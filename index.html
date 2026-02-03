@@ -677,6 +677,81 @@
       }
     };
 
+
+    /* ============================================================
+       FALLBACK OFFLINE (quando /_sdk/data_sdk.js não estiver disponível)
+       - Permite rodar localmente (arquivo .html) e ainda cadastrar/editar
+       - Persiste em localStorage
+       ============================================================ */
+    (function ensureDataSdk(){
+      const LS_KEY = 'audit_records_local_v1';
+
+      function loadLocal(){
+        try{
+          const raw = localStorage.getItem(LS_KEY);
+          return raw ? JSON.parse(raw) : [];
+        }catch(e){ return []; }
+      }
+
+      function saveLocal(records){
+        try{ localStorage.setItem(LS_KEY, JSON.stringify(records)); }catch(e){}
+      }
+
+      // Se já existe dataSdk real, não mexe
+      if (window.dataSdk && typeof window.dataSdk.init === 'function') return;
+
+      const listeners = [];
+      function notify(records){
+        listeners.forEach(fn => { try{ fn(records); }catch(e){} });
+      }
+
+      window.dataSdk = {
+        async init(handler){
+          // registra listener
+          if (handler && typeof handler.onDataChanged === 'function'){
+            listeners.push(handler.onDataChanged);
+          }
+          const records = loadLocal();
+          // dispara estado inicial
+          notify(records);
+          return { isOk: true, value: { mode: 'localStorage' } };
+        },
+
+        async create(record){
+          const records = loadLocal();
+          const newRec = { ...record, __backendId: record.__backendId || record.id || (Date.now().toString()) };
+          records.push(newRec);
+          saveLocal(records);
+          notify(records);
+          return { isOk: true, value: newRec };
+        },
+
+        async update(record){
+          const records = loadLocal();
+          const key = record.__backendId || record.id;
+          const idx = records.findIndex(r => (r.__backendId || r.id) === key);
+          if (idx >= 0){
+            records[idx] = { ...records[idx], ...record, __backendId: records[idx].__backendId || record.__backendId || record.id };
+          } else {
+            records.push({ ...record, __backendId: record.__backendId || record.id });
+          }
+          saveLocal(records);
+          notify(records);
+          return { isOk: true, value: records[idx] || record };
+        },
+
+        async delete(record){
+          const records = loadLocal();
+          const key = record.__backendId || record.id;
+          const next = records.filter(r => (r.__backendId || r.id) !== key);
+          saveLocal(next);
+          notify(next);
+          return { isOk: true };
+        }
+      };
+    })();
+
+
     async function initializeApp() {
       const initResult = await window.dataSdk.init(dataHandler);
       if (!initResult.isOk) console.error('Failed to initialize data SDK');
@@ -2066,28 +2141,6 @@
       // ✅ download robusto + nome seguro (resolve "/" no nome do processo)
       downloadJsPdf(doc, nomeArquivo);
     }
-
-    
-    // Abre a visão de recomendações já filtrando pela unidade selecionada no Dashboard
-    function expandirLocal(local) {
-      try {
-        showView('recomendacoes');
-        const filtroUnidade = document.getElementById('filtro-unidade');
-        const filtroSetor = document.getElementById('filtro-setor');
-        const filtroStatus = document.getElementById('filtro-status');
-
-        if (filtroUnidade) filtroUnidade.value = local || '';
-        if (filtroSetor) filtroSetor.value = '';
-        if (filtroStatus) filtroStatus.value = '';
-
-        renderRecomendacoesTable();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch (err) {
-        console.error('Erro ao expandir local:', err);
-        showToast('Não foi possível abrir o detalhamento do local.', 'error');
-      }
-    }
-
 
     initializeApp();
   </script>
