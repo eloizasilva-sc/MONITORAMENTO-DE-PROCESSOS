@@ -302,6 +302,8 @@
        </div>
        <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">COMO</span> - Como? </label> <textarea id="how" rows="3" placeholder="Descreva como será executado" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
        </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">INDICADOR</span> - Indicador de Acompanhamento </label> <textarea id="indicador" rows="2" placeholder="Como será medido/acompanhado o progresso?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
       </div>
      </div><!-- Status Section -->
      <div class="border-t border-slate-200 pt-6">
@@ -541,6 +543,7 @@
             document.getElementById('who').value = recomendacao.who || '';
             document.getElementById('how').value = recomendacao.how || '';
             document.getElementById('how_much').value = recomendacao.how_much || '';
+            document.getElementById('indicador').value = recomendacao.indicador || '';
             document.getElementById('status').value = recomendacao.status || 'Pendente';
             document.getElementById('observacao').value = recomendacao.observacao || '';
             document.getElementById('evidencias_cumprimento').value = recomendacao.evidencias_cumprimento || '';
@@ -679,6 +682,7 @@
                 who: document.getElementById('who').value,
                 how: document.getElementById('how').value,
                 how_much: document.getElementById('how_much').value,
+                indicador: document.getElementById('indicador').value,
                 status: document.getElementById('status').value,
                 observacao: document.getElementById('observacao').value,
                 evidencias_cumprimento: document.getElementById('evidencias_cumprimento').value,
@@ -1273,12 +1277,16 @@
                                     <p class="mt-2 text-sm text-slate-700 leading-relaxed">${recomendacao.what}</p>
                                 </div>
                                 <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-blue-500">
-                                    <strong class="text-blue-600 text-sm font-bold">POR QUÊ - Por quê?</strong>
+                                    <strong class="text-blue-600 text-sm font-bold">POR QUÊ - Por qu��?</strong>
                                     <p class="mt-2 text-sm text-slate-700 leading-relaxed">${recomendacao.why}</p>
                                 </div>
                                 <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-blue-500">
                                     <strong class="text-blue-600 text-sm font-bold">COMO - Como?</strong>
                                     <p class="mt-2 text-sm text-slate-700 leading-relaxed">${recomendacao.how}</p>
+                                </div>
+                                <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-purple-500">
+                                    <strong class="text-purple-600 text-sm font-bold">INDICADOR - Indicador de Acompanhamento</strong>
+                                    <p class="mt-2 text-sm text-slate-700 leading-relaxed">${recomendacao.indicador}</p>
                                 </div>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div class="bg-slate-50 rounded-lg p-3">
@@ -1859,54 +1867,130 @@
                 doc.text(textoRec, margin + 5, yPos);
                 yPos += textoRec.length * 5 + 5;
                 
-                // 5W2H Section
-                doc.setFillColor(241, 245, 249);
-                const boxHeight = 8;
+                // 5W2H Section - Layout Profissional
+                yPos += 3;
                 
                 // O QUE
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.rect(margin, yPos, pageWidth - 2 * margin, boxHeight, 'F');
-                doc.setFontSize(8);
+                doc.setFillColor(219, 234, 254); // Azul claro
+                doc.setDrawColor(147, 197, 253);
+                doc.setLineWidth(0.5);
+                const whatText = doc.splitTextToSize(rec.what || 'Não informado', pageWidth - 2 * margin - 10);
+                const whatBoxHeight = Math.max(12, whatText.length * 4.5 + 6);
+                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, whatBoxHeight, 2, 2, 'FD');
+                doc.setFontSize(9);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(71, 85, 105);
-                doc.text('O QUE:', margin + 2, yPos + 5);
+                doc.setTextColor(30, 64, 175);
+                doc.text('O QUE - O que será feito?', margin + 3, yPos + 5);
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
                 doc.setTextColor(0, 0, 0);
-                const whatText = doc.splitTextToSize(rec.what, pageWidth - 2 * margin - 20);
-                doc.text(whatText, margin + 18, yPos + 5);
-                yPos += Math.max(boxHeight, whatText.length * 4.5) + 2;
+                doc.text(whatText, margin + 5, yPos + 10);
+                yPos += whatBoxHeight + 3;
                 
                 // POR QUÊ
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.rect(margin, yPos, pageWidth - 2 * margin, boxHeight, 'F');
+                doc.setFillColor(254, 243, 199); // Amarelo claro
+                doc.setDrawColor(253, 224, 71);
+                const whyText = doc.splitTextToSize(rec.why || 'Não informado', pageWidth - 2 * margin - 10);
+                const whyBoxHeight = Math.max(12, whyText.length * 4.5 + 6);
+                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, whyBoxHeight, 2, 2, 'FD');
+                doc.setFontSize(9);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(71, 85, 105);
-                doc.text('POR QUÊ:', margin + 2, yPos + 5);
+                doc.setTextColor(180, 83, 9);
+                doc.text('POR QUÊ - Justificativa da ação', margin + 3, yPos + 5);
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
                 doc.setTextColor(0, 0, 0);
-                const whyText = doc.splitTextToSize(rec.why, pageWidth - 2 * margin - 20);
-                doc.text(whyText, margin + 18, yPos + 5);
-                yPos += Math.max(boxHeight, whyText.length * 4.5) + 2;
+                doc.text(whyText, margin + 5, yPos + 10);
+                yPos += whyBoxHeight + 3;
                 
                 // COMO
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.rect(margin, yPos, pageWidth - 2 * margin, boxHeight, 'F');
+                doc.setFillColor(220, 252, 231); // Verde claro
+                doc.setDrawColor(134, 239, 172);
+                const howText = doc.splitTextToSize(rec.how || 'Não informado', pageWidth - 2 * margin - 10);
+                const howBoxHeight = Math.max(12, howText.length * 4.5 + 6);
+                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, howBoxHeight, 2, 2, 'FD');
+                doc.setFontSize(9);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(71, 85, 105);
-                doc.text('COMO:', margin + 2, yPos + 5);
+                doc.setTextColor(22, 101, 52);
+                doc.text('COMO - Como será executado?', margin + 3, yPos + 5);
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
                 doc.setTextColor(0, 0, 0);
-                const howText = doc.splitTextToSize(rec.how, pageWidth - 2 * margin - 20);
-                doc.text(howText, margin + 18, yPos + 5);
-                yPos += Math.max(boxHeight, howText.length * 4.5) + 2;
+                doc.text(howText, margin + 5, yPos + 10);
+                yPos += howBoxHeight + 3;
                 
-                // Dados resumidos
+                // INDICADOR
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.setFontSize(7);
+                doc.setFillColor(243, 232, 255); // Roxo claro
+                doc.setDrawColor(216, 180, 254);
+                const indicadorText = doc.splitTextToSize(rec.indicador || 'Não informado', pageWidth - 2 * margin - 10);
+                const indicadorBoxHeight = Math.max(12, indicadorText.length * 4.5 + 6);
+                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, indicadorBoxHeight, 2, 2, 'FD');
+                doc.setFontSize(9);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(71, 85, 105);
-                doc.text(`ONDE: ${rec.where} | QUANDO: ${rec.when} | QUEM: ${rec.who} | QUANTO: ${rec.how_much}`, margin + 2, yPos + 5);
-                yPos += 12;
+                doc.setTextColor(107, 33, 168);
+                doc.text('INDICADOR - Indicador de Acompanhamento', margin + 3, yPos + 5);
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(indicadorText, margin + 5, yPos + 10);
+                yPos += indicadorBoxHeight + 3;
+                
+                // Dados resumidos em grid 2x2
+                if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
+                
+                const gridWidth = (pageWidth - 2 * margin - 3) / 2;
+                const gridHeight = 12;
+                
+                // ONDE
+                doc.setFillColor(243, 244, 246);
+                doc.setDrawColor(209, 213, 219);
+                doc.roundedRect(margin, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(75, 85, 99);
+                doc.text('ONDE:', margin + 3, yPos + 4);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                const ondeText = doc.splitTextToSize(rec.where || 'Não informado', gridWidth - 20);
+                doc.text(ondeText, margin + 3, yPos + 8);
+                
+                // QUANDO
+                doc.roundedRect(margin + gridWidth + 3, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(75, 85, 99);
+                doc.text('QUANDO:', margin + gridWidth + 6, yPos + 4);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                const quandoText = doc.splitTextToSize(rec.when || 'Não informado', gridWidth - 20);
+                doc.text(quandoText, margin + gridWidth + 6, yPos + 8);
+                
+                yPos += gridHeight + 3;
+                
+                // QUEM
+                doc.roundedRect(margin, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(75, 85, 99);
+                doc.text('QUEM:', margin + 3, yPos + 4);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                const quemText = doc.splitTextToSize(rec.who || 'Não informado', gridWidth - 20);
+                doc.text(quemText, margin + 3, yPos + 8);
+                
+                // QUANTO
+                doc.roundedRect(margin + gridWidth + 3, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(75, 85, 99);
+                doc.text('QUANTO:', margin + gridWidth + 6, yPos + 4);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                const quantoText = doc.splitTextToSize(rec.how_much || 'Não informado', gridWidth - 20);
+                doc.text(quantoText, margin + gridWidth + 6, yPos + 8);
+                
+                yPos += gridHeight + 5;
                 
                 if (index < recomendacoes.length - 1) {
                     doc.setDrawColor(226, 232, 240);
@@ -1930,5 +2014,5 @@
 
         initializeApp();
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c826b3802f71dd3',t:'MTc3MDEyNjg1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c82758e85931dd3',t:'MTc3MDEyNzI3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
