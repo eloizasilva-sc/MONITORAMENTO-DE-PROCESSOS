@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processos Auditados | Gestão de Auditoria</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processos Auditados | Gestão de Auditoria</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
         // Sistema de armazenamento local para GitHub Pages
         window.dataSdk = {
             _listeners: [],
@@ -112,10 +112,10 @@
             }
         };
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
         body {
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
@@ -147,562 +147,309 @@
             animation: fadeIn 0.2s ease-out;
         }
     </style>
-</head>
-<body class="bg-slate-50 text-slate-900 h-full">
-    <div id="app" class="flex h-full overflow-hidden w-full">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
-            <div class="p-6 flex items-center gap-3 text-white">
-                <i data-lucide="shield-check" class="text-slate-400"></i>
-                <span id="system-title" class="font-bold text-xl tracking-tight">PROCESSOS AUDITADOS - SESAP/RN</span>
-            </div>
-            
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <a href="#" onclick="showView('dashboard'); return false;" id="nav-dashboard" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all active-link">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
-                </a>
-                <a href="#" onclick="showView('processos'); return false;" id="nav-processos" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
-                    <i data-lucide="clipboard-list" class="w-5 h-5"></i> Processos
-                </a>
-                <a href="#" onclick="showView('recomendacoes'); return false;" id="nav-recomendacoes" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
-                    <i data-lucide="alert-circle" class="w-5 h-5"></i> Recomendações
-                </a>
-                <a href="#" onclick="exportMenuOpen(); return false;" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
-                    <i data-lucide="download" class="w-5 h-5"></i> Exportar PDF
-                </a>
-            </nav>
-
-            <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
-                <span id="institution-name">SESAP/RN</span><br>
-                Desenvolvido por Maria Eloiza da Silva - CAS-Administrativo
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
-            <!-- Header -->
-            <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
-                <h1 id="page-title" class="font-semibold text-lg text-slate-800">PROCESSOS AUDITADOS - SESAP/RN</h1>
-                <div class="flex items-center gap-4">
-                    <button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
-                    </button>
-                    <div class="h-8 w-8 bg-slate-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
-                        AD
-                    </div>
-                </div>
-            </header>
-
-            <!-- Dashboard View -->
-            <div id="view-dashboard" class="p-8 max-w-7xl mx-auto">
-                <!-- Cards de Métricas Gerais -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <p class="text-sm font-medium text-slate-500">Total de Locais</p>
-                        <h3 id="dash-total-locais" class="text-3xl font-bold mt-2">0</h3>
-                        <p class="text-xs text-slate-400 mt-2">Unidades auditadas</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <p class="text-sm font-medium text-slate-500">Total de Processos</p>
-                        <h3 id="dash-total-processos" class="text-3xl font-bold mt-2">0</h3>
-                        <p class="text-xs text-slate-400 mt-2">Processos cadastrados</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <p class="text-sm font-medium text-slate-500">Total de Recomendações</p>
-                        <h3 id="dash-total-recomendacoes" class="text-3xl font-bold mt-2">0</h3>
-                        <p class="text-xs text-emerald-600 font-medium mt-2">Recomendações ativas</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <p class="text-sm font-medium text-red-600">Atrasadas</p>
-                        <h3 id="dash-atrasadas" class="text-3xl font-bold mt-2 text-red-600">0</h3>
-                        <p class="text-xs text-slate-400 mt-2">Requerem atenção urgente</p>
-                    </div>
-                </div>
-
-                <!-- Título da Seção de Locais -->
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
-                        <i data-lucide="map-pin" class="w-7 h-7 text-slate-600"></i>
-                        Auditorias por Local
-                    </h2>
-                    <p class="text-slate-500 mt-1">Clique em um local para ver os detalhes das recomendações</p>
-                </div>
-
-                <!-- Blocos de Locais -->
-                <div id="locais-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Locais serão renderizados aqui -->
-                </div>
-
-                <!-- Estado vazio -->
-                <div id="dashboard-empty" style="display: none;" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-                    <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
-                    <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhuma auditoria cadastrada</h3>
-                    <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p>
-                    <button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
-                    </button>
-                </div>
-            </div>
-
-            <!-- Processos View -->
-            <div id="view-processos" style="display: none;" class="p-8 max-w-7xl mx-auto">
-                <div id="processos-list" class="space-y-6">
-                    <!-- Processos serão renderizados aqui -->
-                </div>
-                <div id="processos-empty" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-                    <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
-                    <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
-                    <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p>
-                    <button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
-                    </button>
-                </div>
-            </div>
-
-            <!-- Recomendações View -->
-            <div id="view-recomendacoes" style="display: none;" class="p-8 max-w-7xl mx-auto">
-                <!-- Filtros -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="filter" class="w-5 h-5 text-blue-600"></i>
-                            Filtros
-                        </h3>
-                        <button onclick="limparFiltros()" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                            Limpar Filtros
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Unidade Auditada</label>
-                            <select id="filtro-unidade" onchange="aplicarFiltros()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                                <option value="">Todas as unidades</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Setor Responsável</label>
-                            <select id="filtro-setor" onchange="aplicarFiltros()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                                <option value="">Todos os setores</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Status</label>
-                            <select id="filtro-status" onchange="aplicarFiltros()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                                <option value="">Todos os status</option>
-                                <option value="Pendente">Pendente</option>
-                                <option value="Em Execução">Em Execução</option>
-                                <option value="Atrasado">Atrasado</option>
-                                <option value="Concluído">Concluído</option>
-                                <option value="Não Atendido">Não Atendido</option>
-                                <option value="Parcialmente Atendido">Parcialmente Atendido</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100">
-                        <h2 class="font-bold text-slate-800">Todas as Recomendações</h2>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
-                                <tr>
-                                    <th class="px-6 py-4">Nº Rec.</th>
-                                    <th class="px-6 py-4">Processo</th>
-                                    <th class="px-6 py-4">Unidade</th>
-                                    <th class="px-6 py-4">Setor Resp.</th>
-                                    <th class="px-6 py-4">Texto</th>
-                                    <th class="px-6 py-4">Prioridade</th>
-                                    <th class="px-6 py-4">Status</th>
-                                    <th class="px-6 py-4">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recomendacoes-table" class="divide-y divide-slate-100 text-sm">
-                                <tr>
-                                    <td colspan="8" class="px-6 py-8 text-center text-slate-400">Nenhuma recomendação cadastrada</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="bg-slate-50 text-slate-900 h-full">
+  <div id="app" class="flex h-full overflow-hidden w-full"><!-- Sidebar -->
+   <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
+    <div class="p-6 flex items-center gap-3 text-white"><i data-lucide="shield-check" class="text-slate-400"></i> <span id="system-title" class="font-bold text-xl tracking-tight">PROCESSOS AUDITADOS - SESAP/RN</span>
     </div>
-
-    <!-- Modal Processo -->
-    <div id="modal-processo" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
-                <h2 class="font-bold text-xl text-slate-800">Novo Processo</h2>
-                <button onclick="closeModal('processo')" class="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            
-            <form id="processo-form" class="p-6 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Nº do Processo SEI *</label>
-                        <input type="text" id="processo_numero" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Eixo *</label>
-                        <select id="eixo" onchange="toggleEixoOutro()" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Selecione...</option>
-                            <option value="Orçamento e Estoques">Orçamento e Estoques</option>
-                            <option value="Demandas Judiciais">Demandas Judiciais</option>
-                            <option value="Contratos">Contratos</option>
-                            <option value="Outro">Outro</option>
-                        </select>
-                        <input type="text" id="eixo_outro" placeholder="Digite o nome do novo eixo..." style="display: none;" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Unidade *</label>
-                        <input type="text" id="unidade" required placeholder="Hospital/Setor" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Período *</label>
-                        <input type="text" id="periodo" required placeholder="Janeiro/2024" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Objeto da Auditoria *</label>
-                        <input type="text" id="objeto" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Responsável</label>
-                        <input type="text" id="responsavel" placeholder="Gestor da unidade" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Auditor Responsável</label>
-                        <input type="text" id="auditor" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                </div>
-
-                <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
-                    <button type="button" onclick="closeModal('processo')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
-                        Cancelar
-                    </button>
-                    <button type="submit" id="submit-processo-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                        <span id="submit-processo-text">Salvar Processo</span>
-                    </button>
-                </div>
-            </form>
+    <nav class="flex-1 px-4 space-y-2 mt-4"><a href="#" onclick="showView('dashboard'); return false;" id="nav-dashboard" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all active-link"> <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard </a> <a href="#" onclick="showView('processos'); return false;" id="nav-processos" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all"> <i data-lucide="clipboard-list" class="w-5 h-5"></i> Processos </a> <a href="#" onclick="showView('recomendacoes'); return false;" id="nav-recomendacoes" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all"> <i data-lucide="alert-circle" class="w-5 h-5"></i> Recomendações </a> <a href="#" onclick="exportMenuOpen(); return false;" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all"> <i data-lucide="download" class="w-5 h-5"></i> Exportar PDF </a>
+    </nav>
+    <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center"><span id="institution-name">SESAP/RN</span><br>
+      Desenvolvido por Maria Eloiza da Silva - CAS-Administrativo
+    </div>
+   </aside><!-- Main Content -->
+   <main class="flex-1 overflow-y-auto"><!-- Header -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+     <h1 id="page-title" class="font-semibold text-lg text-slate-800">PROCESSOS AUDITADOS - SESAP/RN</h1>
+     <div class="flex items-center gap-4"><button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 flex items-center gap-2"> <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo </button>
+      <div class="h-8 w-8 bg-slate-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
+       AD
+      </div>
+     </div>
+    </header><!-- Dashboard View -->
+    <div id="view-dashboard" class="p-8 max-w-7xl mx-auto"><!-- Cards de Métricas Gerais -->
+     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+       <p class="text-sm font-medium text-slate-500">Total de Locais</p>
+       <h3 id="dash-total-locais" class="text-3xl font-bold mt-2">0</h3>
+       <p class="text-xs text-slate-400 mt-2">Unidades auditadas</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+       <p class="text-sm font-medium text-slate-500">Total de Processos</p>
+       <h3 id="dash-total-processos" class="text-3xl font-bold mt-2">0</h3>
+       <p class="text-xs text-slate-400 mt-2">Processos cadastrados</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+       <p class="text-sm font-medium text-slate-500">Total de Recomendações</p>
+       <h3 id="dash-total-recomendacoes" class="text-3xl font-bold mt-2">0</h3>
+       <p class="text-xs text-emerald-600 font-medium mt-2">Recomendações ativas</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+       <p class="text-sm font-medium text-red-600">Atrasadas</p>
+       <h3 id="dash-atrasadas" class="text-3xl font-bold mt-2 text-red-600">0</h3>
+       <p class="text-xs text-slate-400 mt-2">Requerem atenção urgente</p>
+      </div>
+     </div><!-- Título da Seção de Locais -->
+     <div class="mb-6">
+      <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3"><i data-lucide="map-pin" class="w-7 h-7 text-slate-600"></i> Auditorias por Local</h2>
+      <p class="text-slate-500 mt-1">Clique em um local para ver os detalhes das recomendações</p>
+     </div><!-- Blocos de Locais -->
+     <div id="locais-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Locais serão renderizados aqui -->
+     </div><!-- Estado vazio -->
+     <div id="dashboard-empty" style="display: none;" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center"><i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
+      <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhuma auditoria cadastrada</h3>
+      <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p><button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2"> <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo </button>
+     </div>
+    </div><!-- Processos View -->
+    <div id="view-processos" style="display: none;" class="p-8 max-w-7xl mx-auto">
+     <div id="processos-list" class="space-y-6"><!-- Processos serão renderizados aqui -->
+     </div>
+     <div id="processos-empty" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center"><i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
+      <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
+      <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p><button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2"> <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo </button>
+     </div>
+    </div><!-- Recomendações View -->
+    <div id="view-recomendacoes" style="display: none;" class="p-8 max-w-7xl mx-auto"><!-- Filtros -->
+     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+       <h3 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="filter" class="w-5 h-5 text-blue-600"></i> Filtros</h3><button onclick="limparFiltros()" class="text-sm text-blue-600 hover:text-blue-700 font-medium"> Limpar Filtros </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Unidade Auditada</label> <select id="filtro-unidade" onchange="aplicarFiltros()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"> <option value="">Todas as unidades</option> </select>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Setor Responsável</label> <select id="filtro-setor" onchange="aplicarFiltros()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"> <option value="">Todos os setores</option> </select>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Status</label> <select id="filtro-status" onchange="aplicarFiltros()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"> <option value="">Todos os status</option> <option value="Pendente">Pendente</option> <option value="Em Execução">Em Execução</option> <option value="Atrasado">Atrasado</option> <option value="Concluído">Concluído</option> <option value="Não Atendido">Não Atendido</option> <option value="Parcialmente Atendido">Parcialmente Atendido</option> </select>
+       </div>
+      </div>
+     </div>
+     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-6 border-b border-slate-100">
+       <h2 class="font-bold text-slate-800">Todas as Recomendações</h2>
+      </div>
+      <div class="overflow-x-auto">
+       <table class="w-full text-left">
+        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
+         <tr>
+          <th class="px-6 py-4">Nº Rec.</th>
+          <th class="px-6 py-4">Processo</th>
+          <th class="px-6 py-4">Unidade</th>
+          <th class="px-6 py-4">Setor Resp.</th>
+          <th class="px-6 py-4">Texto</th>
+          <th class="px-6 py-4">Prioridade</th>
+          <th class="px-6 py-4">Status</th>
+          <th class="px-6 py-4">Ações</th>
+         </tr>
+        </thead>
+        <tbody id="recomendacoes-table" class="divide-y divide-slate-100 text-sm">
+         <tr>
+          <td colspan="8" class="px-6 py-8 text-center text-slate-400">Nenhuma recomendação cadastrada</td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div><!-- Modal Processo -->
+  <div id="modal-processo" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+   <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+     <h2 class="font-bold text-xl text-slate-800">Novo Processo</h2><button onclick="closeModal('processo')" class="text-slate-400 hover:text-slate-600"> <i data-lucide="x" class="w-6 h-6"></i> </button>
+    </div>
+    <form id="processo-form" class="p-6 space-y-4">
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Nº do Processo SEI *</label> <input type="text" id="processo_numero" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Eixo *</label> <select id="eixo" onchange="toggleEixoOutro()" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"> <option value="">Selecione...</option> <option value="Orçamento e Estoques">Orçamento e Estoques</option> <option value="Demandas Judiciais">Demandas Judiciais</option> <option value="Contratos">Contratos</option> <option value="Outro">Outro</option> </select> <input type="text" id="eixo_outro" placeholder="Digite o nome do novo eixo..." style="display: none;" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Unidade *</label> <input type="text" id="unidade" required placeholder="Hospital/Setor" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Período *</label> <input type="text" id="periodo" required placeholder="Janeiro/2024" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-700 mb-2">Objeto da Auditoria *</label> <input type="text" id="objeto" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Responsável</label> <input type="text" id="responsavel" placeholder="Gestor da unidade" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Auditor Responsável</label> <input type="text" id="auditor" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+     </div>
+     <div class="flex gap-3 justify-end pt-4 border-t border-slate-200"><button type="button" onclick="closeModal('processo')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"> Cancelar </button> <button type="submit" id="submit-processo-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"> <span id="submit-processo-text">Salvar Processo</span> </button>
+     </div>
+    </form>
+   </div>
+  </div><!-- Modal Achado -->
+  <div id="modal-achado" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+   <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+     <h2 class="font-bold text-xl text-slate-800">Novo Achado</h2><button onclick="closeModal('achado')" class="text-slate-400 hover:text-slate-600"> <i data-lucide="x" class="w-6 h-6"></i> </button>
+    </div>
+    <form id="achado-form" class="p-6 space-y-4">
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Nº do Achado *</label> <input type="text" id="achado_numero" required placeholder="001" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label> <input type="text" id="achado_subitem" placeholder="a, b, c..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Grau de Risco *</label> <select id="grau_risco" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"> <option value="">Selecione...</option> <option value="Alto">Alto</option> <option value="Médio">Médio</option> <option value="Baixo">Baixo</option> </select>
+      </div>
+      <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-700 mb-2">Descrição do Achado *</label> <textarea id="achado_descricao" required rows="4" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Impacto</label> <select id="impacto" onchange="toggleImpactoOutro()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"> <option value="">Selecione...</option> <option value="Financeiro">Financeiro</option> <option value="Operacional">Operacional</option> <option value="Legal">Legal</option> <option value="Reputacional">Reputacional</option> <option value="Outro">Outro</option> </select> <input type="text" id="impacto_outro" placeholder="Especifique o impacto..." style="display: none;" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+      </div>
+      <div><label class="block text-sm font-medium text-slate-700 mb-2">Evidência</label> <input type="text" id="evidencia" placeholder="Número do documento" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+     </div>
+     <div class="flex gap-3 justify-end pt-4 border-t border-slate-200"><button type="button" onclick="closeModal('achado')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"> Cancelar </button> <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"> <span id="submit-achado-text">Salvar Achado</span> </button>
+     </div>
+    </form>
+   </div>
+  </div><!-- Modal Export PDF -->
+  <div id="modal-export" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+   <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div class="p-6 border-b border-slate-200 flex items-center justify-between">
+     <h2 class="font-bold text-xl text-slate-800">Exportar Plano de Ação em PDF</h2><button onclick="closeModal('export')" class="text-slate-400 hover:text-slate-600"> <i data-lucide="x" class="w-6 h-6"></i> </button>
+    </div>
+    <div class="p-6 space-y-6"><!-- PLANO DE AÇÃO 5W2H -->
+     <div class="border-2 border-blue-300 bg-blue-50 rounded-xl p-4 mb-4">
+      <h3 class="font-bold text-blue-900 mb-3 text-lg flex items-center gap-2"><i data-lucide="clipboard-list" class="w-6 h-6"></i> Plano de Ação 5W2H</h3>
+      <div class="space-y-3"><!-- Geral 5W2H -->
+       <div class="bg-white border border-blue-200 rounded-lg p-4 hover:border-blue-400 transition-all cursor-pointer" onclick="exportPDFGeral()">
+        <div class="flex items-start gap-4">
+         <div class="bg-blue-100 rounded-lg p-3"><i data-lucide="file-text" class="w-7 h-7 text-blue-600"></i>
+         </div>
+         <div class="flex-1">
+          <h4 class="font-bold text-slate-800 mb-1">Relatório Geral - Todas as Recomendações</h4>
+          <p class="text-sm text-slate-600">Exporta todas as recomendações com plano 5W2H completo</p>
+         </div><i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
         </div>
-    </div>
-
-    <!-- Modal Achado -->
-    <div id="modal-achado" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
-                <h2 class="font-bold text-xl text-slate-800">Novo Achado</h2>
-                <button onclick="closeModal('achado')" class="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            
-            <form id="achado-form" class="p-6 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Nº do Achado *</label>
-                        <input type="text" id="achado_numero" required placeholder="001" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label>
-                        <input type="text" id="achado_subitem" placeholder="a, b, c..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Grau de Risco *</label>
-                        <select id="grau_risco" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Selecione...</option>
-                            <option value="Alto">Alto</option>
-                            <option value="Médio">Médio</option>
-                            <option value="Baixo">Baixo</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Descrição do Achado *</label>
-                        <textarea id="achado_descricao" required rows="4" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Impacto</label>
-                        <select id="impacto" onchange="toggleImpactoOutro()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Selecione...</option>
-                            <option value="Financeiro">Financeiro</option>
-                            <option value="Operacional">Operacional</option>
-                            <option value="Legal">Legal</option>
-                            <option value="Reputacional">Reputacional</option>
-                            <option value="Outro">Outro</option>
-                        </select>
-                        <input type="text" id="impacto_outro" placeholder="Especifique o impacto..." style="display: none;" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Evidência</label>
-                        <input type="text" id="evidencia" placeholder="Número do documento" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                </div>
-
-                <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
-                    <button type="button" onclick="closeModal('achado')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
-                        Cancelar
-                    </button>
-                    <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                        <span id="submit-achado-text">Salvar Achado</span>
-                    </button>
-                </div>
-            </form>
+       </div><!-- Por Processo 5W2H -->
+       <div class="bg-white border border-blue-200 rounded-lg p-4">
+        <div class="flex items-start gap-4 mb-3">
+         <div class="bg-blue-100 rounded-lg p-3"><i data-lucide="folder" class="w-7 h-7 text-blue-600"></i>
+         </div>
+         <div class="flex-1">
+          <h4 class="font-bold text-slate-800 mb-1">Por Processo - Plano 5W2H</h4>
+          <p class="text-sm text-slate-600">Exporta recomendações de um processo específico com 5W2H</p>
+         </div>
         </div>
-    </div>
-
-    <!-- Modal Export PDF -->
-    <div id="modal-export" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b border-slate-200 flex items-center justify-between">
-                <h2 class="font-bold text-xl text-slate-800">Exportar Plano de Ação em PDF</h2>
-                <button onclick="closeModal('export')" class="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            
-            <div class="p-6 space-y-6">
-                <!-- Relatório Geral -->
-                <div class="border border-slate-200 rounded-xl p-5 hover:border-blue-400 transition-all cursor-pointer" onclick="exportPDFGeral()">
-                    <div class="flex items-start gap-4">
-                        <div class="bg-blue-100 rounded-lg p-3">
-                            <i data-lucide="file-text" class="w-8 h-8 text-blue-600"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-slate-800 mb-1">Relatório Geral - Plano de Ação</h3>
-                            <p class="text-sm text-slate-600">Exporta todas as recomendações com plano 5W2H</p>
-                        </div>
-                        <i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
-                    </div>
-                </div>
-
-                <!-- Relatório Formal -->
-                <div class="border border-slate-200 rounded-xl p-5 hover:border-purple-400 transition-all cursor-pointer" onclick="exportPDFFormal()">
-                    <div class="flex items-start gap-4">
-                        <div class="bg-purple-100 rounded-lg p-3">
-                            <i data-lucide="file-check" class="w-8 h-8 text-purple-600"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-slate-800 mb-1">Relatório Formal de Acompanhamento</h3>
-                            <p class="text-sm text-slate-600">Relatório com evidências, justificativas e resultados</p>
-                        </div>
-                        <i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
-                    </div>
-                </div>
-
-                <!-- Por Eixo -->
-                <div class="border border-slate-200 rounded-xl p-5">
-                    <div class="flex items-start gap-4 mb-4">
-                        <div class="bg-emerald-100 rounded-lg p-3">
-                            <i data-lucide="layers" class="w-8 h-8 text-emerald-600"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-slate-800 mb-1">Por Eixo</h3>
-                            <p class="text-sm text-slate-600">Exporta recomendações filtradas por eixo temático</p>
-                        </div>
-                    </div>
-                    <div id="eixos-list" class="space-y-2 pl-16">
-                        <!-- Eixos serão renderizados aqui -->
-                    </div>
-                </div>
-
-                <!-- Por Processo -->
-                <div class="border border-slate-200 rounded-xl p-5">
-                    <div class="flex items-start gap-4 mb-4">
-                        <div class="bg-amber-100 rounded-lg p-3">
-                            <i data-lucide="folder" class="w-8 h-8 text-amber-600"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-slate-800 mb-1">Por Processo</h3>
-                            <p class="text-sm text-slate-600">Exporta recomendações de um processo específico</p>
-                        </div>
-                    </div>
-                    <div id="processos-export-list" class="space-y-2 pl-16 max-h-64 overflow-y-auto">
-                        <!-- Processos serão renderizados aqui -->
-                    </div>
-                </div>
-            </div>
+        <div id="processos-plano-list" class="space-y-2 pl-14 max-h-48 overflow-y-auto"><!-- Processos serão renderizados aqui -->
         </div>
-    </div>
-
-    <!-- Modal Recomendação -->
-    <div id="modal-recomendacao" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
-                <h2 class="font-bold text-xl text-slate-800">Nova Recomendação e Plano 5W2H</h2>
-                <button onclick="closeModal('recomendacao')" class="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            
-            <form id="recomendacao-form" class="p-6 space-y-6">
-                <!-- Recomendação Section -->
-                <div>
-                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Dados da Recomendação</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Nº da Recomendação *</label>
-                            <input type="text" id="recomendacao_numero" required placeholder="R-001" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label>
-                            <input type="text" id="recomendacao_subitem" placeholder="a, b, c..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Prioridade *</label>
-                            <select id="prioridade" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Selecione...</option>
-                                <option value="Alta">Alta</option>
-                                <option value="Média">Média</option>
-                                <option value="Baixa">Baixa</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Texto da Recomendação *</label>
-                            <textarea id="recomendacao_texto" required rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Áreas/Pessoas Responsáveis *</label>
-                            <div id="areas-container" class="space-y-2 mb-2">
-                                <!-- Áreas serão adicionadas aqui -->
-                            </div>
-                            <div class="flex gap-2">
-                                <input type="text" id="area_input" placeholder="Digite o nome da área ou pessoa..." class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <button type="button" onclick="adicionarArea()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
-                                    <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
-                                </button>
-                            </div>
-                            <p class="text-xs text-slate-500 mt-2">Exemplos: CAS, SUAH, Hospital Walfredo Gurgel, João Silva, etc.</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Prazo Global *</label>
-                            <input type="text" id="prazo_global" required placeholder="60 dias" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 5W2H Section -->
-                <div class="border-t border-slate-200 pt-6">
-                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Plano de Ação 5W2H</h3>
-                    <p class="text-xs text-amber-600 mb-4 bg-amber-50 p-3 rounded-lg flex items-center gap-2">
-                        <i data-lucide="info" class="w-4 h-4"></i>
-                        <span>Os campos do plano de ação são opcionais. As áreas responsáveis podem preencher posteriormente.</span>
-                    </p>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">
-                                <span class="text-slate-600 font-bold">O QUE</span> - O que será feito?
-                            </label>
-                            <textarea id="what" rows="2" placeholder="Descreva a ação corretiva" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">
-                                <span class="text-slate-600 font-bold">POR QUÊ</span> - Por quê?
-                            </label>
-                            <textarea id="why" rows="2" placeholder="Justificativa da ação" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">
-                                    <span class="text-slate-600 font-bold">ONDE</span> - Onde?
-                                </label>
-                                <input type="text" id="where" placeholder="Local ou setor" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">
-                                    <span class="text-slate-600 font-bold">QUANDO</span> - Quando?
-                                </label>
-                                <input type="date" id="when" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">
-                                    <span class="text-slate-600 font-bold">QUEM</span> - Quem?
-                                </label>
-                                <input type="text" id="who" placeholder="Nome do responsável" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">
-                                    <span class="text-slate-600 font-bold">QUANTO</span> - Quanto custa?
-                                </label>
-                                <input type="text" id="how_much" placeholder="R$ 0,00 ou sem custo" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">
-                                <span class="text-slate-600 font-bold">COMO</span> - Como?
-                            </label>
-                            <textarea id="how" rows="3" placeholder="Descreva como será executado" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">
-                                <span class="text-slate-600 font-bold">INDICADOR</span> - Indicador de Acompanhamento
-                            </label>
-                            <textarea id="indicador" rows="2" placeholder="Como será medido/acompanhado o progresso?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Status Section -->
-                <div class="border-t border-slate-200 pt-6">
-                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Status e Observações</h3>
-                    <div class="grid grid-cols-1 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Status *</label>
-                            <select id="status" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="Pendente">Pendente</option>
-                                <option value="Em Execução">Em Execução</option>
-                                <option value="Atrasado">Atrasado</option>
-                                <option value="Concluído">Concluído</option>
-                                <option value="Não Atendido">Não Atendido</option>
-                                <option value="Parcialmente Atendido">Parcialmente Atendido</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Observações</label>
-                            <textarea id="observacao" rows="3" placeholder="Notas adicionais..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Relatório Formal Section -->
-                <div class="border-t border-slate-200 pt-6">
-                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Informações para Relatório Formal</h3>
-                    <p class="text-xs text-blue-600 mb-4 bg-blue-50 p-3 rounded-lg flex items-center gap-2">
-                        <i data-lucide="info" class="w-4 h-4"></i>
-                        <span>Estes campos são usados no Relatório Formal de Acompanhamento e podem ser preenchidos posteriormente.</span>
-                    </p>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Evidências do Cumprimento (Total ou Parcial)</label>
-                            <textarea id="evidencias_cumprimento" rows="3" placeholder="Descreva as evidências que demonstram o cumprimento..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Justificativa do Não Cumprimento Total ou Cumprimento Parcial</label>
-                            <textarea id="justificativa_nao_cumprimento" rows="4" placeholder="Explique os motivos que impediram o cumprimento total da recomendação..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Resultados Percebidos (por conta do cumprimento parcial ou total)</label>
-                            <textarea id="resultados_percebidos" rows="3" placeholder="Descreva os benefícios e melhorias percebidos..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
-                    <button type="button" onclick="closeModal('recomendacao')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
-                        Cancelar
-                    </button>
-                    <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                        <span id="submit-recomendacao-text">Salvar Recomendação</span>
-                    </button>
-                </div>
-            </form>
+       </div>
+      </div>
+     </div><!-- RELATÓRIO FORMAL DE ACOMPANHAMENTO -->
+     <div class="border-2 border-purple-300 bg-purple-50 rounded-xl p-4">
+      <h3 class="font-bold text-purple-900 mb-3 text-lg flex items-center gap-2"><i data-lucide="file-check" class="w-6 h-6"></i> Relatório Formal de Acompanhamento</h3>
+      <div class="space-y-3"><!-- Geral Formal -->
+       <div class="bg-white border border-purple-200 rounded-lg p-4 hover:border-purple-400 transition-all cursor-pointer" onclick="exportPDFFormalGeral()">
+        <div class="flex items-start gap-4">
+         <div class="bg-purple-100 rounded-lg p-3"><i data-lucide="file-check-2" class="w-7 h-7 text-purple-600"></i>
+         </div>
+         <div class="flex-1">
+          <h4 class="font-bold text-slate-800 mb-1">Relatório Formal - Todas as Recomendações</h4>
+          <p class="text-sm text-slate-600">Relatório completo com evidências, justificativas e resultados</p>
+         </div><i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
         </div>
+       </div><!-- Por Processo Formal -->
+       <div class="bg-white border border-purple-200 rounded-lg p-4">
+        <div class="flex items-start gap-4 mb-3">
+         <div class="bg-purple-100 rounded-lg p-3"><i data-lucide="folder-check" class="w-7 h-7 text-purple-600"></i>
+         </div>
+         <div class="flex-1">
+          <h4 class="font-bold text-slate-800 mb-1">Por Processo - Relatório Formal</h4>
+          <p class="text-sm text-slate-600">Relatório formal de um processo específico</p>
+         </div>
+        </div>
+        <div id="processos-formal-list" class="space-y-2 pl-14 max-h-48 overflow-y-auto"><!-- Processos serão renderizados aqui -->
+        </div>
+       </div>
+      </div>
+     </div>
     </div>
-
-    <script>
+   </div>
+  </div><!-- Modal Recomendação -->
+  <div id="modal-recomendacao" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+   <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+     <h2 class="font-bold text-xl text-slate-800">Nova Recomendação e Plano 5W2H</h2><button onclick="closeModal('recomendacao')" class="text-slate-400 hover:text-slate-600"> <i data-lucide="x" class="w-6 h-6"></i> </button>
+    </div>
+    <form id="recomendacao-form" class="p-6 space-y-6"><!-- Recomendação Section -->
+     <div>
+      <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Dados da Recomendação</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Nº da Recomendação *</label> <input type="text" id="recomendacao_numero" required placeholder="R-001" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label> <input type="text" id="recomendacao_subitem" placeholder="a, b, c..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Prioridade *</label> <select id="prioridade" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"> <option value="">Selecione...</option> <option value="Alta">Alta</option> <option value="Média">Média</option> <option value="Baixa">Baixa</option> </select>
+       </div>
+       <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-700 mb-2">Texto da Recomendação *</label> <textarea id="recomendacao_texto" required rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+       </div>
+       <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-700 mb-2">Áreas/Pessoas Responsáveis *</label>
+        <div id="areas-container" class="space-y-2 mb-2"><!-- Áreas serão adicionadas aqui -->
+        </div>
+        <div class="flex gap-2"><input type="text" id="area_input" placeholder="Digite o nome da área ou pessoa..." class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"> <button type="button" onclick="adicionarArea()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"> <i data-lucide="plus" class="w-4 h-4"></i> Adicionar </button>
+        </div>
+        <p class="text-xs text-slate-500 mt-2">Exemplos: CAS, SUAH, Hospital Walfredo Gurgel, João Silva, etc.</p>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Prazo Global *</label> <input type="text" id="prazo_global" required placeholder="60 dias" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+       </div>
+      </div>
+     </div><!-- 5W2H Section -->
+     <div class="border-t border-slate-200 pt-6">
+      <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Plano de Ação 5W2H</h3>
+      <p class="text-xs text-amber-600 mb-4 bg-amber-50 p-3 rounded-lg flex items-center gap-2"><i data-lucide="info" class="w-4 h-4"></i> <span>Os campos do plano de ação são opcionais. As áreas responsáveis podem preencher posteriormente.</span></p>
+      <div class="space-y-4">
+       <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">O QUE</span> - O que será feito? </label> <textarea id="what" rows="2" placeholder="Descreva a ação corretiva" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">POR QUÊ</span> - Por quê? </label> <textarea id="why" rows="2" placeholder="Justificativa da ação" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">ONDE</span> - Onde? </label> <input type="text" id="where" placeholder="Local ou setor" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">QUANDO</span> - Quando? </label> <input type="date" id="when" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">QUEM</span> - Quem? </label> <input type="text" id="who" placeholder="Nome do responsável" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+        </div>
+        <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">QUANTO</span> - Quanto custa? </label> <input type="text" id="how_much" placeholder="R$ 0,00 ou sem custo" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+        </div>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">COMO</span> - Como? </label> <textarea id="how" rows="3" placeholder="Descreva como será executado" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2"> <span class="text-slate-600 font-bold">INDICADOR</span> - Indicador de Acompanhamento </label> <textarea id="indicador" rows="2" placeholder="Como será medido/acompanhado o progresso?" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
+      </div>
+     </div><!-- Status Section -->
+     <div class="border-t border-slate-200 pt-6">
+      <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Status e Observações</h3>
+      <div class="grid grid-cols-1 gap-4">
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Status *</label> <select id="status" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"> <option value="Pendente">Pendente</option> <option value="Em Execução">Em Execução</option> <option value="Atrasado">Atrasado</option> <option value="Concluído">Concluído</option> <option value="Não Atendido">Não Atendido</option> <option value="Parcialmente Atendido">Parcialmente Atendido</option> </select>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Observações</label> <textarea id="observacao" rows="3" placeholder="Notas adicionais..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+       </div>
+      </div>
+     </div><!-- Relatório Formal Section -->
+     <div class="border-t border-slate-200 pt-6">
+      <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Informações para Relatório Formal</h3>
+      <p class="text-xs text-blue-600 mb-4 bg-blue-50 p-3 rounded-lg flex items-center gap-2"><i data-lucide="info" class="w-4 h-4"></i> <span>Estes campos são usados no Relatório Formal de Acompanhamento e podem ser preenchidos posteriormente.</span></p>
+      <div class="space-y-4">
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Evidências do Cumprimento (Total ou Parcial)</label> <textarea id="evidencias_cumprimento" rows="3" placeholder="Descreva as evidências que demonstram o cumprimento..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Justificativa do Não Cumprimento Total ou Cumprimento Parcial</label> <textarea id="justificativa_nao_cumprimento" rows="4" placeholder="Explique os motivos que impediram o cumprimento total da recomendação..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
+       <div><label class="block text-sm font-medium text-slate-700 mb-2">Resultados Percebidos (por conta do cumprimento parcial ou total)</label> <textarea id="resultados_percebidos" rows="3" placeholder="Descreva os benefícios e melhorias percebidos..." class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+       </div>
+      </div>
+     </div>
+     <div class="flex gap-3 justify-end pt-4 border-t border-slate-200"><button type="button" onclick="closeModal('recomendacao')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"> Cancelar </button> <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"> <span id="submit-recomendacao-text">Salvar Recomendação</span> </button>
+     </div>
+    </form>
+   </div>
+  </div>
+  <script>
         const defaultConfig = {
             system_title: 'PROCESSOS AUDITADOS - SESAP/RN',
             institution_name: 'SESAP/RN'
@@ -1912,29 +1659,31 @@
         function renderExportOptions() {
             const processos = allRecords.filter(r => r.tipo === 'processo');
             
-            // Renderizar eixos únicos
-            const eixosUnicos = [...new Set(processos.map(p => p.eixo))];
-            const eixosList = document.getElementById('eixos-list');
+            // Renderizar processos para Plano de Ação 5W2H
+            const processosPlanoList = document.getElementById('processos-plano-list');
             
-            if (eixosUnicos.length === 0) {
-                eixosList.innerHTML = '<p class="text-sm text-slate-400">Nenhum eixo disponível</p>';
+            if (processos.length === 0) {
+                processosPlanoList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo disponível</p>';
             } else {
-                eixosList.innerHTML = eixosUnicos.map(eixo => `
-                    <button onclick="exportPDFPorEixo('${eixo.replace(/'/g, "\\'")}')" class="w-full text-left px-4 py-2 bg-slate-50 hover:bg-emerald-50 rounded-lg text-sm text-slate-700 hover:text-emerald-700 transition-colors flex items-center justify-between">
-                        <span>${eixo}</span>
+                processosPlanoList.innerHTML = processos.map(proc => `
+                    <button onclick="exportPDFPorProcesso('${proc.id}')" class="w-full text-left px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg text-sm text-slate-700 hover:text-blue-700 transition-colors flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-semibold">${proc.processo_numero}</div>
+                            <div class="text-xs text-slate-500">${proc.unidade}</div>
+                        </div>
                         <i data-lucide="download" class="w-4 h-4"></i>
                     </button>
                 `).join('');
             }
             
-            // Renderizar processos
-            const processosList = document.getElementById('processos-export-list');
+            // Renderizar processos para Relatório Formal
+            const processosFormalList = document.getElementById('processos-formal-list');
             
             if (processos.length === 0) {
-                processosList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo disponível</p>';
+                processosFormalList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo disponível</p>';
             } else {
-                processosList.innerHTML = processos.map(proc => `
-                    <button onclick="exportPDFPorProcesso('${proc.id}')" class="w-full text-left px-4 py-2 bg-slate-50 hover:bg-amber-50 rounded-lg text-sm text-slate-700 hover:text-amber-700 transition-colors flex items-center justify-between">
+                processosFormalList.innerHTML = processos.map(proc => `
+                    <button onclick="exportPDFFormalPorProcesso('${proc.id}')" class="w-full text-left px-3 py-2 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm text-slate-700 hover:text-purple-700 transition-colors flex items-center justify-between">
                         <div class="flex-1">
                             <div class="font-semibold">${proc.processo_numero}</div>
                             <div class="text-xs text-slate-500">${proc.unidade}</div>
@@ -1960,21 +1709,17 @@
             showToast('PDF gerado com sucesso!', 'success');
         };
 
-        window.exportPDFPorEixo = function(eixo) {
-            const processos = allRecords.filter(r => r.tipo === 'processo' && r.eixo === eixo);
-            const processosIds = processos.map(p => p.id);
-            const achados = allRecords.filter(r => r.tipo === 'achado' && processosIds.includes(r.processo_id));
-            const achadosIds = achados.map(a => a.id);
-            const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao' && achadosIds.includes(r.achado_id));
+        window.exportPDFFormalGeral = function() {
+            const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao');
             
             if (recomendacoes.length === 0) {
-                showToast(`Nenhuma recomendação para o eixo ${eixo}`, 'error');
+                showToast('Nenhuma recomendação para exportar', 'error');
                 return;
             }
             
-            generatePDF(recomendacoes, `Relatorio - Eixo: ${eixo}`, `plano-acao-${eixo.toLowerCase().replace(/\s+/g, '-')}.pdf`);
+            generatePDFFormal(recomendacoes, 'Relatorio Formal de Acompanhamento - Todas as Recomendacoes', 'relatorio-formal-geral.pdf');
             closeModal('export');
-            showToast('PDF gerado com sucesso!', 'success');
+            showToast('PDF Formal gerado com sucesso!', 'success');
         };
 
         window.exportPDFPorProcesso = function(processoId) {
@@ -1993,15 +1738,18 @@
             showToast('PDF gerado com sucesso!', 'success');
         };
 
-        window.exportPDFFormal = function() {
-            const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao');
+        window.exportPDFFormalPorProcesso = function(processoId) {
+            const processo = allRecords.find(r => r.id === processoId);
+            const achados = allRecords.filter(r => r.tipo === 'achado' && r.processo_id === processoId);
+            const achadosIds = achados.map(a => a.id);
+            const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao' && achadosIds.includes(r.achado_id));
             
             if (recomendacoes.length === 0) {
-                showToast('Nenhuma recomendação para exportar', 'error');
+                showToast('Nenhuma recomendação neste processo', 'error');
                 return;
             }
             
-            generatePDFFormal(recomendacoes, 'Relatorio Formal de Acompanhamento de Recomendacoes', 'relatorio-formal-acompanhamento.pdf');
+            generatePDFFormal(recomendacoes, `Relatorio Formal - Processo: ${processo.processo_numero}`, `relatorio-formal-${processo.processo_numero}.pdf`);
             closeModal('export');
             showToast('PDF Formal gerado com sucesso!', 'success');
         };
@@ -2418,5 +2166,5 @@
 
         initializeApp();
     </script>
-</body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c82aa8cb44f1dd3',t:'MTc3MDEyOTQ0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
