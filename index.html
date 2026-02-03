@@ -850,7 +850,7 @@
             ];
 
             locaisContainer.innerHTML = locaisArray.map(([local, processosLocal], index) => {
-                // Calcular estatísticas do local
+                // Calcular estat��sticas do local
                 const achados = allRecords.filter(r => 
                     r.tipo === 'achado' && processosLocal.some(p => p.id === r.processo_id)
                 );
@@ -873,9 +873,9 @@
                 const cardColor = coresLocais[index % coresLocais.length];
 
                 return `
-                    <div class="bg-gradient-to-br ${cardColor} rounded-xl shadow-lg p-6 text-white cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1 slide-in" onclick="expandirLocal('${local.replace(/'/g, "\\'")}')">
+                    <div class="bg-gradient-to-br ${cardColor} rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition-all transform hover:-translate-y-1 slide-in">
                         <div class="flex items-start justify-between mb-4">
-                            <div class="flex-1">
+                            <div class="flex-1 cursor-pointer" onclick="expandirLocal('${local.replace(/'/g, "\\'")}')">
                                 <div class="flex items-center gap-2 mb-2">
                                     <i data-lucide="map-pin" class="w-5 h-5"></i>
                                     <h3 class="text-xl font-bold">${local}</h3>
@@ -883,6 +883,9 @@
                                 <p class="text-sm opacity-90 mb-1">${processoRecente.processo_numero}</p>
                                 <p class="text-xs opacity-75 line-clamp-2">${processoRecente.objeto}</p>
                             </div>
+                            <button onclick="event.stopPropagation(); irParaProcessosLocal('${local.replace(/'/g, "\\'")}');" class="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg p-2 transition-colors" title="Ver processos">
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </button>
                         </div>
 
                         <div class="border-t border-white border-opacity-30 pt-4 mt-4">
@@ -1357,7 +1360,7 @@
                                     <p class="mt-2 text-sm text-slate-700 leading-relaxed">${recomendacao.what}</p>
                                 </div>
                                 <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-blue-500">
-                                    <strong class="text-blue-600 text-sm font-bold">POR QUÊ - Por quê?</strong>
+                                    <strong class="text-blue-600 text-sm font-bold">POR QUÊ - Por qu��?</strong>
                                     <p class="mt-2 text-sm text-slate-700 leading-relaxed">${recomendacao.why}</p>
                                 </div>
                                 <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-blue-500">
@@ -1578,6 +1581,33 @@
             });
         };
 
+        window.irParaProcessosLocal = function(local) {
+            showView('processos');
+            
+            setTimeout(() => {
+                const processos = allRecords.filter(r => r.tipo === 'processo' && r.unidade === local);
+                
+                if (processos.length > 0) {
+                    const primeiroProcessoCard = document.querySelector(`[data-local="${local}"]`);
+                    
+                    if (!primeiroProcessoCard) {
+                        const todasCards = document.querySelectorAll('#processos-list > div');
+                        for (const card of todasCards) {
+                            const localSpan = card.querySelector('span[style*="background"]');
+                            if (localSpan && localSpan.textContent.trim().includes(local)) {
+                                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                card.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
+                                setTimeout(() => {
+                                    card.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
+                                }, 2000);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }, 300);
+        };
+
         window.exportMenuOpen = function() {
             renderExportOptions();
             document.getElementById('modal-export').style.display = 'flex';
@@ -1630,7 +1660,7 @@
                 return;
             }
             
-            generatePDF(recomendacoes, 'Relatório Geral - Todas as Recomendações', 'plano-acao-geral.pdf');
+            generatePDF(recomendacoes, 'Relat��rio Geral - Todas as Recomendações', 'plano-acao-geral.pdf');
             closeModal('export');
             showToast('PDF gerado com sucesso!', 'success');
         };
@@ -1725,7 +1755,7 @@
                 const achado = allRecords.find(r => r.id === rec.achado_id);
                 const processo = achado ? allRecords.find(r => r.id === achado.processo_id) : null;
                 
-                // Verificar se precisa de nova página
+                // Verificar se precisa de nova p��gina
                 if (yPos > pageHeight - 80) {
                     doc.addPage();
                     yPos = margin;
@@ -1952,70 +1982,69 @@
                 
                 // O QUE
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.setFillColor(219, 234, 254); // Azul claro
-                doc.setDrawColor(147, 197, 253);
-                doc.setLineWidth(0.5);
+                doc.setDrawColor(220, 220, 220);
+                doc.setLineWidth(0.3);
                 const whatText = doc.splitTextToSize(rec.what || 'Não informado', pageWidth - 2 * margin - 10);
                 const whatBoxHeight = Math.max(12, whatText.length * 4.5 + 6);
-                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, whatBoxHeight, 2, 2, 'FD');
-                doc.setFontSize(9);
+                doc.rect(margin, yPos, pageWidth - 2 * margin, whatBoxHeight, 'D');
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(30, 64, 175);
+                doc.setTextColor(60, 60, 60);
                 doc.text('O QUE - O que será feito?', margin + 3, yPos + 5);
                 doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 doc.text(whatText, margin + 5, yPos + 10);
                 yPos += whatBoxHeight + 3;
                 
                 // POR QUÊ
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.setFillColor(254, 243, 199); // Amarelo claro
-                doc.setDrawColor(253, 224, 71);
+                doc.setDrawColor(220, 220, 220);
+                doc.setLineWidth(0.3);
                 const whyText = doc.splitTextToSize(rec.why || 'Não informado', pageWidth - 2 * margin - 10);
                 const whyBoxHeight = Math.max(12, whyText.length * 4.5 + 6);
-                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, whyBoxHeight, 2, 2, 'FD');
-                doc.setFontSize(9);
+                doc.rect(margin, yPos, pageWidth - 2 * margin, whyBoxHeight, 'D');
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(180, 83, 9);
+                doc.setTextColor(60, 60, 60);
                 doc.text('POR QUÊ - Justificativa da ação', margin + 3, yPos + 5);
                 doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 doc.text(whyText, margin + 5, yPos + 10);
                 yPos += whyBoxHeight + 3;
                 
                 // COMO
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.setFillColor(220, 252, 231); // Verde claro
-                doc.setDrawColor(134, 239, 172);
+                doc.setDrawColor(220, 220, 220);
+                doc.setLineWidth(0.3);
                 const howText = doc.splitTextToSize(rec.how || 'Não informado', pageWidth - 2 * margin - 10);
                 const howBoxHeight = Math.max(12, howText.length * 4.5 + 6);
-                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, howBoxHeight, 2, 2, 'FD');
-                doc.setFontSize(9);
+                doc.rect(margin, yPos, pageWidth - 2 * margin, howBoxHeight, 'D');
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(22, 101, 52);
+                doc.setTextColor(60, 60, 60);
                 doc.text('COMO - Como será executado?', margin + 3, yPos + 5);
                 doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 doc.text(howText, margin + 5, yPos + 10);
                 yPos += howBoxHeight + 3;
                 
                 // INDICADOR
                 if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
-                doc.setFillColor(243, 232, 255); // Roxo claro
-                doc.setDrawColor(216, 180, 254);
+                doc.setDrawColor(220, 220, 220);
+                doc.setLineWidth(0.3);
                 const indicadorText = doc.splitTextToSize(rec.indicador || 'Não informado', pageWidth - 2 * margin - 10);
                 const indicadorBoxHeight = Math.max(12, indicadorText.length * 4.5 + 6);
-                doc.roundedRect(margin, yPos, pageWidth - 2 * margin, indicadorBoxHeight, 2, 2, 'FD');
-                doc.setFontSize(9);
+                doc.rect(margin, yPos, pageWidth - 2 * margin, indicadorBoxHeight, 'D');
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(107, 33, 168);
+                doc.setTextColor(60, 60, 60);
                 doc.text('INDICADOR - Indicador de Acompanhamento', margin + 3, yPos + 5);
                 doc.setFontSize(8);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 doc.text(indicadorText, margin + 5, yPos + 10);
                 yPos += indicadorBoxHeight + 3;
                 
@@ -2026,47 +2055,47 @@
                 const gridHeight = 12;
                 
                 // ONDE
-                doc.setFillColor(243, 244, 246);
-                doc.setDrawColor(209, 213, 219);
-                doc.roundedRect(margin, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.setDrawColor(220, 220, 220);
+                doc.setLineWidth(0.3);
+                doc.rect(margin, yPos, gridWidth, gridHeight, 'D');
                 doc.setFontSize(8);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(75, 85, 99);
+                doc.setTextColor(60, 60, 60);
                 doc.text('ONDE:', margin + 3, yPos + 4);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 const ondeText = doc.splitTextToSize(rec.where || 'Não informado', gridWidth - 20);
                 doc.text(ondeText, margin + 3, yPos + 8);
                 
                 // QUANDO
-                doc.roundedRect(margin + gridWidth + 3, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.rect(margin + gridWidth + 3, yPos, gridWidth, gridHeight, 'D');
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(75, 85, 99);
+                doc.setTextColor(60, 60, 60);
                 doc.text('QUANDO:', margin + gridWidth + 6, yPos + 4);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 const quandoText = doc.splitTextToSize(rec.when || 'Não informado', gridWidth - 20);
                 doc.text(quandoText, margin + gridWidth + 6, yPos + 8);
                 
                 yPos += gridHeight + 3;
                 
                 // QUEM
-                doc.roundedRect(margin, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.rect(margin, yPos, gridWidth, gridHeight, 'D');
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(75, 85, 99);
+                doc.setTextColor(60, 60, 60);
                 doc.text('QUEM:', margin + 3, yPos + 4);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 const quemText = doc.splitTextToSize(rec.who || 'Não informado', gridWidth - 20);
                 doc.text(quemText, margin + 3, yPos + 8);
                 
                 // QUANTO
-                doc.roundedRect(margin + gridWidth + 3, yPos, gridWidth, gridHeight, 2, 2, 'FD');
+                doc.rect(margin + gridWidth + 3, yPos, gridWidth, gridHeight, 'D');
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(75, 85, 99);
+                doc.setTextColor(60, 60, 60);
                 doc.text('QUANTO:', margin + gridWidth + 6, yPos + 4);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(0, 0, 0);
+                doc.setTextColor(80, 80, 80);
                 const quantoText = doc.splitTextToSize(rec.how_much || 'Não informado', gridWidth - 20);
                 doc.text(quantoText, margin + gridWidth + 6, yPos + 8);
                 
@@ -2094,6 +2123,5 @@
 
         initializeApp();
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8285c814411dd3',t:'MTc3MDEyNzk0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c828fb272441dd3',t:'MTc3MDEyODM0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
