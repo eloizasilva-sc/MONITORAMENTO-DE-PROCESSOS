@@ -5,8 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Processos Auditados | Gestão de Auditoria</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
+  <script>
+        // Mock SDK para GitHub Pages - Simula funcionalidade local
+        window.dataSdk = {
+            _listeners: [],
+            _data: JSON.parse(localStorage.getItem('sesap_audit_data') || '[]'),
+            
+            async init(handler) {
+                this._handler = handler;
+                setTimeout(() => handler.onDataChanged(this._data), 100);
+                return { isOk: true, isError: false, data: null, error: null };
+            },
+            
+            async create(record) {
+                try {
+                    const newRecord = { ...record, __backendId: `id_${Date.now()}_${Math.random()}` };
+                    this._data.push(newRecord);
+                    localStorage.setItem('sesap_audit_data', JSON.stringify(this._data));
+                    if (this._handler) this._handler.onDataChanged(this._data);
+                    return { isOk: true, isError: false, data: null, error: null };
+                } catch (error) {
+                    return { isOk: false, isError: true, data: null, error };
+                }
+            },
+            
+            async update(record) {
+                try {
+                    const index = this._data.findIndex(r => r.__backendId === record.__backendId);
+                    if (index !== -1) {
+                        this._data[index] = record;
+                        localStorage.setItem('sesap_audit_data', JSON.stringify(this._data));
+                        if (this._handler) this._handler.onDataChanged(this._data);
+                    }
+                    return { isOk: true, isError: false, data: null, error: null };
+                } catch (error) {
+                    return { isOk: false, isError: true, data: null, error };
+                }
+            },
+            
+            async delete(record) {
+                try {
+                    this._data = this._data.filter(r => r.__backendId !== record.__backendId);
+                    localStorage.setItem('sesap_audit_data', JSON.stringify(this._data));
+                    if (this._handler) this._handler.onDataChanged(this._data);
+                    return { isOk: true, isError: false, data: null, error: null };
+                } catch (error) {
+                    return { isOk: false, isError: true, data: null, error };
+                }
+            }
+        };
+
+        window.elementSdk = {
+            config: {},
+            _element: null,
+            
+            async init(element) {
+                this._element = element;
+                this.config = { ...element.defaultConfig };
+                const savedConfig = localStorage.getItem('sesap_audit_config');
+                if (savedConfig) {
+                    this.config = { ...this.config, ...JSON.parse(savedConfig) };
+                }
+                if (element.onConfigChange) {
+                    await element.onConfigChange(this.config);
+                }
+            },
+            
+            async setConfig(updates) {
+                this.config = { ...this.config, ...updates };
+                localStorage.setItem('sesap_audit_config', JSON.stringify(this.config));
+                if (this._element && this._element.onConfigChange) {
+                    await this._element.onConfigChange(this.config);
+                }
+            }
+        };
+    </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -43,6 +116,8 @@
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
  </head>
  <body class="bg-slate-50 text-slate-900 h-full">
   <div id="app" class="flex h-full overflow-hidden w-full"><!-- Sidebar -->
@@ -735,7 +810,7 @@
                 locaisMap.get(local).push(processo);
             });
 
-            // Atualizar métricas gerais
+            // Atualizar m��tricas gerais
             document.getElementById('dash-total-locais').textContent = locaisMap.size;
             document.getElementById('dash-total-processos').textContent = processos.length;
             document.getElementById('dash-total-recomendacoes').textContent = recomendacoes.length;
@@ -1650,7 +1725,7 @@
                 const achado = allRecords.find(r => r.id === rec.achado_id);
                 const processo = achado ? allRecords.find(r => r.id === achado.processo_id) : null;
                 
-                // Verificar se precisa de nova página
+                // Verificar se precisa de nova p��gina
                 if (yPos > pageHeight - 80) {
                     doc.addPage();
                     yPos = margin;
@@ -2019,5 +2094,5 @@
 
         initializeApp();
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c828175547f1dd3',t:'MTc3MDEyNzc2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8285c814411dd3',t:'MTc3MDEyNzk0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
