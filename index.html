@@ -1,930 +1,2095 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!doctype html>
+<html lang="pt-BR" class="h-full">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIGR 5W2H | Plano de Ação por Processo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processos Auditados | Gestão de Auditoria</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    :root{
-      /* CLEAN LIGHT THEME */
-      --bg:#f6f7fb;
-      --surface:#ffffff;
-      --surface2:#fbfcff;
-      --text:#111827;
-      --muted:#6b7280;
-      --line:#e5e7eb;
+    body { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    .sidebar-item:hover { background-color: #1e293b; }
+    .active-link { background-color: #64748b; color: white; }
 
-      --primary:#2563eb;     /* azul institucional */
-      --primary2:#1d4ed8;
-      --danger:#dc2626;
-
-      --good:#16a34a;
-      --warn:#d97706;
-      --bad:#dc2626;
-
-      --radius:14px;
-      --shadow: 0 10px 25px rgba(17,24,39,.06);
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
+    .slide-in { animation: slideIn 0.3s ease-out; }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
-      color:var(--text);
-      background: var(--bg);
-      min-height:100vh;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
-
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      padding:22px 16px 56px;
-    }
-
-    .topbar{
-      display:flex;
-      gap:14px;
-      align-items:flex-start;
-      justify-content:space-between;
-      margin-bottom:14px;
-    }
-
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    .brand h1{
-      font-size:18px;
-      margin:0;
-      letter-spacing:.2px;
-      font-weight:800;
-    }
-
-    .brand p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
-      max-width:760px;
-    }
-
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    button{
-      border:1px solid var(--line);
-      background: var(--surface);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      box-shadow: var(--shadow);
-      transition: transform .10s ease, background .10s ease, border-color .10s ease;
-      font-weight:700;
-      font-size:13px;
-    }
-
-    button:hover{
-      transform: translateY(-1px);
-      border-color:#cbd5e1;
-      background: #f9fafb;
-    }
-
-    button.primary{
-      border-color: rgba(37,99,235,.25);
-      background: rgba(37,99,235,.10);
-      color: var(--primary2);
-    }
-    button.primary:hover{
-      background: rgba(37,99,235,.14);
-      border-color: rgba(37,99,235,.35);
-    }
-
-    button.danger{
-      border-color: rgba(220,38,38,.25);
-      background: rgba(220,38,38,.08);
-      color: var(--danger);
-    }
-    button.danger:hover{
-      background: rgba(220,38,38,.12);
-      border-color: rgba(220,38,38,.35);
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 380px 1fr;
-      gap:14px;
-      align-items:start;
-    }
-
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .actions{justify-content:flex-start;}
-    }
-
-    .panel{
-      background: var(--surface);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-
-    .panelHeader{
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
-      background: var(--surface2);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .panelHeader h2{
-      margin:0;
-      font-size:12px;
-      letter-spacing:.35px;
-      text-transform:uppercase;
-      color: var(--muted);
-      font-weight:800;
-    }
-
-    .panelBody{ padding:14px; }
-
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin:12px 0 6px;
-      font-weight:700;
-    }
-
-    input, select, textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background: var(--surface);
-      color: var(--text);
-      padding:10px 10px;
-      border-radius:12px;
-      outline:none;
-      font-size:13px;
-    }
-
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(37,99,235,.45);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.10);
-    }
-
-    textarea{ min-height: 86px; resize: vertical; }
-
-    .hint{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.4;
-    }
-
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .card{
-      background: var(--surface);
-      border:1px solid var(--line);
-      border-radius: 14px;
-      padding:12px;
-      box-shadow: var(--shadow);
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-      flex-wrap:wrap;
-    }
-
-    .badge{
-      font-size:11px;
-      padding:5px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      color: var(--muted);
-      background: #f9fafb;
-      white-space:nowrap;
-      font-weight:800;
-    }
-
-    .badge.good{ border-color: rgba(22,163,74,.25); background: rgba(22,163,74,.10); color: var(--good); }
-    .badge.warn{ border-color: rgba(217,119,6,.25); background: rgba(217,119,6,.10); color: var(--warn); }
-    .badge.bad{  border-color: rgba(220,38,38,.25); background: rgba(220,38,38,.10); color: var(--bad); }
-
-    .small{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.35;
-    }
-
-    .title{
-      margin:0 0 6px;
-      font-size:14px;
-      line-height:1.35;
-      font-weight:900;
-    }
-
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:10px;
-    }
-
-    @media (max-width: 520px){
-      .kpis{grid-template-columns:1fr;}
-    }
-
-    .kpi{
-      padding:12px;
-      border-radius: 14px;
-      border:1px solid var(--line);
-      background: var(--surface2);
-    }
-
-    .kpi .v{
-      font-size:18px;
-      font-weight:900;
-      margin-top:4px;
-    }
-
-    .kpi .l{
-      font-size:11px;
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:.25px;
-      font-weight:800;
-    }
-
-    .divider{
-      height:1px;
-      background: var(--line);
-      margin:14px 0;
-    }
-
-    .twoCols{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 720px){
-      .twoCols{grid-template-columns:1fr;}
-    }
-
-    .foot{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    /* PRINT */
-    @media print {
-      body{
-        background:#fff !important;
-        color:#111 !important;
-      }
-      .noPrint{ display:none !important; }
-      .panel, .card, .kpi{
-        box-shadow:none !important;
-      }
-      .panel{
-        border:1px solid #ddd !important;
-        background:#fff !important;
-      }
-      .panelHeader{
-        border-bottom:1px solid #ddd !important;
-        background:#fff !important;
-      }
-      input, select, textarea{
-        border:1px solid #ccc !important;
-        background:#fff !important;
-        color:#111 !important;
-      }
-      .badge{
-        border:1px solid #ddd !important;
-        background:#f6f6f6 !important;
-        color:#111 !important;
-      }
-    }
+    .fade-in { animation: fadeIn 0.2s ease-out; }
   </style>
+  <style>@view-transition { navigation: auto; }</style>
 </head>
 
-<body>
-  <div class="wrap">
-    <div class="topbar noPrint">
-      <div class="brand">
-        <h1>SIGR 5W2H | Plano de Ação por Processo</h1>
-        <p>
-          Sistema clean para organizar recomendações por processo SEI, registrar plano 5W2H e imprimir o plano consolidado do processo selecionado.
-        </p>
+<body class="bg-slate-50 text-slate-900 h-full">
+  <div id="app" class="flex h-full overflow-hidden w-full">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
+      <div class="p-6 flex items-center gap-3 text-white">
+        <i data-lucide="shield-check" class="text-slate-400"></i>
+        <span id="system-title" class="font-bold text-xl tracking-tight">PROCESSOS AUDITADOS - SESAP/RN</span>
       </div>
-      <div class="actions">
-        <button class="primary" id="btnPrint">Imprimir plano do processo</button>
-        <button id="btnExport">Exportar JSON</button>
-        <button class="danger" id="btnReset">Limpar dados</button>
+
+      <nav class="flex-1 px-4 space-y-2 mt-4">
+        <a href="#" onclick="showView('dashboard'); return false;" id="nav-dashboard"
+          class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all active-link">
+          <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+        </a>
+
+        <a href="#" onclick="showView('processos'); return false;" id="nav-processos"
+          class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
+          <i data-lucide="clipboard-list" class="w-5 h-5"></i> Processos
+        </a>
+
+        <a href="#" onclick="showView('recomendacoes'); return false;" id="nav-recomendacoes"
+          class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
+          <i data-lucide="alert-circle" class="w-5 h-5"></i> Recomendações
+        </a>
+
+        <a href="#" onclick="exportMenuOpen(); return false;"
+          class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
+          <i data-lucide="download" class="w-5 h-5"></i> Exportar PDF
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
+        <span id="institution-name">SESAP/RN</span><br>
+        Desenvolvido por Maria Eloiza da Silva - CAS-Administrativo
       </div>
-    </div>
+    </aside>
 
-    <div class="grid">
-      <!-- LEFT: Processos -->
-      <section class="panel noPrint" aria-label="Processos">
-        <div class="panelHeader">
-          <h2>Processos</h2>
-          <span class="badge" id="countProc">0</span>
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+      <!-- Header -->
+      <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+        <h1 id="page-title" class="font-semibold text-lg text-slate-800">PROCESSOS AUDITADOS - SESAP/RN</h1>
+
+        <div class="flex items-center gap-4">
+          <button onclick="openNewProcessModal()"
+            class="bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
+          </button>
+
+          <div class="h-8 w-8 bg-slate-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
+            AD
+          </div>
         </div>
-        <div class="panelBody">
-          <label for="procSelect">Selecionar processo</label>
-          <select id="procSelect"></select>
+      </header>
 
-          <div class="divider"></div>
+      <!-- Dashboard View -->
+      <div id="view-dashboard" class="p-8 max-w-7xl mx-auto">
+        <!-- Cards de Métricas Gerais -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-slate-500">Total de Locais</p>
+            <h3 id="dash-total-locais" class="text-3xl font-bold mt-2">0</h3>
+            <p class="text-xs text-slate-400 mt-2">Unidades auditadas</p>
+          </div>
 
-          <h3 style="margin:0;font-size:13px;letter-spacing:.2px;font-weight:900;">Novo processo</h3>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-slate-500">Total de Processos</p>
+            <h3 id="dash-total-processos" class="text-3xl font-bold mt-2">0</h3>
+            <p class="text-xs text-slate-400 mt-2">Processos cadastrados</p>
+          </div>
 
-          <label for="p_num">Nº do Processo (SEI)</label>
-          <input id="p_num" placeholder="Ex.: 02510051.001062/2025-57" />
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-slate-500">Total de Recomendações</p>
+            <h3 id="dash-total-recomendacoes" class="text-3xl font-bold mt-2">0</h3>
+            <p class="text-xs text-emerald-600 font-medium mt-2">Recomendações ativas</p>
+          </div>
 
-          <div class="twoCols">
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-red-600">Atrasadas</p>
+            <h3 id="dash-atrasadas" class="text-3xl font-bold mt-2 text-red-600">0</h3>
+            <p class="text-xs text-slate-400 mt-2">Requerem atenção urgente</p>
+          </div>
+        </div>
+
+        <!-- Título da Seção de Locais -->
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+            <i data-lucide="map-pin" class="w-7 h-7 text-slate-600"></i> Auditorias por Local
+          </h2>
+          <p class="text-slate-500 mt-1">Clique em um local para ver os detalhes das recomendações</p>
+        </div>
+
+        <!-- Blocos de Locais -->
+        <div id="locais-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <!-- Estado vazio -->
+        <div id="dashboard-empty" style="display: none;"
+          class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
+          <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhuma auditoria cadastrada</h3>
+          <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p>
+          <button onclick="openNewProcessModal()"
+            class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
+          </button>
+        </div>
+      </div>
+
+      <!-- Processos View -->
+      <div id="view-processos" style="display: none;" class="p-8 max-w-7xl mx-auto">
+        <div id="processos-list" class="space-y-6"></div>
+
+        <div id="processos-empty"
+          class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
+          <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
+          <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p>
+          <button onclick="openNewProcessModal()"
+            class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
+          </button>
+        </div>
+      </div>
+
+      <!-- Recomendações View -->
+      <div id="view-recomendacoes" style="display: none;" class="p-8 max-w-7xl mx-auto">
+        <!-- Filtros -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+              <i data-lucide="filter" class="w-5 h-5 text-blue-600"></i> Filtros
+            </h3>
+            <button onclick="limparFiltros()" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              Limpar Filtros
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label for="p_eixo">Eixo</label>
-              <input id="p_eixo" placeholder="Ex.: Contratos" />
+              <label class="block text-sm font-medium text-slate-700 mb-2">Unidade Auditada</label>
+              <select id="filtro-unidade" onchange="aplicarFiltros()"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                <option value="">Todas as unidades</option>
+              </select>
             </div>
+
             <div>
-              <label for="p_unidade">Unidade / Setor</label>
-              <input id="p_unidade" placeholder="Ex.: Hospital Deoclécio Marques de Lucena" />
+              <label class="block text-sm font-medium text-slate-700 mb-2">Setor Responsável</label>
+              <select id="filtro-setor" onchange="aplicarFiltros()"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                <option value="">Todos os setores</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Status</label>
+              <select id="filtro-status" onchange="aplicarFiltros()"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                <option value="">Todos os status</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Em Execução">Em Execução</option>
+                <option value="Atrasado">Atrasado</option>
+                <option value="Concluído">Concluído</option>
+                <option value="Não Atendido">Não Atendido</option>
+                <option value="Parcialmente Atendido">Parcialmente Atendido</option>
+              </select>
             </div>
           </div>
-
-          <label for="p_objeto">Objeto</label>
-          <textarea id="p_objeto" placeholder="Resumo do objeto da auditoria"></textarea>
-
-          <button class="primary" id="btnAddProcess" style="margin-top:12px;width:100%;">Adicionar processo</button>
-
-          <p class="hint">
-            Dica: selecione um processo e cadastre as recomendações. Cada recomendação terá seu 5W2H.
-          </p>
         </div>
-      </section>
 
-      <!-- RIGHT: Detalhe -->
-      <section class="panel" aria-label="Detalhes do Processo" id="printArea">
-        <div class="panelHeader">
-          <h2 id="procTitle">Plano de Ação</h2>
-          <span class="badge" id="procEixo">Eixo</span>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="p-6 border-b border-slate-100">
+            <h2 class="font-bold text-slate-800">Todas as Recomendações</h2>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="px-6 py-4">Nº Rec.</th>
+                  <th class="px-6 py-4">Processo</th>
+                  <th class="px-6 py-4">Unidade</th>
+                  <th class="px-6 py-4">Setor Resp.</th>
+                  <th class="px-6 py-4">Texto</th>
+                  <th class="px-6 py-4">Prioridade</th>
+                  <th class="px-6 py-4">Status</th>
+                  <th class="px-6 py-4">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="recomendacoes-table" class="divide-y divide-slate-100 text-sm">
+                <tr>
+                  <td colspan="8" class="px-6 py-8 text-center text-slate-400">Nenhuma recomendação cadastrada</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="panelBody">
-          <div class="kpis">
-            <div class="kpi">
-              <div class="l">Total de recomendações</div>
-              <div class="v" id="kpiTotal">0</div>
-            </div>
-            <div class="kpi">
-              <div class="l">Concluídas</div>
-              <div class="v" id="kpiDone">0</div>
-            </div>
-            <div class="kpi">
-              <div class="l">Em atraso</div>
-              <div class="v" id="kpiLate">0</div>
-            </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Processo -->
+  <div id="modal-processo" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-xl text-slate-800">Novo Processo</h2>
+        <button onclick="closeModal('processo')" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <form id="processo-form" class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Nº do Processo SEI *</label>
+            <input type="text" id="processo_numero" required
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
-          <div class="divider"></div>
-
-          <div class="card">
-            <div class="row">
-              <div>
-                <p class="small" style="margin:0 0 4px;">Unidade / Setor</p>
-                <p style="margin:0;font-weight:900;" id="procUnidade">-</p>
-              </div>
-              <div>
-                <p class="small" style="margin:0 0 4px;">Processo SEI</p>
-                <p style="margin:0;font-weight:900;" id="procSei">-</p>
-              </div>
-            </div>
-            <div class="divider"></div>
-            <p class="small" style="margin:0 0 6px;">Objeto</p>
-            <p style="margin:0;line-height:1.45" id="procObjeto">-</p>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Eixo *</label>
+            <select id="eixo" onchange="toggleEixoOutro()" required
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Selecione...</option>
+              <option value="Orçamento e Estoques">Orçamento e Estoques</option>
+              <option value="Demandas Judiciais">Demandas Judiciais</option>
+              <option value="Contratos">Contratos</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <input type="text" id="eixo_outro" placeholder="Digite o nome do novo eixo..." style="display: none;"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
           </div>
 
-          <div class="divider"></div>
-
-          <!-- Add recommendation -->
-          <div class="card noPrint">
-            <div class="row">
-              <div>
-                <h3 style="margin:0;font-size:14px;font-weight:900;">Nova recomendação</h3>
-                <p class="small" style="margin:6px 0 0;">Cadastre e depois preencha o 5W2H.</p>
-              </div>
-              <span class="badge" style="border-color:rgba(37,99,235,.25);background:rgba(37,99,235,.10);color:var(--primary2)">5W2H</span>
-            </div>
-
-            <label for="r_text">Texto da recomendação</label>
-            <textarea id="r_text" placeholder="Ex.: Instituir POP para todas as etapas do processo..."></textarea>
-
-            <div class="twoCols">
-              <div>
-                <label for="r_area">Área responsável</label>
-                <input id="r_area" placeholder="Ex.: Hospital e SUAH" />
-              </div>
-              <div>
-                <label for="r_prioridade">Prioridade</label>
-                <select id="r_prioridade">
-                  <option value="Alta">Alta</option>
-                  <option value="Média" selected>Média</option>
-                  <option value="Baixa">Baixa</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="twoCols">
-              <div>
-                <label for="r_prazo">Prazo final (When)</label>
-                <input id="r_prazo" type="date" />
-              </div>
-              <div>
-                <label for="r_status">Status</label>
-                <select id="r_status">
-                  <option value="Pendente" selected>Pendente</option>
-                  <option value="Em execução">Em execução</option>
-                  <option value="Parcialmente atendido">Parcialmente atendido</option>
-                  <option value="Concluído">Concluído</option>
-                  <option value="Não atendido">Não atendido</option>
-                </select>
-              </div>
-            </div>
-
-            <button class="primary" id="btnAddRec" style="margin-top:12px;width:100%;">Adicionar recomendação</button>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Unidade *</label>
+            <input type="text" id="unidade" required placeholder="Hospital/Setor"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
-          <h3 style="margin:0 0 10px;font-size:14px;letter-spacing:.2px;font-weight:900;">Recomendações e Plano 5W2H</h3>
-          <div class="list" id="recList"></div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Período *</label>
+            <input type="text" id="periodo" required placeholder="Janeiro/2024"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
 
-          <p class="foot">
-            Impressão: use “Imprimir plano do processo”. O sistema imprime apenas o processo selecionado, com recomendações e 5W2H.
-          </p>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Objeto da Auditoria *</label>
+            <input type="text" id="objeto" required
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Responsável</label>
+            <input type="text" id="responsavel" placeholder="Gestor da unidade"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Auditor Responsável</label>
+            <input type="text" id="auditor"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
         </div>
-      </section>
+
+        <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeModal('processo')"
+            class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
+            Cancelar
+          </button>
+          <button type="submit" id="submit-processo-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+            <span id="submit-processo-text">Salvar Processo</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
-<script>
-  const STORAGE_KEY = "sigr_5w2h_v1";
+  <!-- Modal Achado -->
+  <div id="modal-achado" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-xl text-slate-800">Novo Achado</h2>
+        <button onclick="closeModal('achado')" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
 
-  const STATUS_META = {
-    "Pendente": { cls:"warn", label:"Pendente" },
-    "Em execução": { cls:"warn", label:"Em execução" },
-    "Parcialmente atendido": { cls:"warn", label:"Parcialmente atendido" },
-    "Concluído": { cls:"good", label:"Concluído" },
-    "Não atendido": { cls:"bad", label:"Não atendido" }
-  };
-
-  function uid(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
-
-  function todayISO(){
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const dd = String(d.getDate()).padStart(2,"0");
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  function loadDB(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw) return JSON.parse(raw);
-    }catch(e){}
-    return seedDB();
-  }
-
-  function saveDB(db){ localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
-
-  function seedDB(){
-    const p1 = {
-      id: uid(),
-      sei: "02510051.001062/2025-57",
-      eixo: "Contratos",
-      unidade: "Hospital Deoclécio Marques de Lucena",
-      objeto: "Avaliação da gestão dos contratos de OPME e fluxos internos.",
-      recs: [
-        {
-          id: uid(),
-          texto: "Instituir POP para todas as etapas do processo (solicitação, recebimento, esterilização, dispensação e uso de OPMEs).",
-          area: "Hospital e SUAH",
-          prioridade: "Alta",
-          prazo: "",
-          status: "Pendente",
-          updatedAt: todayISO(),
-          w2h: {
-            what: "Elaborar, validar e implantar POP do fluxo de OPME.",
-            why: "Padronizar e garantir rastreabilidade.",
-            where: "Centro Cirúrgico, CME e setores correlatos.",
-            when: "",
-            who: "Direção + Coordenação CME + Qualidade",
-            how: "Grupo técnico, mapeamento do fluxo, minuta POP, validação e treinamento.",
-            howMuch: "Sem custo direto (esforço interno)."
-          }
-        }
-      ]
-    };
-
-    const db = { processes: [p1], selectedProcessId: p1.id };
-    saveDB(db);
-    return db;
-  }
-
-  const elProcSelect = document.getElementById("procSelect");
-  const elCountProc = document.getElementById("countProc");
-
-  const elProcTitle = document.getElementById("procTitle");
-  const elProcEixo = document.getElementById("procEixo");
-  const elProcUnidade = document.getElementById("procUnidade");
-  const elProcSei = document.getElementById("procSei");
-  const elProcObjeto = document.getElementById("procObjeto");
-
-  const elKpiTotal = document.getElementById("kpiTotal");
-  const elKpiDone = document.getElementById("kpiDone");
-  const elKpiLate = document.getElementById("kpiLate");
-
-  const elRecList = document.getElementById("recList");
-
-  const btnAddProcess = document.getElementById("btnAddProcess");
-  const btnAddRec = document.getElementById("btnAddRec");
-  const btnPrint = document.getElementById("btnPrint");
-  const btnReset = document.getElementById("btnReset");
-  const btnExport = document.getElementById("btnExport");
-
-  const p_num = document.getElementById("p_num");
-  const p_eixo = document.getElementById("p_eixo");
-  const p_unidade = document.getElementById("p_unidade");
-  const p_objeto = document.getElementById("p_objeto");
-
-  const r_text = document.getElementById("r_text");
-  const r_area = document.getElementById("r_area");
-  const r_prioridade = document.getElementById("r_prioridade");
-  const r_prazo = document.getElementById("r_prazo");
-  const r_status = document.getElementById("r_status");
-
-  let DB = loadDB();
-
-  function getSelectedProcess(){
-    return DB.processes.find(p => p.id === DB.selectedProcessId) || DB.processes[0] || null;
-  }
-
-  function isLate(prazoISO, status){
-    if(!prazoISO) return false;
-    if(status === "Concluído") return false;
-    const now = new Date();
-    const due = new Date(prazoISO + "T23:59:59");
-    return due < now;
-  }
-
-  function badgeForStatus(status){
-    const meta = STATUS_META[status] || {cls:"warn", label:status || "Pendente"};
-    return `<span class="badge ${meta.cls}">${meta.label}</span>`;
-  }
-
-  function escapeHTML(str){
-    return (str ?? "")
-      .toString()
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  function render(){
-    elProcSelect.innerHTML = "";
-    DB.processes.forEach(p => {
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = `${p.sei} | ${p.unidade}`;
-      elProcSelect.appendChild(opt);
-    });
-    elCountProc.textContent = DB.processes.length;
-    if(DB.selectedProcessId){
-      elProcSelect.value = DB.selectedProcessId;
-    }
-
-    const proc = getSelectedProcess();
-    if(!proc){
-      elProcTitle.textContent = "Nenhum processo";
-      elProcEixo.textContent = "Eixo";
-      elProcUnidade.textContent = "-";
-      elProcSei.textContent = "-";
-      elProcObjeto.textContent = "-";
-      elRecList.innerHTML = `<div class="card"><p class="small" style="margin:0">Cadastre um processo para começar.</p></div>`;
-      elKpiTotal.textContent = "0";
-      elKpiDone.textContent = "0";
-      elKpiLate.textContent = "0";
-      return;
-    }
-
-    elProcTitle.textContent = "Plano de Ação";
-    elProcEixo.textContent = proc.eixo || "Eixo";
-    elProcUnidade.textContent = proc.unidade || "-";
-    elProcSei.textContent = proc.sei || "-";
-    elProcObjeto.textContent = proc.objeto || "-";
-
-    const total = proc.recs.length;
-    const done = proc.recs.filter(r => r.status === "Concluído").length;
-    const late = proc.recs.filter(r => isLate(r.prazo, r.status)).length;
-
-    elKpiTotal.textContent = total;
-    elKpiDone.textContent = done;
-    elKpiLate.textContent = late;
-
-    if(total === 0){
-      elRecList.innerHTML = `<div class="card"><p class="small" style="margin:0">Sem recomendações neste processo. Cadastre a primeira.</p></div>`;
-      return;
-    }
-
-    elRecList.innerHTML = "";
-    proc.recs.forEach((r, idx) => {
-      const lateFlag = isLate(r.prazo, r.status);
-      const lateBadge = lateFlag ? `<span class="badge bad">Atrasado</span>` : "";
-
-      const card = document.createElement("div");
-      card.className = "card";
-
-      card.innerHTML = `
-        <div class="row">
-          <div style="min-width:220px;flex:1">
-            <p class="title">Recomendação ${idx+1}</p>
-            <p style="margin:0 0 8px;line-height:1.45">${escapeHTML(r.texto || "")}</p>
-            <p class="small" style="margin:0">
-              <strong>Área:</strong> ${escapeHTML(r.area || "-")} &nbsp;|&nbsp;
-              <strong>Prioridade:</strong> ${escapeHTML(r.prioridade || "-")}
-            </p>
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-            ${badgeForStatus(r.status)}
-            ${lateBadge}
-            <span class="badge" title="Última atualização">${escapeHTML(r.updatedAt || "")}</span>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="twoCols noPrint">
+      <form id="achado-form" class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label>Status</label>
-            <select data-act="status" data-id="${r.id}">
-              ${Object.keys(STATUS_META).map(s => `<option value="${s}" ${s===r.status?"selected":""}>${s}</option>`).join("")}
+            <label class="block text-sm font-medium text-slate-700 mb-2">Nº do Achado *</label>
+            <input type="text" id="achado_numero" required placeholder="001"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label>
+            <input type="text" id="achado_subitem" placeholder="a, b, c..."
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Grau de Risco *</label>
+            <select id="grau_risco" required
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Selecione...</option>
+              <option value="Alto">Alto</option>
+              <option value="Médio">Médio</option>
+              <option value="Baixo">Baixo</option>
             </select>
           </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Descrição do Achado *</label>
+            <textarea id="achado_descricao" required rows="4"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+          </div>
+
           <div>
-            <label>Prazo final (When)</label>
-            <input data-act="prazo" data-id="${r.id}" type="date" value="${r.prazo || ""}" />
+            <label class="block text-sm font-medium text-slate-700 mb-2">Impacto</label>
+            <select id="impacto" onchange="toggleImpactoOutro()"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Selecione...</option>
+              <option value="Financeiro">Financeiro</option>
+              <option value="Operacional">Operacional</option>
+              <option value="Legal">Legal</option>
+              <option value="Reputacional">Reputacional</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <input type="text" id="impacto_outro" placeholder="Especifique o impacto..." style="display: none;"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Evidência</label>
+            <input type="text" id="evidencia" placeholder="Número do documento"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
         </div>
 
-        <div class="divider"></div>
+        <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeModal('achado')"
+            class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
+            Cancelar
+          </button>
+          <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+            <span id="submit-achado-text">Salvar Achado</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-        <h4 style="margin:0 0 8px;font-size:13px;font-weight:900;">Plano 5W2H</h4>
+  <!-- Modal Export PDF -->
+  <div id="modal-export" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-xl text-slate-800">Exportar Plano de Ação em PDF</h2>
+        <button onclick="closeModal('export')" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
 
-        <div class="twoCols">
-          <div>
-            <label>What (O que será feito)</label>
-            <textarea data-act="w2h.what" data-id="${r.id}">${escapeHTML(r.w2h?.what || "")}</textarea>
-          </div>
-          <div>
-            <label>Why (Por quê)</label>
-            <textarea data-act="w2h.why" data-id="${r.id}">${escapeHTML(r.w2h?.why || "")}</textarea>
-          </div>
-
-          <div>
-            <label>Where (Onde)</label>
-            <textarea data-act="w2h.where" data-id="${r.id}">${escapeHTML(r.w2h?.where || "")}</textarea>
-          </div>
-          <div>
-            <label>When (Quando)</label>
-            <textarea data-act="w2h.when" data-id="${r.id}">${escapeHTML(r.w2h?.when || "")}</textarea>
-          </div>
-
-          <div>
-            <label>Who (Quem)</label>
-            <textarea data-act="w2h.who" data-id="${r.id}">${escapeHTML(r.w2h?.who || "")}</textarea>
-          </div>
-          <div>
-            <label>How (Como)</label>
-            <textarea data-act="w2h.how" data-id="${r.id}">${escapeHTML(r.w2h?.how || "")}</textarea>
-          </div>
-
-          <div style="grid-column:1/-1">
-            <label>How much (Quanto custa)</label>
-            <textarea data-act="w2h.howMuch" data-id="${r.id}">${escapeHTML(r.w2h?.howMuch || "")}</textarea>
+      <div class="p-6 space-y-6">
+        <!-- Relatório Geral -->
+        <div class="border border-slate-200 rounded-xl p-5 hover:border-blue-400 transition-all cursor-pointer" onclick="exportPDFGeral()">
+          <div class="flex items-start gap-4">
+            <div class="bg-blue-100 rounded-lg p-3"><i data-lucide="file-text" class="w-8 h-8 text-blue-600"></i></div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-800 mb-1">Relatório Geral - Plano de Ação</h3>
+              <p class="text-sm text-slate-600">Exporta todas as recomendações com plano 5W2H</p>
+            </div>
+            <i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
           </div>
         </div>
 
-        <div class="divider noPrint"></div>
+        <!-- Relatório Formal -->
+        <div class="border border-slate-200 rounded-xl p-5 hover:border-purple-400 transition-all cursor-pointer" onclick="exportPDFFormal()">
+          <div class="flex items-start gap-4">
+            <div class="bg-purple-100 rounded-lg p-3"><i data-lucide="file-check" class="w-8 h-8 text-purple-600"></i></div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-800 mb-1">Relatório Formal de Acompanhamento</h3>
+              <p class="text-sm text-slate-600">Relatório com evidências, justificativas e resultados</p>
+            </div>
+            <i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
+          </div>
+        </div>
 
-        <div class="row noPrint" style="justify-content:space-between;align-items:center">
-          <p class="small" style="margin:0">Salva automaticamente enquanto você digita.</p>
-          <button class="danger" data-act="deleteRec" data-id="${r.id}">Excluir recomendação</button>
+        <!-- Por Eixo -->
+        <div class="border border-slate-200 rounded-xl p-5">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="bg-emerald-100 rounded-lg p-3"><i data-lucide="layers" class="w-8 h-8 text-emerald-600"></i></div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-800 mb-1">Por Eixo</h3>
+              <p class="text-sm text-slate-600">Exporta recomendações filtradas por eixo temático</p>
+            </div>
+          </div>
+          <div id="eixos-list" class="space-y-2 pl-16"></div>
+        </div>
+
+        <!-- Por Processo -->
+        <div class="border border-slate-200 rounded-xl p-5">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="bg-amber-100 rounded-lg p-3"><i data-lucide="folder" class="w-8 h-8 text-amber-600"></i></div>
+            <div class="flex-1">
+              <h3 class="font-bold text-slate-800 mb-1">Por Processo</h3>
+              <p class="text-sm text-slate-600">Exporta recomendações de um processo específico</p>
+            </div>
+          </div>
+          <div id="processos-export-list" class="space-y-2 pl-16 max-h-64 overflow-y-auto"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Recomendação -->
+  <div id="modal-recomendacao" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-xl text-slate-800">Nova Recomendação e Plano 5W2H</h2>
+        <button onclick="closeModal('recomendacao')" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <form id="recomendacao-form" class="p-6 space-y-6">
+        <!-- Recomendação Section -->
+        <div>
+          <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Dados da Recomendação</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Nº da Recomendação *</label>
+              <input type="text" id="recomendacao_numero" required placeholder="R-001"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label>
+              <input type="text" id="recomendacao_subitem" placeholder="a, b, c..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Prioridade *</label>
+              <select id="prioridade" required
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Selecione...</option>
+                <option value="Alta">Alta</option>
+                <option value="Média">Média</option>
+                <option value="Baixa">Baixa</option>
+              </select>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-2">Texto da Recomendação *</label>
+              <textarea id="recomendacao_texto" required rows="3"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-2">Áreas/Pessoas Responsáveis *</label>
+              <div id="areas-container" class="space-y-2 mb-2"></div>
+
+              <div class="flex gap-2">
+                <input type="text" id="area_input" placeholder="Digite o nome da área ou pessoa..."
+                  class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" onclick="adicionarArea()"
+                  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
+                </button>
+              </div>
+
+              <p class="text-xs text-slate-500 mt-2">Exemplos: CAS, SUAH, Hospital Walfredo Gurgel, João Silva, etc.</p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Prazo Global *</label>
+              <input type="text" id="prazo_global" required placeholder="60 dias"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- 5W2H Section -->
+        <div class="border-t border-slate-200 pt-6">
+          <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Plano de Ação 5W2H</h3>
+
+          <p class="text-xs text-amber-600 mb-4 bg-amber-50 p-3 rounded-lg flex items-center gap-2">
+            <i data-lucide="info" class="w-4 h-4"></i>
+            <span>Os campos do plano de ação são opcionais. As áreas responsáveis podem preencher posteriormente.</span>
+          </p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">
+                <span class="text-slate-600 font-bold">O QUE</span> - O que será feito?
+              </label>
+              <textarea id="what" rows="2" placeholder="Descreva a ação corretiva"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">
+                <span class="text-slate-600 font-bold">POR QUÊ</span> - Por quê?
+              </label>
+              <textarea id="why" rows="2" placeholder="Justificativa da ação"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  <span class="text-slate-600 font-bold">ONDE</span> - Onde?
+                </label>
+                <input type="text" id="where" placeholder="Local ou setor"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  <span class="text-slate-600 font-bold">QUANDO</span> - Quando?
+                </label>
+                <input type="date" id="when"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  <span class="text-slate-600 font-bold">QUEM</span> - Quem?
+                </label>
+                <input type="text" id="who" placeholder="Nome do responsável"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                  <span class="text-slate-600 font-bold">QUANTO</span> - Quanto custa?
+                </label>
+                <input type="text" id="how_much" placeholder="R$ 0,00 ou sem custo"
+                  class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">
+                <span class="text-slate-600 font-bold">COMO</span> - Como?
+              </label>
+              <textarea id="how" rows="3" placeholder="Descreva como será executado"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Section -->
+        <div class="border-t border-slate-200 pt-6">
+          <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Status e Observações</h3>
+
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Status *</label>
+              <select id="status" required
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="Pendente">Pendente</option>
+                <option value="Em Execução">Em Execução</option>
+                <option value="Atrasado">Atrasado</option>
+                <option value="Concluído">Concluído</option>
+                <option value="Não Atendido">Não Atendido</option>
+                <option value="Parcialmente Atendido">Parcialmente Atendido</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Observações</label>
+              <textarea id="observacao" rows="3" placeholder="Notas adicionais..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relatório Formal Section -->
+        <div class="border-t border-slate-200 pt-6">
+          <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Informações para Relatório Formal</h3>
+
+          <p class="text-xs text-blue-600 mb-4 bg-blue-50 p-3 rounded-lg flex items-center gap-2">
+            <i data-lucide="info" class="w-4 h-4"></i>
+            <span>Estes campos são usados no Relatório Formal de Acompanhamento e podem ser preenchidos posteriormente.</span>
+          </p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Evidências do Cumprimento (Total ou Parcial)</label>
+              <textarea id="evidencias_cumprimento" rows="3"
+                placeholder="Descreva as evidências que demonstram o cumprimento..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Justificativa do Não Cumprimento Total ou Cumprimento Parcial</label>
+              <textarea id="justificativa_nao_cumprimento" rows="4"
+                placeholder="Explique os motivos que impediram o cumprimento total da recomendação..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Resultados Percebidos (por conta do cumprimento parcial ou total)</label>
+              <textarea id="resultados_percebidos" rows="3"
+                placeholder="Descreva os benefícios e melhorias percebidos..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeModal('recomendacao')"
+            class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
+            Cancelar
+          </button>
+          <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+            <span id="submit-recomendacao-text">Salvar Recomendação</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const defaultConfig = { system_title: 'PROCESSOS AUDITADOS - SESAP/RN', institution_name: 'SESAP/RN' };
+
+    let allRecords = [];
+    let currentProcesso = null;
+    let currentAchado = null;
+    let editingRecord = null;
+    let currentView = 'dashboard';
+    let areasResponsaveis = [];
+
+    const dataHandler = {
+      onDataChanged(data) {
+        allRecords = data;
+        updateDashboard();
+        renderProcessList();
+        renderRecomendacoesTable();
+      }
+    };
+
+    async function initializeApp() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) console.error('Failed to initialize data SDK');
+
+      if (window.elementSdk) {
+        await window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            document.getElementById('system-title').textContent = config.system_title || defaultConfig.system_title;
+            const institutionElements = document.querySelectorAll('#institution-name');
+            institutionElements.forEach(el => el.textContent = config.institution_name || defaultConfig.institution_name);
+          },
+          mapToCapabilities: () => ({
+            recolorables: [],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ['system_title', config.system_title || defaultConfig.system_title],
+            ['institution_name', config.institution_name || defaultConfig.institution_name]
+          ])
+        });
+      }
+
+      setupEventListeners();
+      lucide.createIcons();
+    }
+
+    function setupEventListeners() {
+      document.getElementById('processo-form').addEventListener('submit', handleProcessoSubmit);
+      document.getElementById('achado-form').addEventListener('submit', handleAchadoSubmit);
+      document.getElementById('recomendacao-form').addEventListener('submit', handleRecomendacaoSubmit);
+    }
+
+    function showView(viewName) {
+      currentView = viewName;
+
+      document.getElementById('view-dashboard').style.display = viewName === 'dashboard' ? 'block' : 'none';
+      document.getElementById('view-processos').style.display = viewName === 'processos' ? 'block' : 'none';
+      document.getElementById('view-recomendacoes').style.display = viewName === 'recomendacoes' ? 'block' : 'none';
+
+      document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active-link'));
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeNav) activeNav.classList.add('active-link');
+
+      const titles = {
+        dashboard: 'PROCESSOS AUDITADOS - SESAP/RN',
+        processos: 'Gestão de Processos',
+        recomendacoes: 'Todas as Recomendações'
+      };
+      document.getElementById('page-title').textContent = titles[viewName];
+      lucide.createIcons();
+    }
+
+    function openNewProcessModal() {
+      editingRecord = null;
+      currentProcesso = null;
+      document.getElementById('processo-form').reset();
+      document.getElementById('modal-processo').style.display = 'flex';
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    function openNewAchadoModal(processoId) {
+      editingRecord = null;
+      currentProcesso = processoId;
+      document.getElementById('achado-form').reset();
+      document.getElementById('impacto_outro').style.display = 'none';
+      document.getElementById('modal-achado').style.display = 'flex';
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    function openEditAchadoModal(achado) {
+      editingRecord = achado;
+      currentProcesso = achado.processo_id;
+
+      document.getElementById('achado_numero').value = achado.achado_numero || '';
+      document.getElementById('achado_subitem').value = achado.achado_subitem || '';
+      document.getElementById('grau_risco').value = achado.grau_risco || '';
+      document.getElementById('achado_descricao').value = achado.achado_descricao || '';
+      document.getElementById('evidencia').value = achado.evidencia || '';
+
+      if (achado.impacto && achado.impacto.startsWith('Outro: ')) {
+        document.getElementById('impacto').value = 'Outro';
+        document.getElementById('impacto_outro').value = achado.impacto.substring(7);
+        document.getElementById('impacto_outro').style.display = 'block';
+      } else {
+        document.getElementById('impacto').value = achado.impacto || '';
+        document.getElementById('impacto_outro').value = '';
+        document.getElementById('impacto_outro').style.display = 'none';
+      }
+
+      document.getElementById('modal-achado').style.display = 'flex';
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    window.editAchado = function(backendId) {
+      const achado = allRecords.find(r => r.__backendId === backendId);
+      if (achado) openEditAchadoModal(achado);
+    };
+
+    function openNewRecomendacaoModal(achadoId) {
+      editingRecord = null;
+      currentAchado = achadoId;
+      areasResponsaveis = [];
+      document.getElementById('recomendacao-form').reset();
+      document.getElementById('status').value = 'Pendente';
+      renderAreasResponsaveis();
+      document.getElementById('modal-recomendacao').style.display = 'flex';
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    window.adicionarArea = function() {
+      const input = document.getElementById('area_input');
+      const areaTexto = input.value.trim();
+
+      if (!areaTexto) return showToast('Digite o nome da área ou pessoa', 'error');
+      if (areasResponsaveis.includes(areaTexto)) return showToast('Esta área/pessoa já foi adicionada', 'error');
+
+      areasResponsaveis.push(areaTexto);
+      input.value = '';
+      renderAreasResponsaveis();
+      setTimeout(() => lucide.createIcons(), 0);
+    };
+
+    window.removerArea = function(index) {
+      areasResponsaveis.splice(index, 1);
+      renderAreasResponsaveis();
+      setTimeout(() => lucide.createIcons(), 0);
+    };
+
+    function renderAreasResponsaveis() {
+      const container = document.getElementById('areas-container');
+      if (areasResponsaveis.length === 0) {
+        container.innerHTML = '<p class="text-sm text-slate-400 italic py-2">Nenhuma área adicionada ainda</p>';
+        return;
+      }
+
+      container.innerHTML = areasResponsaveis.map((area, index) => `
+        <div class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
+          <span class="text-sm font-medium text-blue-900">${area}</span>
+          <button type="button" onclick="removerArea(${index})" class="text-red-600 hover:text-red-700 p-1">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openEditRecomendacaoModal(recomendacao) {
+      editingRecord = recomendacao;
+      currentAchado = recomendacao.achado_id;
+
+      document.getElementById('recomendacao_numero').value = recomendacao.recomendacao_numero || '';
+      document.getElementById('recomendacao_subitem').value = recomendacao.recomendacao_subitem || '';
+      document.getElementById('prioridade').value = recomendacao.prioridade || '';
+      document.getElementById('recomendacao_texto').value = recomendacao.recomendacao_texto || '';
+
+      if (recomendacao.area_responsavel) {
+        areasResponsaveis = recomendacao.area_responsavel.split(';').map(a => a.trim()).filter(Boolean);
+      } else {
+        areasResponsaveis = [];
+      }
+      renderAreasResponsaveis();
+
+      document.getElementById('prazo_global').value = recomendacao.prazo_global || '';
+      document.getElementById('what').value = recomendacao.what || '';
+      document.getElementById('why').value = recomendacao.why || '';
+      document.getElementById('where').value = recomendacao.where || '';
+      document.getElementById('when').value = recomendacao.when || '';
+      document.getElementById('who').value = recomendacao.who || '';
+      document.getElementById('how').value = recomendacao.how || '';
+      document.getElementById('how_much').value = recomendacao.how_much || '';
+      document.getElementById('status').value = recomendacao.status || 'Pendente';
+      document.getElementById('observacao').value = recomendacao.observacao || '';
+      document.getElementById('evidencias_cumprimento').value = recomendacao.evidencias_cumprimento || '';
+      document.getElementById('justificativa_nao_cumprimento').value = recomendacao.justificativa_nao_cumprimento || '';
+      document.getElementById('resultados_percebidos').value = recomendacao.resultados_percebidos || '';
+
+      document.getElementById('modal-recomendacao').style.display = 'flex';
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    function closeModal(type) {
+      document.getElementById(`modal-${type}`).style.display = 'none';
+      editingRecord = null;
+    }
+
+    async function handleProcessoSubmit(e) {
+      e.preventDefault();
+
+      if (allRecords.length >= 999) return showToast('Limite máximo de 999 registros atingido.', 'error');
+
+      const btn = document.getElementById('submit-processo-btn');
+      btn.disabled = true;
+
+      let eixoValue = document.getElementById('eixo').value;
+      if (eixoValue === 'Outro') {
+        const outroTexto = document.getElementById('eixo_outro').value.trim();
+        eixoValue = outroTexto ? `Outro: ${outroTexto}` : 'Outro';
+      }
+
+      const formData = {
+        tipo: 'processo',
+        processo_numero: document.getElementById('processo_numero').value,
+        eixo: eixoValue,
+        unidade: document.getElementById('unidade').value,
+        objeto: document.getElementById('objeto').value,
+        periodo: document.getElementById('periodo').value,
+        responsavel: document.getElementById('responsavel').value,
+        auditor: document.getElementById('auditor').value,
+        created_at: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create({ ...formData, id: Date.now().toString() });
+
+      btn.disabled = false;
+
+      if (result.isOk) {
+        closeModal('processo');
+        showToast('Processo criado com sucesso!', 'success');
+        showView('processos');
+      } else {
+        showToast('Erro ao salvar processo.', 'error');
+      }
+    }
+
+    async function handleAchadoSubmit(e) {
+      e.preventDefault();
+
+      if (allRecords.length >= 999 && !editingRecord) return showToast('Limite máximo de 999 registros atingido.', 'error');
+
+      const btn = document.getElementById('submit-achado-btn');
+      btn.disabled = true;
+
+      let impactoValue = document.getElementById('impacto').value;
+      if (impactoValue === 'Outro') {
+        const outroTexto = document.getElementById('impacto_outro').value.trim();
+        impactoValue = outroTexto ? `Outro: ${outroTexto}` : 'Outro';
+      }
+
+      const formData = {
+        tipo: 'achado',
+        processo_id: currentProcesso,
+        achado_numero: document.getElementById('achado_numero').value,
+        achado_subitem: document.getElementById('achado_subitem').value,
+        achado_descricao: document.getElementById('achado_descricao').value,
+        grau_risco: document.getElementById('grau_risco').value,
+        impacto: impactoValue,
+        evidencia: document.getElementById('evidencia').value
+      };
+
+      let result;
+      if (editingRecord) {
+        result = await window.dataSdk.update({
+          ...formData,
+          __backendId: editingRecord.__backendId,
+          id: editingRecord.id,
+          created_at: editingRecord.created_at
+        });
+      } else {
+        result = await window.dataSdk.create({ ...formData, id: Date.now().toString(), created_at: new Date().toISOString() });
+      }
+
+      btn.disabled = false;
+
+      if (result.isOk) {
+        closeModal('achado');
+        showToast(editingRecord ? 'Achado atualizado!' : 'Achado criado com sucesso!', 'success');
+      } else {
+        showToast('Erro ao salvar achado.', 'error');
+      }
+    }
+
+    async function handleRecomendacaoSubmit(e) {
+      e.preventDefault();
+
+      if (areasResponsaveis.length === 0) return showToast('Adicione pelo menos uma área ou pessoa responsável', 'error');
+      if (allRecords.length >= 999 && !editingRecord) return showToast('Limite máximo de 999 registros atingido.', 'error');
+
+      const btn = document.getElementById('submit-recomendacao-btn');
+      btn.disabled = true;
+
+      const formData = {
+        tipo: 'recomendacao',
+        achado_id: currentAchado,
+        recomendacao_numero: document.getElementById('recomendacao_numero').value,
+        recomendacao_subitem: document.getElementById('recomendacao_subitem').value,
+        recomendacao_texto: document.getElementById('recomendacao_texto').value,
+        area_responsavel: areasResponsaveis.join('; '),
+        prioridade: document.getElementById('prioridade').value,
+        prazo_global: document.getElementById('prazo_global').value,
+        what: document.getElementById('what').value,
+        why: document.getElementById('why').value,
+        where: document.getElementById('where').value,
+        when: document.getElementById('when').value,
+        who: document.getElementById('who').value,
+        how: document.getElementById('how').value,
+        how_much: document.getElementById('how_much').value,
+        status: document.getElementById('status').value,
+        observacao: document.getElementById('observacao').value,
+        evidencias_cumprimento: document.getElementById('evidencias_cumprimento').value,
+        justificativa_nao_cumprimento: document.getElementById('justificativa_nao_cumprimento').value,
+        resultados_percebidos: document.getElementById('resultados_percebidos').value,
+        ultima_atualizacao: new Date().toISOString()
+      };
+
+      let result;
+      if (editingRecord) {
+        result = await window.dataSdk.update({
+          ...formData,
+          __backendId: editingRecord.__backendId,
+          id: editingRecord.id,
+          created_at: editingRecord.created_at
+        });
+      } else {
+        result = await window.dataSdk.create({ ...formData, id: Date.now().toString(), created_at: new Date().toISOString() });
+      }
+
+      btn.disabled = false;
+
+      if (result.isOk) {
+        closeModal('recomendacao');
+        showToast(editingRecord ? 'Recomendação atualizada!' : 'Recomendação criada!', 'success');
+      } else {
+        showToast('Erro ao salvar recomendação.', 'error');
+      }
+    }
+
+    /* ===========================
+       UTILITÁRIOS (PDF / DOWNLOAD)
+       =========================== */
+    function safeText(value, fallback = 'Não informado') {
+      if (value === 0) return '0';
+      const s = (value ?? '').toString().trim();
+      return s ? s : fallback;
+    }
+
+    function sanitizeFileName(name) {
+      const base = (name ?? 'relatorio.pdf').toString().trim() || 'relatorio.pdf';
+      const normalized = base.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+      const cleaned = normalized
+        .replace(/[\/\\?%*:|"<>]/g, '-')   // remove proibidos
+        .replace(/\s+/g, '-')             // espaços por "-"
+        .replace(/-+/g, '-')              // colapsa "-"
+        .replace(/^\-+|\-+$/g, '');       // remove "-" no começo/fim
+
+      const limited = cleaned.slice(0, 120) || 'relatorio';
+      return limited.toLowerCase().endsWith('.pdf') ? limited : `${limited}.pdf`;
+    }
+
+    function downloadJsPdf(doc, fileName) {
+      const safeName = sanitizeFileName(fileName);
+      const blob = doc.output('blob');
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /* ===========================
+       DASH / LISTAS / TABELAS
+       =========================== */
+    function updateDashboard() {
+      const processos = allRecords.filter(r => r.tipo === 'processo');
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao');
+      const delayed = recomendacoes.filter(r => r.status === 'Atrasado').length;
+
+      const locaisMap = new Map();
+      processos.forEach(processo => {
+        const local = processo.unidade;
+        if (!locaisMap.has(local)) locaisMap.set(local, []);
+        locaisMap.get(local).push(processo);
+      });
+
+      document.getElementById('dash-total-locais').textContent = locaisMap.size;
+      document.getElementById('dash-total-processos').textContent = processos.length;
+      document.getElementById('dash-total-recomendacoes').textContent = recomendacoes.length;
+      document.getElementById('dash-atrasadas').textContent = delayed;
+
+      const locaisContainer = document.getElementById('locais-dashboard');
+      const emptyState = document.getElementById('dashboard-empty');
+
+      if (locaisMap.size === 0) {
+        locaisContainer.style.display = 'none';
+        emptyState.style.display = 'block';
+        setTimeout(() => lucide.createIcons(), 0);
+        return;
+      }
+
+      locaisContainer.style.display = 'grid';
+      emptyState.style.display = 'none';
+
+      const locaisArray = Array.from(locaisMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+      const coresLocais = [
+        'from-blue-400 to-blue-500', 'from-purple-400 to-purple-500', 'from-pink-400 to-pink-500',
+        'from-indigo-400 to-indigo-500', 'from-cyan-400 to-cyan-500', 'from-teal-400 to-teal-500',
+        'from-emerald-400 to-emerald-500', 'from-orange-400 to-orange-500', 'from-rose-400 to-rose-500',
+        'from-violet-400 to-violet-500'
+      ];
+
+      locaisContainer.innerHTML = locaisArray.map(([local, processosLocal], index) => {
+        const achados = allRecords.filter(r => r.tipo === 'achado' && processosLocal.some(p => p.id === r.processo_id));
+        const achadosIds = achados.map(a => a.id);
+        const recomendacoesLocal = allRecords.filter(r => r.tipo === 'recomendacao' && achadosIds.includes(r.achado_id));
+
+        const pendentes = recomendacoesLocal.filter(r => r.status === 'Pendente').length;
+        const emExecucao = recomendacoesLocal.filter(r => r.status === 'Em Execução').length;
+        const concluidas = recomendacoesLocal.filter(r => r.status === 'Concluído').length;
+        const atrasadas = recomendacoesLocal.filter(r => r.status === 'Atrasado').length;
+
+        const processoRecente = processosLocal.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+        const cardColor = coresLocais[index % coresLocais.length];
+
+        return `
+          <div class="bg-gradient-to-br ${cardColor} rounded-xl shadow-lg p-6 text-white cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1 slide-in"
+            onclick="expandirLocal('${local.replace(/'/g, "\\'")}')">
+
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <i data-lucide="map-pin" class="w-5 h-5"></i>
+                  <h3 class="text-xl font-bold">${local}</h3>
+                </div>
+                <p class="text-sm opacity-90 mb-1">${safeText(processoRecente.processo_numero, '-')}</p>
+                <p class="text-xs opacity-75 line-clamp-2">${safeText(processoRecente.objeto, '-')}</p>
+              </div>
+            </div>
+
+            <div class="border-t border-white border-opacity-30 pt-4 mt-4">
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="bg-white bg-opacity-20 rounded-lg p-2 text-center">
+                  <p class="text-2xl font-bold">${processosLocal.length}</p>
+                  <p class="text-xs opacity-90">Processo${processosLocal.length !== 1 ? 's' : ''}</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-lg p-2 text-center">
+                  <p class="text-2xl font-bold">${recomendacoesLocal.length}</p>
+                  <p class="text-xs opacity-90">Recomendações</p>
+                </div>
+              </div>
+
+              ${recomendacoesLocal.length > 0 ? `
+                <div class="mt-3 grid grid-cols-4 gap-2 text-xs">
+                  ${pendentes > 0 ? `<div class="bg-amber-600 bg-opacity-50 rounded px-2 py-1 text-center"><strong>${pendentes}</strong> Pend.</div>` : ''}
+                  ${emExecucao > 0 ? `<div class="bg-blue-600 bg-opacity-50 rounded px-2 py-1 text-center"><strong>${emExecucao}</strong> Exec.</div>` : ''}
+                  ${concluidas > 0 ? `<div class="bg-emerald-600 bg-opacity-50 rounded px-2 py-1 text-center"><strong>${concluidas}</strong> Concl.</div>` : ''}
+                  ${atrasadas > 0 ? `<div class="bg-red-700 bg-opacity-70 rounded px-2 py-1 text-center"><strong>${atrasadas}</strong> Atras.</div>` : ''}
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="mt-4 text-xs opacity-75 flex items-center gap-2">
+              <i data-lucide="calendar" class="w-3 h-3"></i>
+              ${safeText(processoRecente.periodo, '-')} • ${safeText(processoRecente.eixo, '-')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    function renderProcessList() {
+      const listContainer = document.getElementById('processos-list');
+      const emptyState = document.getElementById('processos-empty');
+
+      const processos = allRecords.filter(r => r.tipo === 'processo');
+
+      if (processos.length === 0) {
+        listContainer.style.display = 'none';
+        emptyState.style.display = 'block';
+        setTimeout(() => lucide.createIcons(), 0);
+        return;
+      }
+
+      listContainer.style.display = 'block';
+      emptyState.style.display = 'none';
+
+      const sortedProcessos = [...processos].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      listContainer.innerHTML = sortedProcessos.map(processo => {
+        const achados = allRecords.filter(r => r.tipo === 'achado' && r.processo_id === processo.id);
+        const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao' && achados.some(a => a.id === r.achado_id));
+
+        return `
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 slide-in">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-bold text-slate-800 mb-2">
+                  <i data-lucide="folder" class="w-5 h-5 inline-block mr-2 text-blue-600"></i>
+                  ${safeText(processo.processo_numero, '-')}
+                </h3>
+
+                <p class="text-sm text-slate-600 mb-3">${safeText(processo.objeto, '-')}</p>
+
+                <div class="flex items-center gap-4 flex-wrap text-xs">
+                  <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold"
+                    style="background: ${getCorLocal(processo.unidade)}; color: white;">
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>${safeText(processo.unidade, '-')}
+                  </span>
+                  <span class="text-slate-500"><i data-lucide="layers" class="w-3 h-3 inline-block mr-1"></i>${safeText(processo.eixo, '-')}</span>
+                  <span class="text-slate-500"><i data-lucide="calendar" class="w-3 h-3 inline-block mr-1"></i>${safeText(processo.periodo, '-')}</span>
+                </div>
+              </div>
+
+              <button onclick="deleteProcesso('${processo.__backendId}')" class="text-red-600 hover:text-red-700 p-2">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <div class="border-t border-slate-200 pt-4 mt-4">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="text-sm font-semibold text-slate-700">Achados (${achados.length})</h4>
+                <button onclick="openNewAchadoModal('${processo.id}')"
+                  class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs hover:bg-blue-700 flex items-center gap-1">
+                  <i data-lucide="plus" class="w-3 h-3"></i> Novo Achado
+                </button>
+              </div>
+
+              ${achados.sort((a, b) => {
+                const parseNumero = (num, sub) => {
+                  const numInt = parseInt(num) || 0;
+                  const subInt = sub ? sub.charCodeAt(0) : 0;
+                  return numInt * 1000 + subInt;
+                };
+                return parseNumero(a.achado_numero, a.achado_subitem) - parseNumero(b.achado_numero, b.achado_subitem);
+              }).map(achado => {
+                const achadoRecomendacoes = recomendacoes.filter(r => r.achado_id === achado.id);
+                return `
+                  <div class="bg-slate-50 rounded-lg p-4 mb-3 border border-slate-200">
+                    <div class="flex items-start justify-between mb-2">
+                      <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="text-sm font-bold text-slate-800">Achado ${safeText(achado.achado_numero, '')}${achado.achado_subitem ? '.' + achado.achado_subitem : ''}</span>
+                          ${getRiskBadgeSlate(achado.grau_risco)}
+                          <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">${safeText(achado.impacto, '-')}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">${safeText(achado.achado_descricao, '-')}</p>
+                      </div>
+
+                      <div class="flex gap-1 ml-2">
+                        <button onclick="editAchado('${achado.__backendId}')" class="text-slate-600 hover:text-slate-700">
+                          <i data-lucide="edit" class="w-3 h-3"></i>
+                        </button>
+                        <button onclick="deleteAchado('${achado.__backendId}')" class="text-red-600 hover:text-red-700">
+                          <i data-lucide="trash-2" class="w-3 h-3"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-3 mt-3">
+                      <div class="flex items-center justify-between mb-2">
+                        <h5 class="text-xs font-semibold text-slate-600">Recomendações (${achadoRecomendacoes.length})</h5>
+                        <button onclick="openNewRecomendacaoModal('${achado.id}')"
+                          class="text-blue-600 hover:text-blue-700 text-xs font-semibold flex items-center gap-1">
+                          <i data-lucide="plus" class="w-3 h-3"></i> Nova
+                        </button>
+                      </div>
+
+                      ${achadoRecomendacoes.length > 0 ? `
+                        <div class="space-y-2">
+                          ${achadoRecomendacoes.map(rec => {
+                            const temPlanoCompleto = rec.what && rec.why && rec.how && rec.where && rec.when && rec.who && rec.how_much;
+                            return `
+                              <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <div class="flex items-start justify-between">
+                                  <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                      <span class="text-xs font-bold text-blue-600">Rec. ${safeText(rec.recomendacao_numero, '')}${rec.recomendacao_subitem ? '.' + rec.recomendacao_subitem : ''}</span>
+                                      ${getPriorityBadgeSlate(rec.prioridade)}
+                                      ${getStatusBadgeSlate(rec.status)}
+                                      ${!temPlanoCompleto ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-semibold flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i>Plano Pendente</span>' : ''}
+                                    </div>
+                                    <p class="text-xs text-slate-600 mb-2">${truncateText(rec.recomendacao_texto, 80)}</p>
+                                  </div>
+
+                                  <div class="flex gap-1 ml-2">
+                                    <button onclick="viewRecomendacao('${rec.__backendId}')" class="text-blue-600 hover:text-blue-700 p-1">
+                                      <i data-lucide="eye" class="w-3 h-3"></i>
+                                    </button>
+                                    <button onclick="editRecomendacao('${rec.__backendId}')" class="text-slate-600 hover:text-slate-700 p-1">
+                                      <i data-lucide="edit" class="w-3 h-3"></i>
+                                    </button>
+                                    <button onclick="deleteRecomendacao('${rec.__backendId}')" class="text-red-600 hover:text-red-700 p-1">
+                                      <i data-lucide="trash-2" class="w-3 h-3"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            `;
+                          }).join('')}
+                        </div>
+                      ` : '<p class="text-xs text-slate-400 text-center py-2">Nenhuma recomendação cadastrada</p>'}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+
+              ${achados.length === 0 ? '<p class="text-sm text-slate-400 text-center py-3">Nenhum achado cadastrado</p>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    function renderRecomendacoesTable() {
+      const table = document.getElementById('recomendacoes-table');
+      let recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao');
+
+      const filtroUnidade = document.getElementById('filtro-unidade')?.value;
+      const filtroSetor = document.getElementById('filtro-setor')?.value;
+      const filtroStatus = document.getElementById('filtro-status')?.value;
+
+      if (filtroUnidade || filtroSetor || filtroStatus) {
+        recomendacoes = recomendacoes.filter(rec => {
+          const achado = allRecords.find(r => r.id === rec.achado_id);
+          const processo = achado ? allRecords.find(r => r.id === achado.processo_id) : null;
+
+          let passa = true;
+          if (filtroUnidade && processo && processo.unidade !== filtroUnidade) passa = false;
+          if (filtroSetor && rec.area_responsavel !== filtroSetor) passa = false;
+          if (filtroStatus && rec.status !== filtroStatus) passa = false;
+
+          return passa;
+        });
+      }
+
+      popularFiltros();
+
+      if (recomendacoes.length === 0) {
+        table.innerHTML = '<tr><td colspan="8" class="px-6 py-8 text-center text-slate-400">Nenhuma recomendação encontrada</td></tr>';
+        return;
+      }
+
+      table.innerHTML = recomendacoes.map(rec => {
+        const achado = allRecords.find(r => r.id === rec.achado_id);
+        const processo = achado ? allRecords.find(r => r.id === achado.processo_id) : null;
+        const temPlanoCompleto = rec.what && rec.why && rec.how && rec.where && rec.when && rec.who && rec.how_much;
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex flex-col gap-1">
+                <span class="font-mono text-xs text-blue-600 font-semibold">${safeText(rec.recomendacao_numero, '')}${rec.recomendacao_subitem ? '.' + rec.recomendacao_subitem : ''}</span>
+                ${!temPlanoCompleto ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-semibold inline-flex items-center gap-1 w-fit"><i data-lucide="alert-triangle" class="w-3 h-3"></i>Plano Pendente</span>' : ''}
+              </div>
+            </td>
+            <td class="px-6 py-4 font-mono text-xs text-slate-600">${processo ? safeText(processo.processo_numero, '-') : '-'}</td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg font-semibold text-xs"
+                style="background: ${processo ? getCorLocal(processo.unidade) : '#e2e8f0'}; color: white;">
+                <i data-lucide="map-pin" class="w-3 h-3"></i>${processo ? safeText(processo.unidade, '-') : '-'}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-slate-700">${safeText(rec.area_responsavel, '-')}</td>
+            <td class="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">${truncateText(rec.recomendacao_texto, 60)}</td>
+            <td class="px-6 py-4">${getPriorityBadgeSlate(rec.prioridade)}</td>
+            <td class="px-6 py-4">${getStatusBadgeSlate(rec.status)}</td>
+            <td class="px-6 py-4">
+              <div class="flex gap-1">
+                <button onclick="viewRecomendacao('${rec.__backendId}')" class="text-blue-600 hover:text-blue-700 p-1">
+                  <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+                <button onclick="editRecomendacao('${rec.__backendId}')" class="text-slate-600 hover:text-slate-700 p-1">
+                  <i data-lucide="edit" class="w-4 h-4"></i>
+                </button>
+                <button onclick="deleteRecomendacao('${rec.__backendId}')" class="text-red-600 hover:text-red-700 p-1">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      setTimeout(() => lucide.createIcons(), 0);
+    }
+
+    function popularFiltros() {
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao');
+      const processos = allRecords.filter(r => r.tipo === 'processo');
+
+      const unidades = [...new Set(processos.map(p => p.unidade))].sort();
+      const filtroUnidade = document.getElementById('filtro-unidade');
+      if (filtroUnidade) {
+        const valorAtual = filtroUnidade.value;
+        filtroUnidade.innerHTML = '<option value="">Todas as unidades</option>' +
+          unidades.map(u => `<option value="${u}" ${valorAtual === u ? 'selected' : ''}>${u}</option>`).join('');
+      }
+
+      const setores = [...new Set(recomendacoes.map(r => r.area_responsavel).filter(Boolean))].sort();
+      const filtroSetor = document.getElementById('filtro-setor');
+      if (filtroSetor) {
+        const valorAtual = filtroSetor.value;
+        filtroSetor.innerHTML = '<option value="">Todos os setores</option>' +
+          setores.map(s => `<option value="${s}" ${valorAtual === s ? 'selected' : ''}>${s}</option>`).join('');
+      }
+    }
+
+    window.aplicarFiltros = function() { renderRecomendacoesTable(); };
+    window.limparFiltros = function() {
+      document.getElementById('filtro-unidade').value = '';
+      document.getElementById('filtro-setor').value = '';
+      document.getElementById('filtro-status').value = '';
+      renderRecomendacoesTable();
+    };
+
+    function getStatusBadgeSlate(status) {
+      const configs = {
+        'Pendente': { bg: 'bg-amber-100', color: 'text-amber-700' },
+        'Em Execução': { bg: 'bg-blue-100', color: 'text-blue-700' },
+        'Atrasado': { bg: 'bg-red-100', color: 'text-red-700' },
+        'Concluído': { bg: 'bg-emerald-100', color: 'text-emerald-700' },
+        'Não Atendido': { bg: 'bg-red-100', color: 'text-red-700' },
+        'Parcialmente Atendido': { bg: 'bg-amber-100', color: 'text-amber-700' }
+      };
+      const cfg = configs[status] || configs['Pendente'];
+      return `<span class="${cfg.bg} ${cfg.color} px-3 py-1 rounded-full text-xs font-semibold">${safeText(status, 'Pendente')}</span>`;
+    }
+
+    function getPriorityBadgeSlate(priority) {
+      const configs = {
+        'Alta': { bg: 'bg-red-100', color: 'text-red-700' },
+        'Média': { bg: 'bg-amber-100', color: 'text-amber-700' },
+        'Baixa': { bg: 'bg-emerald-100', color: 'text-emerald-700' }
+      };
+      const cfg = configs[priority] || configs['Média'];
+      return `<span class="${cfg.bg} ${cfg.color} px-2 py-0.5 rounded text-xs font-semibold uppercase">${safeText(priority, 'Média')}</span>`;
+    }
+
+    function getRiskBadgeSlate(risk) {
+      const configs = {
+        'Alto': { bg: 'bg-red-100', color: 'text-red-700' },
+        'Médio': { bg: 'bg-amber-100', color: 'text-amber-700' },
+        'Baixo': { bg: 'bg-emerald-100', color: 'text-emerald-700' }
+      };
+      const cfg = configs[risk] || configs['Médio'];
+      return `<span class="${cfg.bg} ${cfg.color} px-2 py-0.5 rounded text-xs font-semibold">${safeText(risk, 'Médio')}</span>`;
+    }
+
+    function truncateText(text, maxLength) {
+      const s = safeText(text, '');
+      return s.length > maxLength ? s.substring(0, maxLength) + '...' : s;
+    }
+
+    function getCorLocal(local) {
+      const coresLocais = [
+        'linear-gradient(135deg, #3b82f6, #2563eb)',
+        'linear-gradient(135deg, #a855f7, #9333ea)',
+        'linear-gradient(135deg, #ec4899, #db2777)',
+        'linear-gradient(135deg, #6366f1, #4f46e5)',
+        'linear-gradient(135deg, #06b6d4, #0891b2)',
+        'linear-gradient(135deg, #14b8a6, #0d9488)',
+        'linear-gradient(135deg, #10b981, #059669)',
+        'linear-gradient(135deg, #f97316, #ea580c)',
+        'linear-gradient(135deg, #f43f5e, #e11d48)',
+        'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+      ];
+
+      const l = safeText(local, 'Local');
+      let hash = 0;
+      for (let i = 0; i < l.length; i++) hash = l.charCodeAt(i) + ((hash << 5) - hash);
+      const index = Math.abs(hash) % coresLocais.length;
+      return coresLocais[index];
+    }
+
+    /* ===========================
+       DELETES
+       =========================== */
+    window.deleteProcesso = async function(backendId) {
+      const processo = allRecords.find(r => r.__backendId === backendId);
+      if (!processo) return;
+
+      const achados = allRecords.filter(r => r.tipo === 'achado' && r.processo_id === processo.id);
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao' && achados.some(a => a.id === r.achado_id));
+
+      if (!await confirmDelete(`Excluir processo ${safeText(processo.processo_numero, '')}? Isso também excluirá ${achados.length} achado(s) e ${recomendacoes.length} recomendação(ões).`)) return;
+
+      for (const rec of recomendacoes) await window.dataSdk.delete(rec);
+      for (const achado of achados) await window.dataSdk.delete(achado);
+
+      const result = await window.dataSdk.delete(processo);
+      if (result.isOk) showToast('Processo excluído com sucesso!', 'success');
+      else showToast('Erro ao excluir processo.', 'error');
+    };
+
+    window.deleteAchado = async function(backendId) {
+      const achado = allRecords.find(r => r.__backendId === backendId);
+      if (!achado) return;
+
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao' && r.achado_id === achado.id);
+      if (!await confirmDelete(`Excluir achado ${safeText(achado.achado_numero, '')}? Isso também excluirá ${recomendacoes.length} recomendação(ões).`)) return;
+
+      for (const rec of recomendacoes) await window.dataSdk.delete(rec);
+
+      const result = await window.dataSdk.delete(achado);
+      if (result.isOk) showToast('Achado excluído!', 'success');
+      else showToast('Erro ao excluir achado.', 'error');
+    };
+
+    window.deleteRecomendacao = async function(backendId) {
+      const recomendacao = allRecords.find(r => r.__backendId === backendId);
+      if (!recomendacao) return;
+
+      if (!await confirmDelete(`Excluir recomendação ${safeText(recomendacao.recomendacao_numero, '')}?`)) return;
+
+      const result = await window.dataSdk.delete(recomendacao);
+      if (result.isOk) showToast('Recomendação excluída!', 'success');
+      else showToast('Erro ao excluir recomendação.', 'error');
+    };
+
+    window.editRecomendacao = function(backendId) {
+      const recomendacao = allRecords.find(r => r.__backendId === backendId);
+      if (recomendacao) openEditRecomendacaoModal(recomendacao);
+    };
+
+    window.viewRecomendacao = function(backendId) {
+      const recomendacao = allRecords.find(r => r.__backendId === backendId);
+      if (!recomendacao) return;
+
+      const achado = allRecords.find(r => r.id === recomendacao.achado_id);
+      const processo = achado ? allRecords.find(r => r.id === achado.processo_id) : null;
+
+      const modal = document.createElement('div');
+      modal.className = 'fade-in fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+
+      modal.innerHTML = `
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+            <h2 class="font-bold text-xl text-slate-800">Detalhes da Recomendação</h2>
+            <button id="close-detail" class="text-slate-400 hover:text-slate-600">
+              <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            ${processo ? `
+              <div>
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Processo</h3>
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div class="text-sm text-slate-700 space-y-2">
+                    <div><strong class="text-slate-900">Nº SEI:</strong> ${safeText(processo.processo_numero, '-')}</div>
+                    <div><strong class="text-slate-900">Unidade:</strong> ${safeText(processo.unidade, '-')}</div>
+                    <div><strong class="text-slate-900">Objeto:</strong> ${safeText(processo.objeto, '-')}</div>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
+            ${achado ? `
+              <div>
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                  Achado ${safeText(achado.achado_numero, '')}${achado.achado_subitem ? '.' + achado.achado_subitem : ''}
+                </h3>
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div class="flex gap-2 mb-3">${getRiskBadgeSlate(achado.grau_risco)}
+                    <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">${safeText(achado.impacto, '-')}</span>
+                  </div>
+                  <p class="text-sm text-slate-700 leading-relaxed">${safeText(achado.achado_descricao, '-')}</p>
+                </div>
+              </div>
+            ` : ''}
+
+            <div>
+              <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                Recomendação ${safeText(recomendacao.recomendacao_numero, '')}${recomendacao.recomendacao_subitem ? '.' + recomendacao.recomendacao_subitem : ''}
+              </h3>
+              <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <div class="flex gap-2 mb-3">${getPriorityBadgeSlate(recomendacao.prioridade)} ${getStatusBadgeSlate(recomendacao.status)}</div>
+                <p class="text-sm text-slate-700 leading-relaxed mb-4">${safeText(recomendacao.recomendacao_texto, '-')}</p>
+                <div class="grid grid-cols-2 gap-3 text-sm text-slate-700">
+                  <div><strong class="text-slate-900">Área:</strong> ${safeText(recomendacao.area_responsavel, '-')}</div>
+                  <div><strong class="text-slate-900">Prazo:</strong> ${safeText(recomendacao.prazo_global, '-')}</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Plano de Ação 5W2H</h3>
+              <div class="space-y-3">
+                <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-blue-500">
+                  <strong class="text-blue-600 text-sm font-bold">O QUE - O que será feito?</strong>
+                  <p class="mt-2 text-sm text-slate-700 leading-relaxed">${safeText(recomendacao.what)}</p>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-blue-500">
+                  <strong class="text-blue-600 text-sm font-bold">POR QUÊ - Por quê?</strong>
+                  <p class="mt-2 text-sm text-slate-700 leading-relaxed">${safeText(recomendacao.why)}</p>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-4 border-l-4 border-blue-500">
+                  <strong class="text-blue-600 text-sm font-bold">COMO - Como?</strong>
+                  <p class="mt-2 text-sm text-slate-700 leading-relaxed">${safeText(recomendacao.how)}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="bg-slate-50 rounded-lg p-3">
+                    <strong class="text-blue-600 text-xs font-bold">ONDE:</strong>
+                    <span class="text-sm text-slate-700"> ${safeText(recomendacao.where)}</span>
+                  </div>
+                  <div class="bg-slate-50 rounded-lg p-3">
+                    <strong class="text-blue-600 text-xs font-bold">QUANDO:</strong>
+                    <span class="text-sm text-slate-700"> ${safeText(recomendacao.when)}</span>
+                  </div>
+                  <div class="bg-slate-50 rounded-lg p-3">
+                    <strong class="text-blue-600 text-xs font-bold">QUEM:</strong>
+                    <span class="text-sm text-slate-700"> ${safeText(recomendacao.who)}</span>
+                  </div>
+                  <div class="bg-slate-50 rounded-lg p-3">
+                    <strong class="text-blue-600 text-xs font-bold">QUANTO:</strong>
+                    <span class="text-sm text-slate-700"> ${safeText(recomendacao.how_much)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            ${recomendacao.observacao ? `
+              <div>
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Observações</h3>
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <p class="text-sm text-slate-700 leading-relaxed">${safeText(recomendacao.observacao, '-')}</p>
+                </div>
+              </div>
+            ` : ''}
+
+            <div class="text-xs text-slate-400 text-center pt-4 border-t border-slate-200">
+              Última atualização: ${recomendacao.ultima_atualizacao ? new Date(recomendacao.ultima_atualizacao).toLocaleString('pt-BR') : '-'}
+            </div>
+          </div>
         </div>
       `;
 
-      elRecList.appendChild(card);
-    });
-  }
+      document.body.appendChild(modal);
+      setTimeout(() => lucide.createIcons(), 0);
 
-  elProcSelect.addEventListener("change", (e) => {
-    DB.selectedProcessId = e.target.value;
-    saveDB(DB);
-    render();
-  });
-
-  btnAddProcess.addEventListener("click", () => {
-    const sei = (p_num.value || "").trim();
-    const eixo = (p_eixo.value || "").trim();
-    const unidade = (p_unidade.value || "").trim();
-    const objeto = (p_objeto.value || "").trim();
-
-    if(!sei || !unidade){
-      alert("Informe pelo menos o Nº do Processo (SEI) e a Unidade.");
-      return;
-    }
-    const exists = DB.processes.some(p => p.sei === sei);
-    if(exists){
-      alert("Já existe um processo com esse número. Selecione-o na lista.");
-      return;
-    }
-
-    const proc = { id: uid(), sei, eixo, unidade, objeto, recs: [] };
-    DB.processes.unshift(proc);
-    DB.selectedProcessId = proc.id;
-    saveDB(DB);
-
-    p_num.value = "";
-    p_eixo.value = "";
-    p_unidade.value = "";
-    p_objeto.value = "";
-    render();
-  });
-
-  btnAddRec.addEventListener("click", () => {
-    const proc = getSelectedProcess();
-    if(!proc){
-      alert("Cadastre ou selecione um processo primeiro.");
-      return;
-    }
-
-    const texto = (r_text.value || "").trim();
-    const area = (r_area.value || "").trim();
-    const prioridade = r_prioridade.value;
-    const prazo = r_prazo.value || "";
-    const status = r_status.value;
-
-    if(!texto){
-      alert("Informe o texto da recomendação.");
-      return;
-    }
-
-    const rec = {
-      id: uid(),
-      texto,
-      area,
-      prioridade,
-      prazo,
-      status,
-      updatedAt: todayISO(),
-      w2h: { what:"", why:"", where:"", when:"", who:"", how:"", howMuch:"" }
+      const closeDetail = () => modal.remove();
+      modal.querySelector('#close-detail').addEventListener('click', closeDetail);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeDetail(); });
     };
 
-    proc.recs.unshift(rec);
-    saveDB(DB);
+    async function confirmDelete(message) {
+      return new Promise((resolve) => {
+        const confirmDiv = document.createElement('div');
+        confirmDiv.className = 'fade-in fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+        confirmDiv.innerHTML = `
+          <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-full">
+            <h3 class="text-lg font-bold text-slate-800 mb-3">Confirmar Exclusão</h3>
+            <p class="text-sm text-slate-600 mb-6">${message}</p>
+            <div class="flex gap-3 justify-end">
+              <button id="cancel-delete" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">Cancelar</button>
+              <button id="confirm-delete" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Excluir</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(confirmDiv);
 
-    r_text.value = "";
-    r_area.value = "";
-    r_prioridade.value = "Média";
-    r_prazo.value = "";
-    r_status.value = "Pendente";
+        const cleanup = (result) => { confirmDiv.remove(); resolve(result); };
 
-    render();
-  });
-
-  document.addEventListener("input", (e) => {
-    const t = e.target;
-    const act = t.getAttribute("data-act");
-    const id = t.getAttribute("data-id");
-    if(!act || !id) return;
-
-    const proc = getSelectedProcess();
-    if(!proc) return;
-
-    const rec = proc.recs.find(r => r.id === id);
-    if(!rec) return;
-
-    if(act === "prazo"){
-      rec.prazo = t.value || "";
-      rec.updatedAt = todayISO();
+        document.getElementById('cancel-delete').addEventListener('click', () => cleanup(false));
+        confirmDiv.addEventListener('click', (e) => { if (e.target === confirmDiv) cleanup(false); });
+        document.getElementById('confirm-delete').addEventListener('click', () => cleanup(true));
+      });
     }
 
-    if(act.startsWith("w2h.")){
-      const key = act.split(".")[1];
-      rec.w2h = rec.w2h || {};
-      rec.w2h[key] = t.value || "";
-      rec.updatedAt = todayISO();
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      toast.className = 'slide-in fixed top-6 right-6 z-50 px-6 py-4 rounded-lg shadow-lg text-white font-medium';
+      toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     }
 
-    saveDB(DB);
-    render();
-  });
+    window.toggleImpactoOutro = function() {
+      const impactoSelect = document.getElementById('impacto');
+      const impactoOutroInput = document.getElementById('impacto_outro');
 
-  document.addEventListener("change", (e) => {
-    const t = e.target;
-    const act = t.getAttribute("data-act");
-    const id = t.getAttribute("data-id");
-    if(!act || !id) return;
+      if (impactoSelect.value === 'Outro') impactoOutroInput.style.display = 'block';
+      else { impactoOutroInput.style.display = 'none'; impactoOutroInput.value = ''; }
+    };
 
-    const proc = getSelectedProcess();
-    if(!proc) return;
+    window.toggleEixoOutro = function() {
+      const eixoSelect = document.getElementById('eixo');
+      const eixoOutroInput = document.getElementById('eixo_outro');
 
-    const rec = proc.recs.find(r => r.id === id);
-    if(!rec) return;
+      if (eixoSelect.value === 'Outro') eixoOutroInput.style.display = 'block';
+      else { eixoOutroInput.style.display = 'none'; eixoOutroInput.value = ''; }
+    };
 
-    if(act === "status"){
-      rec.status = t.value;
-      rec.updatedAt = todayISO();
-      saveDB(DB);
-      render();
+    /* ===========================
+       EXPORTAR PDF
+       =========================== */
+    window.exportMenuOpen = function() {
+      renderExportOptions();
+      document.getElementById('modal-export').style.display = 'flex';
+      setTimeout(() => lucide.createIcons(), 0);
+    };
+
+    function renderExportOptions() {
+      const processos = allRecords.filter(r => r.tipo === 'processo');
+
+      const eixosUnicos = [...new Set(processos.map(p => p.eixo))];
+      const eixosList = document.getElementById('eixos-list');
+
+      if (eixosUnicos.length === 0) {
+        eixosList.innerHTML = '<p class="text-sm text-slate-400">Nenhum eixo disponível</p>';
+      } else {
+        eixosList.innerHTML = eixosUnicos.map(eixo => `
+          <button onclick="exportPDFPorEixo('${(eixo || '').replace(/'/g, "\\'")}')"
+            class="w-full text-left px-4 py-2 bg-slate-50 hover:bg-emerald-50 rounded-lg text-sm text-slate-700 hover:text-emerald-700 transition-colors flex items-center justify-between">
+            <span>${safeText(eixo, '-')}</span>
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
+        `).join('');
+      }
+
+      const processosList = document.getElementById('processos-export-list');
+
+      if (processos.length === 0) {
+        processosList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo disponível</p>';
+      } else {
+        processosList.innerHTML = processos.map(proc => `
+          <button onclick="exportPDFPorProcesso('${proc.id}')"
+            class="w-full text-left px-4 py-2 bg-slate-50 hover:bg-amber-50 rounded-lg text-sm text-slate-700 hover:text-amber-700 transition-colors flex items-center justify-between">
+            <div class="flex-1">
+              <div class="font-semibold">${safeText(proc.processo_numero, '-')}</div>
+              <div class="text-xs text-slate-500">${safeText(proc.unidade, '-')}</div>
+            </div>
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
+        `).join('');
+      }
+
+      setTimeout(() => lucide.createIcons(), 0);
     }
-  });
 
-  document.addEventListener("click", (e) => {
-    const t = e.target;
-    const act = t.getAttribute("data-act");
-    const id = t.getAttribute("data-id");
-    if(!act || !id) return;
+    window.exportPDFGeral = function() {
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao');
+      if (recomendacoes.length === 0) return showToast('Nenhuma recomendação para exportar', 'error');
 
-    const proc = getSelectedProcess();
-    if(!proc) return;
+      generatePDF(recomendacoes, 'Relatório Geral - Todas as Recomendações', 'plano-acao-geral.pdf');
+      closeModal('export');
+      showToast('PDF gerado com sucesso!', 'success');
+    };
 
-    if(act === "deleteRec"){
-      const ok = confirm("Excluir esta recomendação? Esta ação não pode ser desfeita.");
-      if(!ok) return;
-      proc.recs = proc.recs.filter(r => r.id !== id);
-      saveDB(DB);
-      render();
+    window.exportPDFPorEixo = function(eixo) {
+      const processos = allRecords.filter(r => r.tipo === 'processo' && r.eixo === eixo);
+      const processosIds = processos.map(p => p.id);
+      const achados = allRecords.filter(r => r.tipo === 'achado' && processosIds.includes(r.processo_id));
+      const achadosIds = achados.map(a => a.id);
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao' && achadosIds.includes(r.achado_id));
+
+      if (recomendacoes.length === 0) return showToast(`Nenhuma recomendação para o eixo ${safeText(eixo, '-')}`, 'error');
+
+      generatePDF(recomendacoes, `Relatório - Eixo: ${safeText(eixo, '-')}`, `plano-acao-${safeText(eixo, 'eixo').toLowerCase().replace(/\s+/g, '-')}.pdf`);
+      closeModal('export');
+      showToast('PDF gerado com sucesso!', 'success');
+    };
+
+    window.exportPDFPorProcesso = function(processoId) {
+      const processo = allRecords.find(r => r.id === processoId);
+      const achados = allRecords.filter(r => r.tipo === 'achado' && r.processo_id === processoId);
+      const achadosIds = achados.map(a => a.id);
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao' && achadosIds.includes(r.achado_id));
+
+      if (recomendacoes.length === 0) return showToast('Nenhuma recomendação neste processo', 'error');
+
+      // OBS: aqui estava quebrando por causa de "/" no número do processo -> agora sanitizamos no download
+      generatePDF(recomendacoes, `Processo: ${safeText(processo?.processo_numero, '-')}`, `plano-acao-${safeText(processo?.processo_numero, 'processo')}.pdf`);
+      closeModal('export');
+      showToast('PDF gerado com sucesso!', 'success');
+    };
+
+    window.exportPDFFormal = function() {
+      const recomendacoes = allRecords.filter(r => r.tipo === 'recomendacao');
+      if (recomendacoes.length === 0) return showToast('Nenhuma recomendação para exportar', 'error');
+
+      generatePDFFormal(recomendacoes, 'Relatório Formal de Acompanhamento de Recomendações', 'relatorio-formal-acompanhamento.pdf');
+      closeModal('export');
+      showToast('PDF Formal gerado com sucesso!', 'success');
+    };
+
+    function generatePDFFormal(recomendacoes, titulo, nomeArquivo) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      let yPos = margin;
+
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, pageWidth, 35, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PROCESSOS AUDITADOS - SESAP/RN', margin, 15);
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Relatório Formal de Acompanhamento', margin, 22);
+      doc.text('SESAP/RN', margin, 28);
+
+      yPos = 45;
+
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(titulo, margin, yPos);
+      yPos += 10;
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, yPos);
+      doc.text(`Total de recomendações: ${recomendacoes.length}`, pageWidth - margin - 60, yPos);
+      yPos += 15;
+
+      recomendacoes.forEach((rec, index) => {
+        const achado = allRecords.find(r => r.id === rec.achado_id);
+        const processo = achado ? allRecords.find(r => r.id === achado.processo_id) : null;
+
+        if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
+
+        if (index > 0) {
+          doc.setDrawColor(71, 85, 105);
+          doc.setLineWidth(0.8);
+          doc.line(margin, yPos, pageWidth - margin, yPos);
+          yPos += 10;
+        }
+
+        doc.setFillColor(241, 245, 249);
+        doc.rect(margin, yPos, pageWidth - 2 * margin, 10, 'F');
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 41, 59);
+        doc.text(`RECOMENDAÇÃO ${safeText(rec.recomendacao_numero, '')}${rec.recomendacao_subitem ? '.' + rec.recomendacao_subitem : ''}`, margin + 3, yPos + 7);
+        yPos += 14;
+
+        if (processo) {
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(71, 85, 105);
+          doc.text('Processo:', margin, yPos);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          doc.text(safeText(processo.processo_numero, '-'), margin + 18, yPos);
+
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(71, 85, 105);
+          doc.text('Unidade:', margin + 70, yPos);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          doc.text(safeText(processo.unidade, '-'), margin + 88, yPos);
+          yPos += 6;
+        }
+
+        if (achado) {
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(71, 85, 105);
+          doc.text('DESCRIÇÃO DO ACHADO:', margin, yPos);
+          yPos += 6;
+
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(0, 0, 0);
+          const descAchado = doc.splitTextToSize(safeText(achado.achado_descricao), pageWidth - 2 * margin - 5);
+          doc.text(descAchado, margin + 3, yPos);
+          yPos += descAchado.length * 5 + 8;
+        }
+
+        if (yPos > pageHeight - 90) { doc.addPage(); yPos = margin; }
+        doc.setFillColor(219, 234, 254);
+        doc.rect(margin, yPos - 3, pageWidth - 2 * margin, 8, 'F');
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 64, 175);
+        doc.text('EVIDÊNCIAS DO CUMPRIMENTO TOTAL OU PARCIAL', margin + 3, yPos + 3);
+        yPos += 10;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(8);
+        const evidenciasText = doc.splitTextToSize(safeText(rec.evidencias_cumprimento), pageWidth - 2 * margin - 6);
+        doc.text(evidenciasText, margin + 3, yPos);
+        yPos += Math.max(evidenciasText.length * 4.5, 12) + 5;
+
+        if (yPos > pageHeight - 90) { doc.addPage(); yPos = margin; }
+        doc.setFillColor(254, 243, 199);
+        doc.rect(margin, yPos - 3, pageWidth - 2 * margin, 8, 'F');
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(180, 83, 9);
+        doc.text('JUSTIFICATIVA DO NÃO CUMPRIMENTO TOTAL OU CUMPRIMENTO PARCIAL', margin + 3, yPos + 3);
+        yPos += 10;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(8);
+        const justificativaText = doc.splitTextToSize(safeText(rec.justificativa_nao_cumprimento), pageWidth - 2 * margin - 6);
+        doc.text(justificativaText, margin + 3, yPos);
+        yPos += Math.max(justificativaText.length * 4.5, 12) + 5;
+
+        if (yPos > pageHeight - 90) { doc.addPage(); yPos = margin; }
+        doc.setFillColor(220, 252, 231);
+        doc.rect(margin, yPos - 3, pageWidth - 2 * margin, 8, 'F');
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(22, 101, 52);
+        doc.text('RESULTADOS PERCEBIDOS (CUMPRIMENTO PARCIAL OU TOTAL)', margin + 3, yPos + 3);
+        yPos += 10;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(8);
+        const resultadosText = doc.splitTextToSize(safeText(rec.resultados_percebidos), pageWidth - 2 * margin - 6);
+        doc.text(resultadosText, margin + 3, yPos);
+        yPos += Math.max(resultadosText.length * 4.5, 12) + 8;
+
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Status: ${safeText(rec.status, '-')}`, margin, yPos);
+        if (rec.ultima_atualizacao) doc.text(`Última atualização: ${new Date(rec.ultima_atualizacao).toLocaleDateString('pt-BR')}`, margin + 50, yPos);
+        yPos += 15;
+      });
+
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.setFontSize(7);
+        doc.text('Relatório Formal de Acompanhamento - SESAP/RN', margin, pageHeight - 10);
+      }
+
+      // ✅ download robusto + nome seguro
+      downloadJsPdf(doc, nomeArquivo);
     }
-  });
 
-  btnPrint.addEventListener("click", () => {
-    const proc = getSelectedProcess();
-    if(!proc){
-      alert("Selecione um processo para imprimir.");
-      return;
+    function generatePDF(recomendacoes, titulo, nomeArquivo) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      let yPos = margin;
+
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, pageWidth, 35, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('PROCESSOS AUDITADOS - SESAP/RN', margin, 15);
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Sistema de Gestão de Recomendações', margin, 22);
+      doc.text('SESAP/RN', margin, 28);
+
+      yPos = 45;
+
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(titulo, margin, yPos);
+      yPos += 10;
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, yPos);
+      doc.text(`Total de recomendações: ${recomendacoes.length}`, pageWidth - margin - 60, yPos);
+      yPos += 15;
+
+      recomendacoes.forEach((rec, index) => {
+        const achado = allRecords.find(r => r.id === rec.achado_id);
+        const processo = achado ? allRecords.find(r => r.id === achado.processo_id) : null;
+
+        if (yPos > pageHeight - 60) { doc.addPage(); yPos = margin; }
+
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.5);
+        doc.rect(margin, yPos, pageWidth - 2 * margin, 0);
+        yPos += 5;
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text(`Recomendação ${safeText(rec.recomendacao_numero, '')}${rec.recomendacao_subitem ? '.' + rec.recomendacao_subitem : ''}`, margin, yPos);
+        yPos += 6;
+
+        if (processo) {
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(71, 85, 105);
+          doc.text(`Processo: ${safeText(processo.processo_numero, '-')} | Unidade: ${safeText(processo.unidade, '-')}`, margin, yPos);
+          yPos += 5;
+        }
+
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Status: ${safeText(rec.status, '-')} | Prioridade: ${safeText(rec.prioridade, '-')}`, margin, yPos);
+        yPos += 7;
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        const textoRec = doc.splitTextToSize(safeText(rec.recomendacao_texto), pageWidth - 2 * margin - 10);
+        doc.text(textoRec, margin + 5, yPos);
+        yPos += textoRec.length * 5 + 5;
+
+        doc.setFillColor(241, 245, 249);
+        const boxHeight = 8;
+
+        if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
+        doc.rect(margin, yPos, pageWidth - 2 * margin, boxHeight, 'F');
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text('O QUE:', margin + 2, yPos + 5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        const whatText = doc.splitTextToSize(safeText(rec.what), pageWidth - 2 * margin - 20);
+        doc.text(whatText, margin + 18, yPos + 5);
+        yPos += Math.max(boxHeight, whatText.length * 4.5) + 2;
+
+        if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
+        doc.rect(margin, yPos, pageWidth - 2 * margin, boxHeight, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text('POR QUÊ:', margin + 2, yPos + 5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        const whyText = doc.splitTextToSize(safeText(rec.why), pageWidth - 2 * margin - 20);
+        doc.text(whyText, margin + 18, yPos + 5);
+        yPos += Math.max(boxHeight, whyText.length * 4.5) + 2;
+
+        if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
+        doc.rect(margin, yPos, pageWidth - 2 * margin, boxHeight, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text('COMO:', margin + 2, yPos + 5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        const howText = doc.splitTextToSize(safeText(rec.how), pageWidth - 2 * margin - 20);
+        doc.text(howText, margin + 18, yPos + 5);
+        yPos += Math.max(boxHeight, howText.length * 4.5) + 2;
+
+        if (yPos > pageHeight - 80) { doc.addPage(); yPos = margin; }
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text(
+          `ONDE: ${safeText(rec.where)} | QUANDO: ${safeText(rec.when)} | QUEM: ${safeText(rec.who)} | QUANTO: ${safeText(rec.how_much)}`,
+          margin + 2,
+          yPos + 5
+        );
+        yPos += 12;
+
+        if (index < recomendacoes.length - 1) {
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.3);
+          doc.line(margin, yPos, pageWidth - margin, yPos);
+          yPos += 8;
+        }
+      });
+
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+
+      // ✅ download robusto + nome seguro (resolve "/" no nome do processo)
+      downloadJsPdf(doc, nomeArquivo);
     }
-    document.title = `Plano de Ação 5W2H - ${proc.sei}`;
-    window.print();
-    document.title = "SIGR 5W2H | Plano de Ação por Processo";
-  });
 
-  btnReset.addEventListener("click", () => {
-    const ok = confirm("Isso vai apagar todos os dados salvos no navegador. Continuar?");
-    if(!ok) return;
-    localStorage.removeItem(STORAGE_KEY);
-    DB = seedDB();
-    render();
-  });
+    
+    // Abre a visão de recomendações já filtrando pela unidade selecionada no Dashboard
+    function expandirLocal(local) {
+      try {
+        showView('recomendacoes');
+        const filtroUnidade = document.getElementById('filtro-unidade');
+        const filtroSetor = document.getElementById('filtro-setor');
+        const filtroStatus = document.getElementById('filtro-status');
 
-  btnExport.addEventListener("click", () => {
-    const proc = getSelectedProcess();
-    if(!proc){
-      alert("Selecione um processo para exportar.");
-      return;
+        if (filtroUnidade) filtroUnidade.value = local || '';
+        if (filtroSetor) filtroSetor.value = '';
+        if (filtroStatus) filtroStatus.value = '';
+
+        renderRecomendacoesTable();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error('Erro ao expandir local:', err);
+        showToast('Não foi possível abrir o detalhamento do local.', 'error');
+      }
     }
-    const dataStr = JSON.stringify(proc, null, 2);
-    const blob = new Blob([dataStr], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `plano_acao_${proc.sei.replaceAll("/","-")}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
 
-  if(!DB.selectedProcessId && DB.processes.length){
-    DB.selectedProcessId = DB.processes[0].id;
-    saveDB(DB);
-  }
-  render();
-</script>
+
+    initializeApp();
+  </script>
 </body>
 </html>
