@@ -17,106 +17,48 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    body { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
-  /* ====== TEMA "APP" (igual imagem) ====== */
+  <style>
   :root{
-    --app-blue-900:#0B2A6F;
-    --app-blue-800:#123B92;
-    --app-blue-700:#1D4ED8;
-    --app-blue-600:#2563EB;
-    --app-bg:#F5F7FB;
-    --app-card:#FFFFFF;
-    --app-muted:#64748B;
-    --app-border:#E6EAF2;
-    --app-shadow: 0 14px 30px rgba(2, 8, 23, 0.08);
-    --app-radius: 18px;
+    --sys-blue-900:#0B2A6F;
+    --sys-blue-800:#123B92;
+    --sys-blue-700:#1D4ED8;
+    --sys-bg:#F5F7FB;
+    --sys-card:#FFFFFF;
+    --sys-border:#E6EAF2;
+    --sys-radius:18px;
   }
 
-  body { background: var(--app-bg); }
+  body{ background: var(--sys-bg) !important; }
 
-  /* “tela app” centralizada, com bordas arredondadas no mobile */
-  .app-shell{
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* cards mais “iOS” */
-  .app-card{
-    background: var(--app-card);
-    border: 1px solid var(--app-border);
-    border-radius: var(--app-radius);
+  /* Cards e containers comuns */
+  .card, .panel, .box, .container-card{
+    background: var(--sys-card);
+    border: 1px solid var(--sys-border);
+    border-radius: var(--sys-radius);
     box-shadow: 0 6px 18px rgba(2,8,23,0.06);
   }
 
-  /* Top bar azul estilo app */
-  .app-topbar{
-    background: linear-gradient(135deg, var(--app-blue-900), var(--app-blue-800));
-    color: white;
+  /* Header/topo: tenta pegar o que você já tem */
+  header{
+    background: linear-gradient(135deg, var(--sys-blue-900), var(--sys-blue-800));
+    color: #fff;
     border-bottom-left-radius: 24px;
     border-bottom-right-radius: 24px;
   }
 
-  .app-topbar input, .app-topbar select{
+  header input, header select{
     background: rgba(255,255,255,0.12);
     border: 1px solid rgba(255,255,255,0.18);
-    color: white;
+    color: #fff;
   }
-  .app-topbar input::placeholder{ color: rgba(255,255,255,0.70); }
+  header input::placeholder{ color: rgba(255,255,255,0.70); }
 
-  /* Sidebar (desktop) mais clean */
-  .sidebar-app{
+  /* Sidebar (se existir) */
+  aside{
     background: linear-gradient(180deg, #071C4D, #051536);
-    color: rgba(255,255,255,0.82);
+    color: rgba(255,255,255,0.86);
   }
-  .sidebar-item:hover { background-color: rgba(255,255,255,0.08); }
-  .active-link { background-color: rgba(255,255,255,0.14); color: white; }
-
-  /* Bottom bar (mobile) */
-  .bottom-nav{
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    height: 64px;
-    background: white;
-    border-top: 1px solid var(--app-border);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 50;
-  }
-  .bottom-nav a{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:4px;
-    font-size:11px;
-    color:#64748B;
-  }
-  .bottom-nav a.active{
-    color: var(--app-blue-700);
-    font-weight: 600;
-  }
-
-  /* padding no conteúdo para não ficar atrás do bottom nav */
-  .pb-bottomnav{ padding-bottom: 92px; }
-
-  /* pequenos refinamentos */
-  .chip{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:8px 10px;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:600;
-    background: rgba(255,255,255,0.14);
-    border: 1px solid rgba(255,255,255,0.18);
-  }
-
-  @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-  .slide-in { animation: slideIn 0.3s ease-out; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .fade-in { animation: fadeIn 0.2s ease-out; }
+</style>
 </style>
 </head>
 
@@ -3264,6 +3206,7 @@ logout = function() {
 
 </body>
 </html>
+
 
 
 
