@@ -1243,22 +1243,26 @@
     // NAV + FILTRO DE DADOS POR USUÁRIO
     // ============================
     function showView(view) {
-      currentView = view;
+  currentView = view;
 
-      document.querySelectorAll('[id^="view-"]').forEach(v => v.style.display = "none");
-      const viewEl = document.getElementById("view-" + view);
-      if (viewEl) viewEl.style.display = "block";
+  document.querySelectorAll('[id^="view-"]').forEach(v => v.style.display = "none");
+  const viewEl = document.getElementById("view-" + view);
+  if (viewEl) viewEl.style.display = "block";
 
-      document.querySelectorAll('[id^="nav-"]').forEach(n => n.classList.remove("active-link"));
-      const navElement = document.getElementById("nav-" + view);
-      if (navElement) navElement.classList.add("active-link");
+  document.querySelectorAll('[id^="nav-"]').forEach(n => n.classList.remove("active-link"));
+  const navElement = document.getElementById("nav-" + view);
+  if (navElement) navElement.classList.add("active-link");
 
-      const titles = { dashboard: "Dashboard", processos: "Processos", recomendacoes: "Recomendações" };
-      document.getElementById("page-title").textContent = titles[view] || view;
+  const titles = {
+    dashboard: "Dashboard",
+    processos: "Processos",
+    recomendacoes: "Recomendações",
+    auditoria: "Auditoria do Sistema"
+  };
+  document.getElementById("page-title").textContent = titles[view] || view;
 
-      renderCurrentView();
-    }
-
+  renderCurrentView();
+}
     function filterDataByUser(data) {
       if (!userSession || userSession.perfil === "Administrador Geral - CAS ADM") return data;
 
@@ -2206,89 +2210,94 @@ document.getElementById("achado-form").onsubmit = async (e) => {
     // ============================
     // SUBMIT: RECOMENDAÇÃO (com ações múltiplas + progresso automático)
     // ============================
-    document.getElementById("recomendacao-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      ensureDataSdk();
+   document.getElementById("recomendacao-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  ensureDataSdk();
 
-      if (areasResponsaveis.length === 0) { showToast("Adicione pelo menos uma área/setor responsável", "error"); return; }
+  if (areasResponsaveis.length === 0) { showToast("Adicione pelo menos uma área/setor responsável", "error"); return; }
 
-      const btn = document.getElementById("submit-recomendacao-btn");
-      btn.disabled = true;
-      document.getElementById("submit-recomendacao-text").textContent = "Salvando...";
+  const btn = document.getElementById("submit-recomendacao-btn");
+  btn.disabled = true;
+  document.getElementById("submit-recomendacao-text").textContent = "Salvando...";
 
-      const isEdit = !!currentEditingRec;
+  const isEdit = !!currentEditingRec;
 
-      try {
-        // ações do plano: exige ao menos 1 para progresso automático
-        if (!acoesTemp || acoesTemp.length === 0) {
-          showToast("Adicione pelo menos 1 ação do plano para calcular progresso", "error");
-          return;
-        }
+  try {
+    if (!acoesTemp || acoesTemp.length === 0) {
+      showToast("Adicione pelo menos 1 ação do plano para calcular progresso", "error");
+      return;
+    }
 
-        const baseRec = {
-          tipo: "recomendacao",
-          processo_id: currentProcessoId,
-          achado_id: currentAchadoId,
-          recomendacao_id: currentEditingRec || ("rec_" + Date.now() + "_" + Math.random().toString(36).slice(2)),
-          recomendacao_numero: document.getElementById("recomendacao_numero").value,
-          recomendacao_subitem: document.getElementById("recomendacao_subitem").value,
-          recomendacao_texto: document.getElementById("recomendacao_texto").value,
-          area_responsavel: areasResponsaveis.join("; "),
-          responsavel_recomendacao: document.getElementById("responsavel_recomendacao").value,
-          areas_envolvidas: areasEnvolvidas.join("; "),
-          prioridade: document.getElementById("prioridade").value,
-          prazo_global: document.getElementById("prazo_global").value,
+    const recResp = (document.getElementById("responsavel_recomendacao").value || "").trim();
 
-          // AÇÕES (plano)
-          acoes: acoesTemp.map(a => ({
-            id: a.id,
-            desc: a.desc || "",
-            responsavel: a.responsavel || "",
-            prazo: a.prazo || "",
-            como: a.como || "",
-            indicador: a.indicador || "",
-            custo: a.custo || "",
-            status: a.status || "Não iniciada",
-            updated_at: a.updated_at || new Date().toISOString()
-          })),
+    // Se o achado ainda não tinha responsável, copia a partir da recomendação
+    await syncRecResponsavelToAchadoIfNeeded(recResp);
 
-          // Relatório formal
-          evidencias_cumprimento: document.getElementById("evidencias_cumprimento").value,
-          justificativa_nao_cumprimento: document.getElementById("justificativa_nao_cumprimento").value,
-          resultados_percebidos: document.getElementById("resultados_percebidos").value,
+    const baseRec = {
+      tipo: "recomendacao",
+      processo_id: currentProcessoId,
+      achado_id: currentAchadoId,
+      recomendacao_id: currentEditingRec || ("rec_" + Date.now() + "_" + Math.random().toString(36).slice(2)),
+      recomendacao_numero: document.getElementById("recomendacao_numero").value,
+      recomendacao_subitem: document.getElementById("recomendacao_subitem").value,
+      recomendacao_texto: document.getElementById("recomendacao_texto").value,
+      area_responsavel: areasResponsaveis.join("; "),
+      responsavel_recomendacao: recResp,
+      areas_envolvidas: areasEnvolvidas.join("; "),
+      prioridade: document.getElementById("prioridade").value,
+      prazo_global: document.getElementById("prazo_global").value,
 
-          ultima_atualizacao: new Date().toISOString(),
-          updated_by: userSession ? userSession.nome : "Sistema",
-          created_at: isEdit
-            ? (allData.find(d => d.recomendacao_id === currentEditingRec)?.created_at || new Date().toISOString())
-            : new Date().toISOString()
-        };
+      // AÇÕES (se a ação vier sem responsável, usa o responsável da recomendação como fallback)
+      acoes: acoesTemp.map(a => ({
+        id: a.id,
+        desc: a.desc || "",
+        responsavel: (a.responsavel || "").trim() ? a.responsavel : recResp,
+        prazo: a.prazo || "",
+        como: a.como || "",
+        indicador: a.indicador || "",
+        custo: a.custo || "",
+        status: a.status || "Não iniciada",
+        updated_at: a.updated_at || new Date().toISOString()
+      })),
 
-        // aplica status/progresso calculados automaticamente
-        const recomendacao = applyDerivedFieldsToRec(baseRec);
+      // Relatório formal
+      evidencias_cumprimento: document.getElementById("evidencias_cumprimento").value,
+      justificativa_nao_cumprimento: document.getElementById("justificativa_nao_cumprimento").value,
+      resultados_percebidos: document.getElementById("resultados_percebidos").value,
 
-        let result;
-        if (isEdit) {
-          const existing = allData.find(d => d.recomendacao_id === currentEditingRec);
-          if (existing) result = await window.dataSdk.update({ ...existing, ...recomendacao });
-          else result = await window.dataSdk.create(recomendacao);
-        } else {
-          result = await window.dataSdk.create(recomendacao);
-        }
+      ultima_atualizacao: new Date().toISOString(),
+      updated_by: userSession ? userSession.nome : "Sistema",
+      created_at: isEdit
+        ? (allData.find(d => d.recomendacao_id === currentEditingRec)?.created_at || new Date().toISOString())
+        : new Date().toISOString()
+    };
 
-        if (result && result.isOk) {
-          closeModal("recomendacao");
-          showToast(isEdit ? "Recomendação atualizada com sucesso!" : "Recomendação salva com sucesso!", "success");
-          currentEditingRec = null;
-        } else showToast("Erro ao salvar recomendação. " + (result?.error ? String(result.error) : ""), "error");
-      } catch (err) {
-        console.error(err);
-        showToast("Erro inesperado ao salvar recomendação", "error");
-      } finally {
-        btn.disabled = false;
-        document.getElementById("submit-recomendacao-text").textContent = "Salvar Recomendação";
-      }
-    });
+    const recomendacao = applyDerivedFieldsToRec(baseRec);
+
+    let result;
+    if (isEdit) {
+      const existing = allData.find(d => d.recomendacao_id === currentEditingRec);
+      if (existing) result = await window.dataSdk.update({ ...existing, ...recomendacao });
+      else result = await window.dataSdk.create(recomendacao);
+    } else {
+      result = await window.dataSdk.create(recomendacao);
+    }
+
+    if (result && result.isOk) {
+      closeModal("recomendacao");
+      showToast(isEdit ? "Recomendação atualizada com sucesso!" : "Recomendação salva com sucesso!", "success");
+      currentEditingRec = null;
+    } else {
+      showToast("Erro ao salvar recomendação. " + (result?.error ? String(result.error) : ""), "error");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Erro inesperado ao salvar recomendação", "error");
+  } finally {
+    btn.disabled = false;
+    document.getElementById("submit-recomendacao-text").textContent = "Salvar Recomendação";
+  }
+});
 
     // ============================
     // EDITAR RECOMENDAÇÃO (ações editáveis + recalcula status/progresso)
@@ -2812,7 +2821,7 @@ document.getElementById("achado-form").onsubmit = async (e) => {
         showToast("Erro ao gerar PDF", "error");
       }
     }
-    // ============================
+// ============================
 // PATCH: Auditoria + Editar Achado + Sync Responsáveis
 // (cole no FINAL do <script> principal)
 // ============================
@@ -2852,7 +2861,6 @@ function summarizeChanges(oldObj, newObj) {
   return "Campos alterados: " + changes.slice(0, 12).join(", ") + (changes.length > 12 ? "..." : "");
 }
 
-// Wrap do SDK para auditar create/update/delete
 let _auditWrapped = false;
 function wrapDataSdkForAudit() {
   if (_auditWrapped) return;
@@ -2916,14 +2924,12 @@ function wrapDataSdkForAudit() {
   _auditWrapped = true;
 }
 
-// Nav auditoria só para admin
 function updateAdminNavVisibility() {
   const navAudit = document.getElementById("nav-auditoria");
   if (!navAudit) return;
   navAudit.style.display = isAdmin() ? "flex" : "none";
 }
 
-// Auditoria UI
 const auditFilters = { busca:"", acao:"", tipo:"", usuario:"" };
 
 function resetAuditFilters() {
@@ -2942,7 +2948,7 @@ function resetAuditFilters() {
 function renderAuditView() {
   if (!isAdmin()) {
     showToast("Acesso restrito ao Administrador Geral.", "error");
-    showView("dashboard");
+    currentView = "dashboard";
     return;
   }
 
@@ -3014,7 +3020,7 @@ function clearAuditLog() {
   });
 }
 
-// Achado: editar
+// Achado: editar (com impacto "Outro" funcionando)
 function openEditAchado(achadoId) {
   const a = allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
   if (!a) return;
@@ -3026,7 +3032,26 @@ function openEditAchado(achadoId) {
   document.getElementById("achado_subitem").value = a.achado_subitem || "";
   document.getElementById("grau_risco").value = a.grau_risco || "";
   document.getElementById("achado_descricao").value = a.achado_descricao || "";
-  document.getElementById("impacto").value = a.impacto || "";
+
+  const impactoSel = document.getElementById("impacto");
+  const impactoOutro = document.getElementById("impacto_outro");
+
+  const impactoVal = (a.impacto || "").trim();
+  const valid = ["Financeiro","Operacional","Legal","Reputacional","Outro"];
+  if (valid.includes(impactoVal)) {
+    impactoSel.value = impactoVal;
+    impactoOutro.style.display = (impactoVal === "Outro") ? "block" : "none";
+    if (impactoVal === "Outro") impactoOutro.value = "";
+  } else if (impactoVal) {
+    impactoSel.value = "Outro";
+    impactoOutro.style.display = "block";
+    impactoOutro.value = impactoVal;
+  } else {
+    impactoSel.value = "";
+    impactoOutro.style.display = "none";
+    impactoOutro.value = "";
+  }
+
   document.getElementById("evidencia").value = a.evidencia || "";
   if (document.getElementById("responsavel_achado")) {
     document.getElementById("responsavel_achado").value = a.responsavel_achado || "";
@@ -3074,38 +3099,33 @@ async function syncRecResponsavelToAchadoIfNeeded(recResponsavel) {
   if (!ach) return;
 
   if (!(ach.responsavel_achado || "").trim()) {
-    const updated = { ...ach, responsavel_achado: resp, updated_at: new Date().toISOString(), updated_by: userSession ? userSession.nome : "Sistema" };
+    const updated = {
+      ...ach,
+      responsavel_achado: resp,
+      updated_at: new Date().toISOString(),
+      updated_by: userSession ? userSession.nome : "Sistema"
+    };
     ensureDataSdk();
     await window.dataSdk.update(updated);
   }
 }
 
-function normalizeAcoesResponsavel(acoes, fallbackResp) {
-  const fb = (fallbackResp || "").trim();
-  if (!fb) return acoes;
-  return (acoes || []).map(a => ({ ...a, responsavel: (a.responsavel || "").trim() ? a.responsavel : fb }));
-}
-
-// Sugestão automática para ação quando muda responsável da recomendação
 document.addEventListener("input", (e) => {
   if (e.target && e.target.id === "responsavel_recomendacao") setDefaultResponsavelParaAcao();
 });
 
-// Hook: ao abrir modal nova recomendação, puxar responsável do achado
 const _oldOpenNewRecomendacaoModal = openNewRecomendacaoModal;
 openNewRecomendacaoModal = function(processoId, achadoId) {
   _oldOpenNewRecomendacaoModal(processoId, achadoId);
   syncAchadoToRecomendacaoDefaults();
 };
 
-// Hook: ao editar recomendação, garantir sugestão no campo de ação
 const _oldOpenEditRecomendacao = openEditRecomendacao;
 openEditRecomendacao = function(recId) {
   _oldOpenEditRecomendacao(recId);
   setDefaultResponsavelParaAcao();
 };
 
-// Bloquear auditoria para não-admin
 const _oldShowView = showView;
 showView = function(view) {
   if (view === "auditoria" && !isAdmin()) {
@@ -3115,7 +3135,6 @@ showView = function(view) {
   _oldShowView(view);
 };
 
-// Interceptar renderCurrentView para auditoria + wrap
 const _oldRenderCurrentView = renderCurrentView;
 renderCurrentView = function() {
   wrapDataSdkForAudit();
@@ -3129,10 +3148,16 @@ renderCurrentView = function() {
   _oldRenderCurrentView();
 };
 
-// Logar LOGIN/LOGOUT
 document.getElementById("login-form").addEventListener("submit", function() {
   setTimeout(() => {
-    if (userSession) appendAudit({ action:"LOGIN", tipo:"sessao", id:"-", summary:`Login (${userSession.perfil}${userSession.setor ? " | " + userSession.setor : ""})` });
+    if (userSession) {
+      appendAudit({
+        action:"LOGIN",
+        tipo:"sessao",
+        id:"-",
+        summary:`Login (${userSession.perfil}${userSession.setor ? " | " + userSession.setor : ""})`
+      });
+    }
   }, 50);
 });
 
@@ -3142,13 +3167,11 @@ logout = function() {
   _oldLogout();
 };
 
-// IMPORTANTE: sincronizar responsáveis no submit de recomendação
-// (sem duplicar listener): fazemos um “gancho” no final do submit atual
-// -> você vai trocar manualmente o trecho acoes: ... pelo abaixo no seu submit:
 
   </script>
 
 </body>
 </html>
+
 
 
