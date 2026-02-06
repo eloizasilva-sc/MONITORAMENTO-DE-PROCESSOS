@@ -17,90 +17,106 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
  <style>
-:root{
-  --card:#ffffff;
-  --border:#e6eaf2;
-  --text:#0f172a;
-  --muted:#64748b;
-  --shadow1:0 6px 16px rgba(0,0,0,0.08);
-  --shadow2:0 12px 26px rgba(0,0,0,0.12);
+  :root{
+    /* Fundo */
+    --bg-main: #EEF1F7;
+    --bg-card: #FFFFFF;
+    --bg-soft: #F6F8FC;
 
-  --blue:#2563eb;
-  --green:#16a34a;
-  --red:#ef4444;
-}
+    /* Marca (azuis) */
+    --primary: #2F5DE4;
+    --primary-light: #5199FE;
+    --primary-dark: #1A2F65;
 
-<div class="dashboard-cards">
+    /* Texto */
+    --text-main: #0F1F3D;
+    --text-muted: #6B6F77;
+    --text-light: #9A9FAA;
 
-  <!-- Total de Locais -->
-  <div class="dash-card">
-    <div class="dash-left">
-      <div class="dash-icon">🏥</div>
-      <div>
-        <div class="dash-title">Total de Locais</div>
-        <div class="dash-value" id="totalLocais">1</div>
-        <div class="dash-sub">Unidades auditadas</div>
-      </div>
-    </div>
-    <div class="dash-chip">Visão geral</div>
-  </div>
+    /* Bordas */
+    --border-soft: #B8C5DC;
 
-  <!-- Total de Processos -->
-  <div class="dash-card">
-    <div class="dash-left">
-      <div class="dash-icon">📄</div>
-      <div>
-        <div class="dash-title">Total de Processos</div>
-        <div class="dash-value" id="totalProcessos">1</div>
-        <div class="dash-sub">Processos cadastrados</div>
-      </div>
-    </div>
-    <div class="dash-chip">Cadastro</div>
-  </div>
+    /* Destaque (estrela/nota) */
+    --accent: #F4C045;
 
-  <!-- Total de Recomendações -->
-  <div class="dash-card dash-ok">
-    <div class="dash-left">
-      <div class="dash-icon">✅</div>
-      <div>
-        <div class="dash-title">Total de Recomendações</div>
-        <div class="dash-value" id="totalRecomendacoes">2</div>
-        <div class="dash-sub">Recomendações ativas</div>
-      </div>
-    </div>
-    <div class="dash-chip">Em andamento</div>
-  </div>
+    /* Sombra */
+    --shadow-soft: 0 10px 28px rgba(26,47,101,0.12);
 
-  <!-- Atrasadas -->
-  <div class="dash-card dash-bad">
-    <div class="dash-left">
-      <div class="dash-icon">⏰</div>
-      <div>
-        <div class="dash-title">Atrasadas</div>
-        <div class="dash-value" id="totalAtrasadas">0</div>
-        <div class="dash-sub">Atenção urgente</div>
-      </div>
-    </div>
-    <div class="dash-chip">Crítico</div>
-  </div>
+    /* Gradiente igual ao visual da imagem */
+    --gradient-main: linear-gradient(
+      135deg,
+      #5199FE 0%,
+      #2F5DE4 45%,
+      #1A2F65 100%
+    );
+  }
 
-</div>
+  body{
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+  }
 
-/* Variações */
-.dash-ok::before{ background:var(--green); }
-.dash-ok .dash-icon{
-  background:rgba(22,163,74,0.12);
-  border-color:rgba(22,163,74,0.2);
-  color:var(--green);
-}
+  /* Componentes reaproveitáveis */
+  .app-header{
+    background: var(--gradient-main);
+    color: #fff;
+    box-shadow: var(--shadow-soft);
+  }
 
-.dash-bad::before{ background:var(--red); }
-.dash-bad .dash-icon{
-  background:rgba(239,68,68,0.12);
-  border-color:rgba(239,68,68,0.2);
-  color:var(--red);
-}
+  .app-card{
+    background: var(--bg-card);
+    border: 1px solid rgba(184,197,220,0.55);
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    transition: all .25s ease;
+  }
+  .app-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(26,47,101,0.18);
+  }
+
+  .btn-primary{
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    transition: .2s;
+    box-shadow: 0 6px 16px rgba(47,93,228,.25);
+  }
+  .btn-primary:hover{
+    background: var(--primary-dark);
+  }
+
+  .btn-soft{
+    background: rgba(47,93,228,.12);
+    color: var(--primary-dark);
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    transition: .2s;
+  }
+  .btn-soft:hover{
+    background: rgba(47,93,228,.18);
+  }
+
+  .muted{ color: var(--text-muted); }
+
+  .pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.28);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+  }
 </style>
+
 
 </head>
 
@@ -157,8 +173,7 @@
     </div>
   </div>
 
-  <!-- App -->
-  <div id="app" style="display:none;" class="flex h-full overflow-hidden w-full">
+  
 
     <!-- Sidebar -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
@@ -214,19 +229,21 @@
     <main class="flex-1 overflow-y-auto">
 
       <!-- Header -->
-      <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
-        <div>
-          <h1 id="page-title" class="font-semibold text-lg text-slate-800">Dashboard</h1>
-          <p id="page-subtitle" class="text-xs text-slate-500"></p>
-        </div>
+   <header class="app-header sticky top-0 z-10">
+  <div class="max-w-6xl mx-auto h-16 px-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-extrabold">Gestão de Auditoria</h1>
+      <p class="text-xs opacity-90">Painel de processos e plano de ação</p>
+    </div>
 
-        <div class="flex items-center gap-4">
-          <button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 flex items-center gap-2">
-            <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
-          </button>
-          <div class="h-8 w-8 bg-slate-600 rounded-full flex items-center justify-center text-white font-medium text-sm" id="user-avatar-header">AD</div>
-        </div>
-      </header>
+    <div class="flex items-center gap-3">
+      <span class="pill">Ativo</span>
+      <button class="btn-soft">Novo Processo</button>
+      <button class="btn-primary">Exportar</button>
+    </div>
+  </div>
+</header>
+      
 
       <!-- Dashboard View -->
       <div id="view-dashboard" class="p-8 max-w-7xl mx-auto">
@@ -3248,6 +3265,7 @@ logout = function() {
 
 </body>
 </html>
+
 
 
 
