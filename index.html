@@ -16,174 +16,116 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <style>
-  :root{
-    --bg:#F6F8FC;
-    --card:#FFFFFF;
-    --text:#0F172A;
-    --muted:#64748B;
-    --border:#E6EAF2;
-    --shadow: 0 10px 30px rgba(2, 8, 23, 0.08);
-    --shadow2: 0 6px 16px rgba(2, 8, 23, 0.06);
-    --radius: 18px;
+ <style>
+:root{
+  --card:#ffffff;
+  --border:#e6eaf2;
+  --text:#0f172a;
+  --muted:#64748b;
+  --shadow1:0 6px 16px rgba(0,0,0,0.08);
+  --shadow2:0 12px 26px rgba(0,0,0,0.12);
 
-    --primary:#1D4ED8;
-    --primary2:#0B2A6F;
+  --blue:#2563eb;
+  --green:#16a34a;
+  --red:#ef4444;
+}
 
-    --ok:#16A34A;
-    --warn:#F59E0B;
-    --bad:#EF4444;
-  }
+.dashboard-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+  margin:20px 0;
+}
 
-  body{
-    background: var(--bg) !important;
-    color: var(--text);
-  }
+.dash-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:var(--shadow1);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  position:relative;
+  overflow:hidden;
+}
 
-  /* “container de plataforma”: se você já tem um wrapper, aplique a classe .app-shell nele */
-  .app-shell{
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 18px 18px 40px;
-  }
+.dash-card:hover{
+  box-shadow:var(--shadow2);
+  transform:translateY(-2px);
+  transition:0.2s;
+}
 
-  /* Títulos mais “dashboard” */
-  h1, .page-title{
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-  .subtitle, .page-subtitle{
-    color: var(--muted);
-    font-size: 13px;
-  }
+.dash-card::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0;
+  height:4px;
+  background:var(--blue);
+}
 
-  /* Card base */
-  .card-ui{
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow2);
-  }
-  .card-ui:hover{
-    box-shadow: var(--shadow);
-    transform: translateY(-1px);
-    transition: 180ms ease;
-  }
+.dash-left{
+  display:flex;
+  gap:12px;
+}
 
-  /* Cards de métrica */
-  .metric{
-    padding: 18px 18px;
-    display:flex;
-    gap:14px;
-    align-items:flex-start;
-  }
-  .metric .icon{
-    width:40px; height:40px;
-    border-radius: 14px;
-    display:flex; align-items:center; justify-content:center;
-    background: rgba(29,78,216,0.10);
-    border: 1px solid rgba(29,78,216,0.18);
-    color: var(--primary);
-    flex: 0 0 auto;
-  }
-  .metric .label{ color: var(--muted); font-size: 12px; font-weight: 600; }
-  .metric .value{ font-size: 28px; font-weight: 900; line-height: 1; margin-top: 4px; }
-  .metric .hint{ color: var(--muted); font-size: 12px; margin-top: 6px; }
+.dash-icon{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  background:rgba(37,99,235,0.12);
+  border:1px solid rgba(37,99,235,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  color:var(--blue);
+}
 
-  .metric.ok .icon{ background: rgba(22,163,74,0.10); border-color: rgba(22,163,74,0.18); color: var(--ok); }
-  .metric.warn .icon{ background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.20); color: var(--warn); }
-  .metric.bad .icon{ background: rgba(239,68,68,0.10); border-color: rgba(239,68,68,0.18); color: var(--bad); }
+.dash-title{
+  font-size:12px;
+  font-weight:800;
+  color:var(--muted);
+  text-transform:uppercase;
+}
 
-  /* Seção “Auditórias por Local” */
-  .section-title{
-    display:flex; align-items:center; gap:10px;
-    font-size: 18px; font-weight: 900; letter-spacing: -0.01em;
-    margin-top: 12px;
-  }
+.dash-value{
+  font-size:30px;
+  font-weight:900;
+  margin:4px 0;
+  color:var(--text);
+}
 
-  /* Card de local mais visual */
-  .local-card{
-    padding: 18px;
-  }
-  .local-card .top{
-    display:flex; align-items:flex-start; justify-content:space-between;
-    gap:12px;
-  }
-  .badge{
-    display:inline-flex; align-items:center; gap:8px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: rgba(15,23,42,0.05);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 700;
-  }
-  .kpi-line{
-    display:flex; justify-content:space-between; align-items:center;
-    padding: 10px 0;
-    border-bottom: 1px dashed rgba(230,234,242,0.9);
-    font-size: 13px;
-  }
-  .kpi-line:last-child{ border-bottom: 0; }
-  .kpi-line .n{ font-weight: 900; }
-  .kpi-line .ok{ color: var(--ok); font-weight: 800; }
-  .kpi-line .warn{ color: var(--warn); font-weight: 800; }
-  .kpi-line .bad{ color: var(--bad); font-weight: 800; }
+.dash-sub{
+  font-size:12px;
+  color:var(--muted);
+}
 
-  /* Barra de filtros como card de plataforma */
-  .filters-card{
-    padding: 14px;
-    position: sticky;
-    bottom: 10px; /* se preferir no topo, troco pra top */
-    z-index: 20;
-  }
-  .filters-grid{
-    display:grid;
-    grid-template-columns: 1.2fr repeat(5, 0.5fr) auto auto;
-    gap: 10px;
-    align-items:end;
-  }
-  .filters-grid label{
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 700;
-    display:block;
-    margin-bottom: 6px;
-  }
-  .filters-grid input, .filters-grid select{
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 12px;
-    background: #fff;
-    outline: none;
-  }
-  .filters-grid input:focus, .filters-grid select:focus{
-    border-color: rgba(29,78,216,0.45);
-    box-shadow: 0 0 0 4px rgba(29,78,216,0.10);
-  }
-  .btn-primary{
-    background: linear-gradient(135deg, var(--primary2), var(--primary));
-    color:#fff;
-    border: 0;
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-weight: 800;
-  }
-  .btn-ghost{
-    background:#fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-weight: 800;
-    color: var(--text);
-  }
+.dash-chip{
+  background:#f8fafc;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:4px 10px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--muted);
+  white-space:nowrap;
+}
 
-  @media (max-width: 1024px){
-    .filters-grid{ grid-template-columns: 1fr 1fr; }
-  }
+/* Variações */
+.dash-ok::before{ background:var(--green); }
+.dash-ok .dash-icon{
+  background:rgba(22,163,74,0.12);
+  border-color:rgba(22,163,74,0.2);
+  color:var(--green);
+}
+
+.dash-bad::before{ background:var(--red); }
+.dash-bad .dash-icon{
+  background:rgba(239,68,68,0.12);
+  border-color:rgba(239,68,68,0.2);
+  color:var(--red);
+}
 </style>
 
 </head>
@@ -3332,6 +3274,7 @@ logout = function() {
 
 </body>
 </html>
+
 
 
 
