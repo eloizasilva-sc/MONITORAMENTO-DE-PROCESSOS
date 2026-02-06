@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR" class="h-full">
 <head>
@@ -116,6 +115,10 @@
         <a href="#" onclick="showView('recomendacoes'); return false;" id="nav-recomendacoes" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
           <i data-lucide="alert-circle" class="w-5 h-5"></i> Recomendações
         </a>
+        <a href="#" onclick="showView('auditoria'); return false;" id="nav-auditoria"
+  class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all" style="display:none;">
+  <i data-lucide="file-search" class="w-5 h-5"></i> Auditoria do Sistema
+</a>
         <a href="#" onclick="exportMenuOpen(); return false;" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
           <i data-lucide="download" class="w-5 h-5"></i> Exportar PDF
         </a>
@@ -208,6 +211,94 @@
 
       <!-- Recomendações View -->
       <div id="view-recomendacoes" style="display:none;" class="p-8 max-w-7xl mx-auto">
+        <!-- View Auditoria -->
+<div id="view-auditoria" style="display:none;" class="p-8 max-w-7xl mx-auto">
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+    <div class="flex items-start justify-between gap-4 flex-col lg:flex-row">
+      <div>
+        <h2 class="text-xl font-bold text-slate-800">Auditoria do Sistema</h2>
+        <p class="text-sm text-slate-600 mt-1">Registro de logins, cadastros, edições e exclusões (somente Administrador Geral).</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="exportAuditJSON()"
+          class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 flex items-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> Exportar JSON
+        </button>
+        <button onclick="clearAuditLog()"
+          class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 flex items-center gap-2">
+          <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar log
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Buscar</label>
+        <input id="audit-busca" type="text" placeholder="Usuário, ação, item..."
+          oninput="renderAuditView()"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Ação</label>
+        <select id="audit-acao" onchange="renderAuditView()"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">Todas</option>
+          <option value="LOGIN">LOGIN</option>
+          <option value="LOGOUT">LOGOUT</option>
+          <option value="CREATE">CREATE</option>
+          <option value="UPDATE">UPDATE</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo</label>
+        <select id="audit-tipo" onchange="renderAuditView()"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">Todos</option>
+          <option value="processo">processo</option>
+          <option value="achado">achado</option>
+          <option value="recomendacao">recomendacao</option>
+          <option value="sessao">sessao</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Usuário</label>
+        <input id="audit-usuario" type="text" placeholder="Nome do usuário"
+          oninput="renderAuditView()"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div class="md:col-span-1 flex items-end">
+        <button onclick="resetAuditFilters()"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50">
+          Limpar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th class="text-left px-4 py-3 font-semibold text-slate-700">Data/Hora</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-700">Usuário</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-700">Ação</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-700">Tipo</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-700">ID</th>
+            <th class="text-left px-4 py-3 font-semibold text-slate-700">Resumo</th>
+          </tr>
+        </thead>
+        <tbody id="audit-table-body"></tbody>
+      </table>
+    </div>
+    <div id="audit-empty" class="p-10 text-center text-slate-500" style="display:none;">
+      Nenhum registro de auditoria encontrado.
+    </div>
+  </div>
+</div>
 
         <!-- Filtros -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
@@ -437,6 +528,13 @@
             <input type="text" id="impacto_outro" placeholder="Especifique o impacto..." style="display:none;"
               class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
           </div>
+          <!-- 🔽 NOVO CAMPO: Responsável pelo Achado -->
+<div class="md:col-span-2">
+  <label class="block text-sm font-medium text-slate-700 mb-2">Responsável pelo Achado</label>
+  <input type="text" id="responsavel_achado" placeholder="Nome do responsável pelo achado"
+    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  <p class="text-xs text-slate-500 mt-1">Será usado como sugestão automática para responsável da recomendação e ações.</p>
+</div>
 
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Evidência</label>
@@ -752,12 +850,9 @@
 
   <!-- SCRIPT PRINCIPAL -->
   <script>
-   function safeOn(elId, eventName, handler) {
-  const el = document.getElementById(elId);
-  if (!el) return false;
-  el.addEventListener(eventName, handler);
-  return true;
-}
+    // ============================
+    // PATCH CRÍTICO: dataSdk fallback (GitHub Pages)
+    // ============================
     const STORAGE_KEY = "processos_auditados_v2";
 
     function safeParse(json, fallback) { try { return JSON.parse(json) ?? fallback; } catch { return fallback; } }
@@ -956,7 +1051,26 @@
       }
     }
 
-    safeOn("login-form", "submit", function(e) {   e.preventDefault();    const perfil = document.getElementById("login-perfil").value;   const nome = document.getElementById("login-nome").value;   const setor = document.getElementById("login-setor").value;    if (!perfil || !nome) { showToast("Por favor, preencha todos os campos obrigatórios", "error"); return; }   if (perfil === "Técnico" && !setor) { showToast("Por favor, selecione seu setor", "error"); return; }    userSession = { nome, perfil, setor: setor || null, loginTime: new Date().toISOString() };   localStorage.setItem("userSession", JSON.stringify(userSession));    document.getElementById("login-screen").style.display = "none";   document.getElementById("app").style.display = "flex";    updateUserUI();   refreshIcons();   renderCurrentView(); });
+    document.getElementById("login-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const perfil = document.getElementById("login-perfil").value;
+      const nome = document.getElementById("login-nome").value;
+      const setor = document.getElementById("login-setor").value;
+
+      if (!perfil || !nome) { showToast("Por favor, preencha todos os campos obrigatórios", "error"); return; }
+      if (perfil === "Técnico" && !setor) { showToast("Por favor, selecione seu setor", "error"); return; }
+
+      userSession = { nome, perfil, setor: setor || null, loginTime: new Date().toISOString() };
+      localStorage.setItem("userSession", JSON.stringify(userSession));
+
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("app").style.display = "flex";
+
+      updateUserUI();
+      refreshIcons();
+      renderCurrentView();
+    });
 
     function updateUserUI() {
       if (!userSession) return;
@@ -1227,14 +1341,17 @@
                   <span><strong>${achados.length}</strong> achados</span>
                   <span><strong>${recs.length}</strong> recomendações</span>
                 </div>
-                <div class="flex gap-2">
-                  <button onclick="openNewAchadoModal('${p.processo_id}')" class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 text-sm font-medium">
-                    + Achado
-                  </button>
-                  <button onclick="deleteProcesso('${p.processo_id}')" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium">
-                    Excluir
-                  </button>
-                </div>
+               <div class="flex gap-2">
+               <button onclick="openNewRecomendacaoModal('${p.processo_id}', '${a.achado_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+               + Recomendação
+               </button>
+               <button onclick="openEditAchado('${a.achado_id}')" class="text-slate-700 hover:text-slate-900 text-sm font-medium">
+               Editar
+               </button>
+               <button onclick="deleteAchado('${a.achado_id}')" class="text-red-600 hover:text-red-700 text-sm font-medium">
+               Excluir
+               </button>
+               </div>
               </div>
 
               ${achados.length > 0 ? `
@@ -1873,48 +1990,74 @@
       }
     });
 
-    // ============================
-    // SUBMIT: ACHADO
-    // ============================
-    document.getElementById("achado-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      ensureDataSdk();
+   // ============================
+// SUBMIT: ACHADO (CREATE + UPDATE)
+// ============================
+let currentEditingAchado = null;
 
-      const btn = document.getElementById("submit-achado-btn");
-      btn.disabled = true;
-      document.getElementById("submit-achado-text").textContent = "Salvando...";
+document.getElementById("achado-form").onsubmit = async (e) => {
+  e.preventDefault();
+  ensureDataSdk();
 
-      try {
-        let impacto = document.getElementById("impacto").value;
-        if (impacto === "Outro") impacto = document.getElementById("impacto_outro").value || "Outro";
+  const btn = document.getElementById("submit-achado-btn");
+  const txt = document.getElementById("submit-achado-text");
+  btn.disabled = true;
+  txt.textContent = "Salvando...";
 
-        const achado = {
-          tipo: "achado",
-          processo_id: currentProcessoId,
-          achado_id: "achado_" + Date.now() + "_" + Math.random().toString(36).slice(2),
-          achado_numero: document.getElementById("achado_numero").value,
-          achado_subitem: document.getElementById("achado_subitem").value,
-          achado_descricao: document.getElementById("achado_descricao").value,
-          grau_risco: document.getElementById("grau_risco").value,
-          impacto: impacto,
-          evidencia: document.getElementById("evidencia").value,
-          created_at: new Date().toISOString()
-        };
+  try {
+    let impacto = document.getElementById("impacto").value;
+    if (impacto === "Outro") impacto = (document.getElementById("impacto_outro").value || "Outro").trim();
 
-        const result = await window.dataSdk.create(achado);
+    const responsavelAchado = (document.getElementById("responsavel_achado").value || "").trim();
 
-        if (result.isOk) {
-          closeModal("achado");
-          showToast("Achado cadastrado com sucesso!", "success");
-        } else showToast("Erro ao salvar achado. " + (result?.error ? String(result.error) : ""), "error");
-      } catch (err) {
-        console.error(err);
-        showToast("Erro inesperado ao salvar achado", "error");
-      } finally {
-        btn.disabled = false;
-        document.getElementById("submit-achado-text").textContent = "Salvar Achado";
-      }
-    });
+    const base = {
+      tipo: "achado",
+      processo_id: currentProcessoId,
+      achado_id: currentEditingAchado || ("achado_" + Date.now() + "_" + Math.random().toString(36).slice(2)),
+      achado_numero: document.getElementById("achado_numero").value,
+      achado_subitem: document.getElementById("achado_subitem").value,
+      achado_descricao: document.getElementById("achado_descricao").value,
+      grau_risco: document.getElementById("grau_risco").value,
+      impacto: impacto,
+      evidencia: document.getElementById("evidencia").value,
+      responsavel_achado: responsavelAchado,
+      updated_at: new Date().toISOString(),
+      updated_by: userSession ? userSession.nome : "Sistema",
+    };
+
+    let result;
+
+    if (currentEditingAchado) {
+      const existing = allData.find(d => d.tipo === "achado" && d.achado_id === currentEditingAchado);
+      const payload = {
+        ...(existing || {}),
+        ...base,
+        created_at: existing?.created_at || new Date().toISOString()
+      };
+      result = await window.dataSdk.update(payload);
+    } else {
+      result = await window.dataSdk.create({ ...base, created_at: new Date().toISOString() });
+    }
+
+    if (result && result.isOk) {
+      closeModal("achado");
+      showToast(currentEditingAchado ? "Achado atualizado com sucesso!" : "Achado cadastrado com sucesso!", "success");
+      currentEditingAchado = null;
+      document.getElementById("achado-form").reset();
+      document.getElementById("impacto_outro").style.display = "none";
+      if (document.getElementById("responsavel_achado")) document.getElementById("responsavel_achado").value = "";
+      txt.textContent = "Salvar Achado";
+    } else {
+      showToast("Erro ao salvar achado. " + (result?.error ? String(result.error) : ""), "error");
+    }
+  } catch (err) {
+    console.error(err);
+    showToast("Erro inesperado ao salvar achado", "error");
+  } finally {
+    btn.disabled = false;
+    txt.textContent = currentEditingAchado ? "Salvar Alterações" : "Salvar Achado";
+  }
+};
 
     // ============================
     // SUBMIT: RECOMENDAÇÃO (com ações múltiplas + progresso automático)
@@ -2525,142 +2668,11 @@
         showToast("Erro ao gerar PDF", "error");
       }
     }
-    <!-- ✅ AQUI VAI UM PATCH PRONTO (copiar e colar) PARA O SEU ARQUIVO ÚNICO.
-Ele faz 3 coisas:
-1) Adiciona EDITAR ACHADO (abre o mesmo modal e salva como update).
-2) SINCRONIZA RESPONSÁVEIS (Achado ↔ Recomendação ↔ Ações).
-3) Cria um MÓDULO “AUDITORIA DO SISTEMA” APENAS PARA Administrador Geral (log de usuários, ações e mudanças).
--->
+    // ============================
+// PATCH: Auditoria + Editar Achado + Sync Responsáveis
+// (cole no FINAL do <script> principal)
+// ============================
 
-<!-- =========================
-(1) MODAL ACHADO: adicionar campo “Responsável pelo Achado”
-Cole dentro do <form id="achado-form"...> no modal-achado,
-logo após “Evidência” (ou onde você preferir):
-========================= -->
-<!-- 🔽 ADICIONE ESTE BLOCO NO MODAL ACHADO -->
-<div class="md:col-span-2">
-  <label class="block text-sm font-medium text-slate-700 mb-2">Responsável pelo Achado</label>
-  <input type="text" id="responsavel_achado" placeholder="Nome do responsável pelo achado"
-    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-  <p class="text-xs text-slate-500 mt-1">Será usado como sugestão automática para responsável da recomendação e ações.</p>
-</div>
-
-
-<!-- =========================
-(2) SIDEBAR: adicionar item de Auditoria (somente Admin)
-Cole este <a> no nav da sidebar, depois de “Recomendações”, por exemplo.
-========================= -->
-<!-- 🔽 ADICIONE ESTE ITEM NO NAV DA SIDEBAR -->
-<a href="#" onclick="showView('auditoria'); return false;" id="nav-auditoria"
-  class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all" style="display:none;">
-  <i data-lucide="file-search" class="w-5 h-5"></i> Auditoria do Sistema
-</a>
-
-
-<!-- =========================
-(3) MAIN: criar a View de Auditoria
-Cole este bloco dentro do <main> junto das outras views (dashboard/processos/recomendacoes).
-========================= -->
-<!-- 🔽 ADICIONE A VIEW -->
-<div id="view-auditoria" style="display:none;" class="p-8 max-w-7xl mx-auto">
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-    <div class="flex items-start justify-between gap-4 flex-col lg:flex-row">
-      <div>
-        <h2 class="text-xl font-bold text-slate-800">Auditoria do Sistema</h2>
-        <p class="text-sm text-slate-600 mt-1">Registro de logins, cadastros, edições e exclusões (somente Administrador Geral).</p>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="exportAuditJSON()"
-          class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 flex items-center gap-2">
-          <i data-lucide="download" class="w-4 h-4"></i> Exportar JSON
-        </button>
-        <button onclick="clearAuditLog()"
-          class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 flex items-center gap-2">
-          <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar log
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">Buscar</label>
-        <input id="audit-busca" type="text" placeholder="Usuário, ação, item..."
-          oninput="renderAuditView()"
-          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">Ação</label>
-        <select id="audit-acao" onchange="renderAuditView()"
-          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          <option value="">Todas</option>
-          <option value="LOGIN">LOGIN</option>
-          <option value="LOGOUT">LOGOUT</option>
-          <option value="CREATE">CREATE</option>
-          <option value="UPDATE">UPDATE</option>
-          <option value="DELETE">DELETE</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo</label>
-        <select id="audit-tipo" onchange="renderAuditView()"
-          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          <option value="">Todos</option>
-          <option value="processo">processo</option>
-          <option value="achado">achado</option>
-          <option value="recomendacao">recomendacao</option>
-          <option value="sessao">sessao</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">Usuário</label>
-        <input id="audit-usuario" type="text" placeholder="Nome do usuário"
-          oninput="renderAuditView()"
-          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-      </div>
-      <div class="md:col-span-1 flex items-end">
-        <button onclick="resetAuditFilters()"
-          class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50">
-          Limpar filtros
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="min-w-full text-sm">
-        <thead class="bg-slate-50 border-b border-slate-200">
-          <tr>
-            <th class="text-left px-4 py-3 font-semibold text-slate-700">Data/Hora</th>
-            <th class="text-left px-4 py-3 font-semibold text-slate-700">Usuário</th>
-            <th class="text-left px-4 py-3 font-semibold text-slate-700">Ação</th>
-            <th class="text-left px-4 py-3 font-semibold text-slate-700">Tipo</th>
-            <th class="text-left px-4 py-3 font-semibold text-slate-700">ID</th>
-            <th class="text-left px-4 py-3 font-semibold text-slate-700">Resumo</th>
-          </tr>
-        </thead>
-        <tbody id="audit-table-body"></tbody>
-      </table>
-    </div>
-    <div id="audit-empty" class="p-10 text-center text-slate-500" style="display:none;">
-      Nenhum registro de auditoria encontrado.
-    </div>
-  </div>
-</div>
-
-
-<script>
-/* =========================
-(4) SCRIPT: cole este PATCH dentro do seu <script> PRINCIPAL
-Pode colar logo após as VARIÁVEIS GLOBAIS, por exemplo.
-========================= */
-
-// ✅ NOVAS VARIÁVEIS
-let currentEditingAchado = null;
-
-// ✅ AUDIT LOG (somente localStorage)
 const AUDIT_KEY = "audit_log_v1";
 
 function getAuditLog() { return safeParse(localStorage.getItem(AUDIT_KEY), []); }
@@ -2678,7 +2690,7 @@ function appendAudit(entry) {
   };
   const log = getAuditLog();
   log.unshift({ ...base, ...entry });
-  setAuditLog(log.slice(0, 2000)); // limita para não crescer infinito
+  setAuditLog(log.slice(0, 2000));
 }
 
 function summarizeChanges(oldObj, newObj) {
@@ -2696,7 +2708,7 @@ function summarizeChanges(oldObj, newObj) {
   return "Campos alterados: " + changes.slice(0, 12).join(", ") + (changes.length > 12 ? "..." : "");
 }
 
-// ✅ WRAP do dataSdk: registra CREATE/UPDATE/DELETE
+// Wrap do SDK para auditar create/update/delete
 let _auditWrapped = false;
 function wrapDataSdkForAudit() {
   if (_auditWrapped) return;
@@ -2760,7 +2772,14 @@ function wrapDataSdkForAudit() {
   _auditWrapped = true;
 }
 
-// ✅ AUDITORIA: UI
+// Nav auditoria só para admin
+function updateAdminNavVisibility() {
+  const navAudit = document.getElementById("nav-auditoria");
+  if (!navAudit) return;
+  navAudit.style.display = isAdmin() ? "flex" : "none";
+}
+
+// Auditoria UI
 const auditFilters = { busca:"", acao:"", tipo:"", usuario:"" };
 
 function resetAuditFilters() {
@@ -2768,10 +2787,11 @@ function resetAuditFilters() {
   auditFilters.acao = "";
   auditFilters.tipo = "";
   auditFilters.usuario = "";
-  document.getElementById("audit-busca").value = "";
-  document.getElementById("audit-acao").value = "";
-  document.getElementById("audit-tipo").value = "";
-  document.getElementById("audit-usuario").value = "";
+  const a = (id) => document.getElementById(id);
+  if (a("audit-busca")) a("audit-busca").value = "";
+  if (a("audit-acao")) a("audit-acao").value = "";
+  if (a("audit-tipo")) a("audit-tipo").value = "";
+  if (a("audit-usuario")) a("audit-usuario").value = "";
   renderAuditView();
 }
 
@@ -2782,13 +2802,14 @@ function renderAuditView() {
     return;
   }
 
-  auditFilters.busca = (document.getElementById("audit-busca").value || "").toLowerCase().trim();
-  auditFilters.acao = document.getElementById("audit-acao").value || "";
-  auditFilters.tipo = document.getElementById("audit-tipo").value || "";
-  auditFilters.usuario = (document.getElementById("audit-usuario").value || "").toLowerCase().trim();
+  auditFilters.busca = (document.getElementById("audit-busca")?.value || "").toLowerCase().trim();
+  auditFilters.acao = document.getElementById("audit-acao")?.value || "";
+  auditFilters.tipo = document.getElementById("audit-tipo")?.value || "";
+  auditFilters.usuario = (document.getElementById("audit-usuario")?.value || "").toLowerCase().trim();
 
   const body = document.getElementById("audit-table-body");
   const empty = document.getElementById("audit-empty");
+  if (!body || !empty) return;
 
   const log = getAuditLog().filter(e => {
     if (auditFilters.acao && e.action !== auditFilters.acao) return false;
@@ -2796,9 +2817,7 @@ function renderAuditView() {
     if (auditFilters.usuario && !(String(e.user||"").toLowerCase().includes(auditFilters.usuario))) return false;
 
     if (auditFilters.busca) {
-      const hay = [
-        e.ts, e.user, e.action, e.tipo, e.id, e.processo_id, e.summary
-      ].join(" ").toLowerCase();
+      const hay = [e.ts, e.user, e.action, e.tipo, e.id, e.processo_id, e.summary].join(" ").toLowerCase();
       if (!hay.includes(auditFilters.busca)) return false;
     }
     return true;
@@ -2851,60 +2870,7 @@ function clearAuditLog() {
   });
 }
 
-// ✅ EXIBIR ITEM DE NAV somente Admin + render view
-function updateAdminNavVisibility() {
-  const navAudit = document.getElementById("nav-auditoria");
-  if (!navAudit) return;
-  navAudit.style.display = isAdmin() ? "flex" : "none";
-}
-
-// ✅ SINCRONIZAÇÃO DE RESPONSÁVEIS
-function getAchadoById(achadoId) {
-  return allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
-}
-
-function setDefaultResponsavelParaAcao() {
-  const recResp = (document.getElementById("responsavel_recomendacao").value || "").trim();
-  const acaoResp = (document.getElementById("acao_resp").value || "").trim();
-  if (recResp && !acaoResp) document.getElementById("acao_resp").value = recResp;
-}
-
-function syncAchadoToRecomendacaoDefaults() {
-  const achado = getAchadoById(currentAchadoId);
-  if (!achado) return;
-
-  const achResp = (achado.responsavel_achado || "").trim();
-  const recRespEl = document.getElementById("responsavel_recomendacao");
-  if (recRespEl && achResp && !(recRespEl.value || "").trim()) {
-    recRespEl.value = achResp;
-  }
-  setDefaultResponsavelParaAcao();
-}
-
-async function syncRecResponsavelToAchadoIfNeeded(recResponsavel) {
-  const resp = (recResponsavel || "").trim();
-  if (!resp) return;
-  const ach = getAchadoById(currentAchadoId);
-  if (!ach) return;
-
-  // atualiza o achado se estiver vazio (ou diferente, se você quiser “forçar”)
-  if (!(ach.responsavel_achado || "").trim()) {
-    const updated = { ...ach, responsavel_achado: resp, updated_at: new Date().toISOString(), updated_by: userSession ? userSession.nome : "Sistema" };
-    ensureDataSdk();
-    await window.dataSdk.update(updated);
-  }
-}
-
-function normalizeAcoesResponsavel(acoes, fallbackResp) {
-  const fb = (fallbackResp || "").trim();
-  if (!fb) return acoes;
-  return (acoes || []).map(a => ({
-    ...a,
-    responsavel: (a.responsavel || "").trim() ? a.responsavel : fb
-  }));
-}
-
-// ✅ EDITAR ACHADO
+// Achado: editar
 function openEditAchado(achadoId) {
   const a = allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
   if (!a) return;
@@ -2918,45 +2884,96 @@ function openEditAchado(achadoId) {
   document.getElementById("achado_descricao").value = a.achado_descricao || "";
   document.getElementById("impacto").value = a.impacto || "";
   document.getElementById("evidencia").value = a.evidencia || "";
-  document.getElementById("responsavel_achado").value = a.responsavel_achado || "";
+  if (document.getElementById("responsavel_achado")) {
+    document.getElementById("responsavel_achado").value = a.responsavel_achado || "";
+  }
 
   document.getElementById("submit-achado-text").textContent = "Salvar Alterações";
   document.getElementById("modal-achado").style.display = "flex";
   refreshIcons();
 }
 
-// ✅ Ajuste: ao abrir novo achado, resetar modo edição
+// Ao abrir novo achado, resetar modo edição
 const _oldOpenNewAchadoModal = openNewAchadoModal;
 openNewAchadoModal = function(processoId) {
   currentEditingAchado = null;
   _oldOpenNewAchadoModal(processoId);
-  document.getElementById("responsavel_achado").value = "";
+  if (document.getElementById("responsavel_achado")) document.getElementById("responsavel_achado").value = "";
   document.getElementById("submit-achado-text").textContent = "Salvar Achado";
 };
 
-// ✅ Interceptar mudança do responsável da recomendação para sugerir no campo de ação
+// Sync responsáveis: Achado -> Recomendação -> Ações
+function getAchadoById(achadoId) {
+  return allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
+}
+
+function setDefaultResponsavelParaAcao() {
+  const recResp = (document.getElementById("responsavel_recomendacao")?.value || "").trim();
+  const acaoRespEl = document.getElementById("acao_resp");
+  if (acaoRespEl && recResp && !(acaoRespEl.value || "").trim()) acaoRespEl.value = recResp;
+}
+
+function syncAchadoToRecomendacaoDefaults() {
+  const achado = getAchadoById(currentAchadoId);
+  if (!achado) return;
+
+  const achResp = (achado.responsavel_achado || "").trim();
+  const recRespEl = document.getElementById("responsavel_recomendacao");
+  if (recRespEl && achResp && !(recRespEl.value || "").trim()) recRespEl.value = achResp;
+  setDefaultResponsavelParaAcao();
+}
+
+async function syncRecResponsavelToAchadoIfNeeded(recResponsavel) {
+  const resp = (recResponsavel || "").trim();
+  if (!resp) return;
+  const ach = getAchadoById(currentAchadoId);
+  if (!ach) return;
+
+  if (!(ach.responsavel_achado || "").trim()) {
+    const updated = { ...ach, responsavel_achado: resp, updated_at: new Date().toISOString(), updated_by: userSession ? userSession.nome : "Sistema" };
+    ensureDataSdk();
+    await window.dataSdk.update(updated);
+  }
+}
+
+function normalizeAcoesResponsavel(acoes, fallbackResp) {
+  const fb = (fallbackResp || "").trim();
+  if (!fb) return acoes;
+  return (acoes || []).map(a => ({ ...a, responsavel: (a.responsavel || "").trim() ? a.responsavel : fb }));
+}
+
+// Sugestão automática para ação quando muda responsável da recomendação
 document.addEventListener("input", (e) => {
   if (e.target && e.target.id === "responsavel_recomendacao") setDefaultResponsavelParaAcao();
 });
 
-// ✅ Hook no openNewRecomendacaoModal para puxar responsável do achado
+// Hook: ao abrir modal nova recomendação, puxar responsável do achado
 const _oldOpenNewRecomendacaoModal = openNewRecomendacaoModal;
 openNewRecomendacaoModal = function(processoId, achadoId) {
   _oldOpenNewRecomendacaoModal(processoId, achadoId);
   syncAchadoToRecomendacaoDefaults();
 };
 
-// ✅ Hook no openEditRecomendacao para garantir sugestão de ação
+// Hook: ao editar recomendação, garantir sugestão no campo de ação
 const _oldOpenEditRecomendacao = openEditRecomendacao;
 openEditRecomendacao = function(recId) {
   _oldOpenEditRecomendacao(recId);
   setDefaultResponsavelParaAcao();
 };
 
-// ✅ Mostrar view auditoria quando necessário
+// Bloquear auditoria para não-admin
+const _oldShowView = showView;
+showView = function(view) {
+  if (view === "auditoria" && !isAdmin()) {
+    showToast("Acesso restrito ao Administrador Geral.", "error");
+    view = "dashboard";
+  }
+  _oldShowView(view);
+};
+
+// Interceptar renderCurrentView para auditoria + wrap
 const _oldRenderCurrentView = renderCurrentView;
 renderCurrentView = function() {
-  // garante wrap de auditoria sempre que o app renderiza
   wrapDataSdkForAudit();
   updateAdminNavVisibility();
 
@@ -2968,20 +2985,8 @@ renderCurrentView = function() {
   _oldRenderCurrentView();
 };
 
-// ✅ Ajuste no showView: se tentar auditoria sem ser admin, bloqueia
-const _oldShowView = showView;
-showView = function(view) {
-  if (view === "auditoria" && !isAdmin()) {
-    showToast("Acesso restrito ao Administrador Geral.", "error");
-    view = "dashboard";
-  }
-  _oldShowView(view);
-};
-
-// ✅ Logar LOGIN/LOGOUT
-const _oldLoginSubmit = document.getElementById("login-form").onsubmit;
+// Logar LOGIN/LOGOUT
 document.getElementById("login-form").addEventListener("submit", function() {
-  // o submit já faz preventDefault no seu código; aqui só registramos depois da sessão criada
   setTimeout(() => {
     if (userSession) appendAudit({ action:"LOGIN", tipo:"sessao", id:"-", summary:`Login (${userSession.perfil}${userSession.setor ? " | " + userSession.setor : ""})` });
   }, 50);
@@ -2993,149 +2998,11 @@ logout = function() {
   _oldLogout();
 };
 
-// =========================
-// (5) ALTERAR RENDER DE PROCESSOS: adicionar botão EDITAR no Achado
-// Localize o trecho onde mostra botões do achado (hoje tem “+ Recomendação” e “Excluir”)
-// e substitua o bloco <div class="flex gap-2"> daquele achado por este:
-// =========================
-
-/*
-SUBSTITUA ESTE TRECHO (dentro de renderProcessos, no card do achado):
-
-<div class="flex gap-2">
-  <button onclick="openNewRecomendacaoModal(..."> ... </button>
-  <button onclick="deleteAchado(..."> ... </button>
-</div>
-
-POR ESTE:
-*/
-
-function _achadoButtonsHtml(pId, aId) {
-  return `
-    <div class="flex gap-2">
-      <button onclick="openNewRecomendacaoModal('${pId}', '${aId}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-        + Recomendação
-      </button>
-      <button onclick="openEditAchado('${aId}')" class="text-slate-700 hover:text-slate-900 text-sm font-medium">
-        Editar
-      </button>
-      <button onclick="deleteAchado('${aId}')" class="text-red-600 hover:text-red-700 text-sm font-medium">
-        Excluir
-      </button>
-    </div>
-  `;
-}
-
-// ✅ Agora, dentro do renderProcessos, troque manualmente no template do achado:
-// onde está <div class="flex gap-2"> ... </div>
-// use: ${_achadoButtonsHtml(p.processo_id, a.achado_id)}
-
-
-// =========================
-// (6) SUBMIT ACHADO: suportar CREATE e UPDATE (editar)
-// Localize seu listener do "achado-form" e substitua o conteúdo pelo abaixo.
-// =========================
-
-document.getElementById("achado-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  ensureDataSdk();
-
-  const btn = document.getElementById("submit-achado-btn");
-  btn.disabled = true;
-  document.getElementById("submit-achado-text").textContent = currentEditingAchado ? "Salvando..." : "Salvando...";
-
-  try {
-    let impacto = document.getElementById("impacto").value;
-    if (impacto === "Outro") impacto = (document.getElementById("impacto_outro").value || "Outro").trim();
-
-    const responsavelAchado = (document.getElementById("responsavel_achado").value || "").trim();
-
-    const base = {
-      tipo: "achado",
-      processo_id: currentProcessoId,
-      achado_id: currentEditingAchado || ("achado_" + Date.now() + "_" + Math.random().toString(36).slice(2)),
-      achado_numero: document.getElementById("achado_numero").value,
-      achado_subitem: document.getElementById("achado_subitem").value,
-      achado_descricao: document.getElementById("achado_descricao").value,
-      grau_risco: document.getElementById("grau_risco").value,
-      impacto: impacto,
-      evidencia: document.getElementById("evidencia").value,
-      responsavel_achado: responsavelAchado,
-      updated_at: new Date().toISOString(),
-      updated_by: userSession ? userSession.nome : "Sistema",
-    };
-
-    let result;
-    if (currentEditingAchado) {
-      const existing = allData.find(d => d.tipo === "achado" && d.achado_id === currentEditingAchado);
-      const payload = {
-        ...existing,
-        ...base,
-        created_at: existing?.created_at || new Date().toISOString()
-      };
-      result = await window.dataSdk.update(payload);
-    } else {
-      result = await window.dataSdk.create({ ...base, created_at: new Date().toISOString() });
-    }
-
-    if (result && result.isOk) {
-      closeModal("achado");
-      showToast(currentEditingAchado ? "Achado atualizado com sucesso!" : "Achado cadastrado com sucesso!", "success");
-      currentEditingAchado = null;
-      document.getElementById("achado-form").reset();
-      document.getElementById("impacto_outro").style.display = "none";
-      document.getElementById("submit-achado-text").textContent = "Salvar Achado";
-    } else {
-      showToast("Erro ao salvar achado. " + (result?.error ? String(result.error) : ""), "error");
-    }
-  } catch (err) {
-    console.error(err);
-    showToast("Erro inesperado ao salvar achado", "error");
-  } finally {
-    btn.disabled = false;
-    document.getElementById("submit-achado-text").textContent = currentEditingAchado ? "Salvar Alterações" : "Salvar Achado";
-  }
-});
-
-
-// =========================
-// (7) SUBMIT RECOMENDAÇÃO: sincronizar responsáveis
-// Dentro do seu submit de recomendação, antes de montar baseRec,
-// aplique estas 2 linhas:
-// 1) normalizar responsáveis das ações
-// 2) atualizar responsável do achado se estiver vazio
-// =========================
-
-// 🔽 Cole isto dentro do submit de recomendação, logo antes de baseRec.acoes:
-const recResp = (document.getElementById("responsavel_recomendacao").value || "").trim();
-
-// depois, ao montar a lista de ações, use normalizeAcoesResponsavel:
-const normalizedAcoes = normalizeAcoesResponsavel(
-  acoesTemp.map(a => ({
-    id: a.id,
-    desc: a.desc || "",
-    responsavel: a.responsavel || "",
-    prazo: a.prazo || "",
-    como: a.como || "",
-    indicador: a.indicador || "",
-    custo: a.custo || "",
-    status: a.status || "Não iniciada",
-    updated_at: a.updated_at || new Date().toISOString()
-  })),
-  recResp
-);
-
-// e substitua no baseRec:
-// acoes: acoesTemp.map(...)
-// por:
-// acoes: normalizedAcoes
-
-// ao final, antes de salvar (antes do create/update):
-await syncRecResponsavelToAchadoIfNeeded(recResp);
+// IMPORTANTE: sincronizar responsáveis no submit de recomendação
+// (sem duplicar listener): fazemos um “gancho” no final do submit atual
+// -> você vai trocar manualmente o trecho acoes: ... pelo abaixo no seu submit:
 
   </script>
 
 </body>
 </html>
-
-
