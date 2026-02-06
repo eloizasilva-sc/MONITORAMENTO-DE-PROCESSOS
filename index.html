@@ -7,7 +7,8 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Em GitHub Pages, /_sdk costuma falhar. O sistema abaixo tem fallback (localStorage). -->
+  <!-- Se estiver no GitHub Pages, estes caminhos /_sdk normalmente dão 404.
+       O sistema abaixo já tem fallback via localStorage, então pode manter ou remover. -->
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
 
@@ -19,33 +20,32 @@
     body { box-sizing: border-box; font-family: 'Inter', sans-serif; }
     .sidebar-item:hover { background-color: #1e293b; }
     .active-link { background-color: #64748b; color: white; }
-    .glass { background: rgba(255,255,255,.75); backdrop-filter: blur(10px); }
-    .card-hover { transition: transform .15s ease, box-shadow .15s ease; }
-    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(15, 23, 42, .08); }
+
     @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    .slide-in { animation: slideIn 0.25s ease-out; }
+    .slide-in { animation: slideIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .fade-in { animation: fadeIn 0.2s ease-out; }
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900 h-full">
 
-  <!-- Login -->
-  <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4 z-50">
+  <!-- Tela de Login -->
+  <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-      <div class="bg-gradient-to-r from-slate-800 to-slate-950 p-8 text-white text-center">
+      <div class="bg-gradient-to-r from-slate-600 to-slate-700 p-8 text-white text-center">
         <i data-lucide="shield-check" class="w-16 h-16 mx-auto mb-4"></i>
-        <h1 class="text-2xl font-extrabold tracking-tight">PROCESSOS AUDITADOS</h1>
-        <p class="text-sm opacity-90 mt-1">SESAP/RN</p>
+        <h1 class="text-2xl font-bold mb-2">PROCESSOS AUDITADOS</h1>
+        <p class="text-sm opacity-90">SESAP/RN</p>
       </div>
-
       <div class="p-8">
-        <h2 class="text-lg font-bold text-slate-800 mb-6 text-center">Acesso</h2>
+        <h2 class="text-xl font-bold text-slate-800 mb-6 text-center">Selecione seu Perfil</h2>
 
         <form id="login-form" class="space-y-6">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Tipo de Usuário *</label>
             <select id="login-perfil" required onchange="toggleSetorField()"
-              class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base">
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base">
               <option value="">Selecione...</option>
               <option value="Administrador Geral - CAS ADM">Administrador Geral - CAS ADM</option>
               <option value="Técnico">Técnico (Por Setor)</option>
@@ -54,27 +54,28 @@
 
           <div id="setor-field" style="display:none;">
             <label class="block text-sm font-medium text-slate-700 mb-2">Setor Responsável *</label>
-            <select id="login-setor" class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base">
+            <select id="login-setor"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base">
               <option value="">Selecione seu setor...</option>
             </select>
-            <p class="text-xs text-slate-500 mt-2">A lista é atualizada automaticamente quando você cadastra novos processos</p>
+            <p class="text-xs text-slate-500 mt-2">Você verá apenas processos do seu setor cadastrados pelo Administrador</p>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Nome Completo *</label>
             <input type="text" id="login-nome" required placeholder="Digite seu nome"
-              class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <button type="submit" id="login-btn"
-            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl">
-            Entrar
+            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl">
+            Entrar no Sistema
           </button>
         </form>
 
         <div class="mt-6 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
           <p>Sistema de Gestão de Auditorias</p>
-          <p class="mt-1">CAS Administrativo</p>
+          <p class="mt-1">Desenvolvido por Maria Eloiza da Silva - CAS-Administrativo</p>
         </div>
       </div>
     </div>
@@ -84,13 +85,13 @@
   <div id="app" style="display:none;" class="flex h-full overflow-hidden w-full">
 
     <!-- Sidebar -->
-    <aside class="w-72 bg-slate-950 text-slate-300 flex flex-col hidden md:flex">
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
       <div class="p-6 flex items-center gap-3 text-white border-b border-slate-800">
         <i data-lucide="shield-check" class="text-slate-400"></i>
-        <span class="font-extrabold text-lg tracking-tight">PROCESSOS AUDITADOS</span>
+        <span id="system-title" class="font-bold text-xl tracking-tight">PROCESSOS AUDITADOS</span>
       </div>
 
-      <div class="px-5 py-4 bg-slate-900 border-b border-slate-800">
+      <div class="px-4 py-4 bg-slate-800 border-b border-slate-700">
         <div class="flex items-center gap-3 mb-2">
           <div class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm" id="user-avatar">AD</div>
           <div class="flex-1 min-w-0">
@@ -98,38 +99,34 @@
             <p class="text-xs text-slate-400" id="user-role-sidebar">Carregando...</p>
           </div>
         </div>
-        <div id="user-setor-badge" style="display:none;" class="mt-2 px-3 py-1.5 bg-blue-600 bg-opacity-20 border border-blue-500 rounded-xl">
+
+        <div id="user-setor-badge" style="display:none;" class="mt-2 px-3 py-1.5 bg-blue-600 bg-opacity-20 border border-blue-500 rounded-lg">
           <p class="text-xs font-semibold text-blue-300 text-center" id="user-setor-text"></p>
         </div>
       </div>
 
       <nav class="flex-1 px-4 space-y-2 mt-4">
-        <a href="#" onclick="showView('dashboard'); return false;" id="nav-dashboard" class="sidebar-item flex items-center gap-3 p-3 rounded-xl transition-all active-link">
+        <a href="#" onclick="showView('dashboard'); return false;" id="nav-dashboard" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all active-link">
           <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
         </a>
-        <a href="#" onclick="showView('processos'); return false;" id="nav-processos" class="sidebar-item flex items-center gap-3 p-3 rounded-xl transition-all">
+        <a href="#" onclick="showView('processos'); return false;" id="nav-processos" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
           <i data-lucide="clipboard-list" class="w-5 h-5"></i> Processos
         </a>
-        <a href="#" onclick="showView('recomendacoes'); return false;" id="nav-recomendacoes" class="sidebar-item flex items-center gap-3 p-3 rounded-xl transition-all">
-          <i data-lucide="list-checks" class="w-5 h-5"></i> Plano de Ação
+        <a href="#" onclick="showView('recomendacoes'); return false;" id="nav-recomendacoes" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
+          <i data-lucide="alert-circle" class="w-5 h-5"></i> Recomendações
         </a>
-
-        <!-- Somente ADMIN vê Auditoria -->
-        <a href="#" onclick="showView('auditoria'); return false;" id="nav-auditoria" style="display:none;"
-           class="sidebar-item flex items-center gap-3 p-3 rounded-xl transition-all">
-          <i data-lucide="activity" class="w-5 h-5"></i> Auditoria do Sistema
-        </a>
-
-        <a href="#" onclick="exportMenuOpen(); return false;" class="sidebar-item flex items-center gap-3 p-3 rounded-xl transition-all">
+        <a href="#" onclick="exportMenuOpen(); return false;" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
           <i data-lucide="download" class="w-5 h-5"></i> Exportar PDF
         </a>
       </nav>
 
       <div class="p-4 border-t border-slate-800">
-        <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium transition-colors">
+        <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
           <i data-lucide="log-out" class="w-4 h-4"></i> Sair
         </button>
-        <div class="mt-3 text-xs text-slate-500 text-center">SESAP/RN</div>
+        <div class="mt-3 text-xs text-slate-500 text-center">
+          <span id="institution-name">SESAP/RN</span>
+        </div>
       </div>
     </aside>
 
@@ -137,135 +134,118 @@
     <main class="flex-1 overflow-y-auto">
 
       <!-- Header -->
-      <header class="bg-white/80 backdrop-blur border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
+      <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-10">
         <div>
           <h1 id="page-title" class="font-semibold text-lg text-slate-800">Dashboard</h1>
           <p id="page-subtitle" class="text-xs text-slate-500"></p>
         </div>
 
-        <div class="flex items-center gap-3">
-          <button onclick="openNewProcessoModal()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-slate-900 flex items-center gap-2 shadow-sm">
+        <div class="flex items-center gap-4">
+          <button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 flex items-center gap-2">
             <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
           </button>
-          <div class="h-9 w-9 bg-slate-800 rounded-full flex items-center justify-center text-white font-semibold text-sm" id="user-avatar-header">AD</div>
+          <div class="h-8 w-8 bg-slate-600 rounded-full flex items-center justify-center text-white font-medium text-sm" id="user-avatar-header">AD</div>
         </div>
       </header>
 
-      <!-- Dashboard -->
+      <!-- Dashboard View -->
       <div id="view-dashboard" class="p-8 max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 card-hover">
-            <div class="flex items-center justify-between">
-              <p class="text-sm font-semibold text-slate-500">Locais</p>
-              <i data-lucide="building-2" class="w-5 h-5 text-slate-400"></i>
-            </div>
-            <h3 id="dash-total-locais" class="text-3xl font-extrabold mt-2">0</h3>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-slate-500">Total de Locais</p>
+            <h3 id="dash-total-locais" class="text-3xl font-bold mt-2">0</h3>
             <p class="text-xs text-slate-400 mt-2">Unidades auditadas</p>
           </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 card-hover">
-            <div class="flex items-center justify-between">
-              <p class="text-sm font-semibold text-slate-500">Processos</p>
-              <i data-lucide="clipboard-list" class="w-5 h-5 text-slate-400"></i>
-            </div>
-            <h3 id="dash-total-processos" class="text-3xl font-extrabold mt-2">0</h3>
-            <p class="text-xs text-slate-400 mt-2">Cadastrados</p>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-slate-500">Total de Processos</p>
+            <h3 id="dash-total-processos" class="text-3xl font-bold mt-2">0</h3>
+            <p class="text-xs text-slate-400 mt-2">Processos cadastrados</p>
           </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 card-hover">
-            <div class="flex items-center justify-between">
-              <p class="text-sm font-semibold text-slate-500">Recomendações</p>
-              <i data-lucide="list-checks" class="w-5 h-5 text-slate-400"></i>
-            </div>
-            <h3 id="dash-total-recomendacoes" class="text-3xl font-extrabold mt-2">0</h3>
-            <p class="text-xs text-slate-400 mt-2">Ativas</p>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-slate-500">Total de Recomendações</p>
+            <h3 id="dash-total-recomendacoes" class="text-3xl font-bold mt-2">0</h3>
+            <p class="text-xs text-emerald-600 font-medium mt-2">Recomendações ativas</p>
           </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 card-hover">
-            <div class="flex items-center justify-between">
-              <p class="text-sm font-semibold text-red-600">Atrasadas</p>
-              <i data-lucide="alarm-clock" class="w-5 h-5 text-red-400"></i>
-            </div>
-            <h3 id="dash-atrasadas" class="text-3xl font-extrabold mt-2 text-red-600">0</h3>
-            <p class="text-xs text-slate-400 mt-2">Precisam de ação</p>
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <p class="text-sm font-medium text-red-600">Atrasadas</p>
+            <h3 id="dash-atrasadas" class="text-3xl font-bold mt-2 text-red-600">0</h3>
+            <p class="text-xs text-slate-400 mt-2">Requerem atenção urgente</p>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 card-hover">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h2 class="text-lg font-extrabold text-slate-800">Distribuição por Unidade</h2>
-                <p class="text-sm text-slate-500">Visão rápida por local auditado</p>
-              </div>
-              <i data-lucide="pie-chart" class="w-5 h-5 text-slate-400"></i>
-            </div>
-            <div id="locais-dashboard" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-
-            <div id="dashboard-empty" style="display:none;" class="mt-6 bg-slate-50 rounded-2xl border border-slate-200 p-10 text-center">
-              <i data-lucide="folder-open" class="w-14 h-14 text-slate-300 mx-auto mb-4"></i>
-              <h3 class="text-xl font-extrabold text-slate-700 mb-2">Nenhuma auditoria cadastrada</h3>
-              <p class="text-slate-500 mb-6">Crie seu primeiro processo para iniciar o monitoramento</p>
-              <button onclick="openNewProcessoModal()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-slate-900 inline-flex items-center gap-2">
-                <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
-              </button>
-            </div>
-          </div>
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+            <i data-lucide="map-pin" class="w-7 h-7 text-slate-600"></i> Auditorias por Local
+          </h2>
+          <p class="text-slate-500 mt-1">Clique em um local para ver os detalhes das recomendações</p>
         </div>
-      </div>
 
-      <!-- Processos -->
-      <div id="view-processos" style="display:none;" class="p-8 max-w-7xl mx-auto">
-        <div id="processos-list" class="space-y-6"></div>
-        <div id="processos-empty" class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div id="locais-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <div id="dashboard-empty" style="display:none;" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
           <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
-          <h3 class="text-xl font-extrabold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
+          <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhuma auditoria cadastrada</h3>
           <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p>
-          <button onclick="openNewProcessoModal()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-slate-900 inline-flex items-center gap-2">
+          <button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2">
             <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
           </button>
         </div>
       </div>
 
-      <!-- Plano de Ação -->
+      <!-- Processos View -->
+      <div id="view-processos" style="display:none;" class="p-8 max-w-7xl mx-auto">
+        <div id="processos-list" class="space-y-6"></div>
+        <div id="processos-empty" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+          <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
+          <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
+          <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p>
+          <button onclick="openNewProcessModal()" class="bg-slate-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-700 inline-flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
+          </button>
+        </div>
+      </div>
+
+      <!-- Recomendações View -->
       <div id="view-recomendacoes" style="display:none;" class="p-8 max-w-7xl mx-auto">
-        <div class="bg-white rounded-2xl border border-slate-200 p-4 mb-6 card-hover">
+
+        <!-- Filtros -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
           <div class="flex flex-col lg:flex-row gap-3 lg:items-end">
             <div class="flex-1">
-              <label class="block text-xs font-bold text-slate-600 mb-1">Buscar</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Buscar</label>
               <input id="filtro-busca" type="text" placeholder="Recomendação, processo, unidade, área..."
                 oninput="applyRecFilters()"
-                class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Unidade</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Unidade</label>
               <select id="filtro-unidade" onchange="applyRecFilters()"
-                class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                 <option value="">Todas</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Processo</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Processo</label>
               <select id="filtro-processo" onchange="applyRecFilters()"
-                class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                 <option value="">Todos</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Área responsável</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Área responsável</label>
               <select id="filtro-area" onchange="applyRecFilters()"
-                class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                 <option value="">Todas</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Status</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
               <select id="filtro-status" onchange="applyRecFilters()"
-                class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                 <option value="">Todos</option>
                 <option value="Pendente">Pendente</option>
                 <option value="Em Execução">Em Execução</option>
@@ -275,9 +255,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Prioridade</label>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Prioridade</label>
               <select id="filtro-prioridade" onchange="applyRecFilters()"
-                class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                 <option value="">Todas</option>
                 <option value="Alta">Alta</option>
                 <option value="Média">Média</option>
@@ -291,59 +271,19 @@
             </div>
 
             <div class="lg:ml-auto flex gap-2">
-              <button onclick="resetRecFilters()" class="px-3 py-2 border border-slate-300 rounded-xl text-sm font-semibold hover:bg-slate-50">Limpar</button>
-              <button onclick="renderCurrentView()" class="px-3 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900">Atualizar</button>
+              <button onclick="resetRecFilters()" class="px-3 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50">Limpar</button>
+              <button onclick="renderCurrentView()" class="px-3 py-2 bg-slate-700 text-white rounded-lg text-sm font-medium hover:bg-slate-800">Atualizar</button>
             </div>
           </div>
         </div>
 
+        <!-- Conteúdo agrupado -->
         <div id="recomendacoes-grouped" class="space-y-6"></div>
 
-        <div id="recomendacoes-empty" style="display:none;" class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div id="recomendacoes-empty" style="display:none;" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
           <i data-lucide="clipboard-check" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
-          <h3 class="text-xl font-extrabold text-slate-700 mb-2">Nenhuma recomendação encontrada</h3>
+          <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhuma recomendação encontrada</h3>
           <p class="text-slate-500">As recomendações atribuídas ao seu setor aparecerão aqui</p>
-        </div>
-      </div>
-
-      <!-- Auditoria (somente Admin) -->
-      <div id="view-auditoria" style="display:none;" class="p-8 max-w-7xl mx-auto">
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 card-hover">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <h2 class="text-xl font-extrabold text-slate-800">Auditoria das Modificações</h2>
-              <p class="text-sm text-slate-500 mt-1">Quem fez, o que fez, data e hora, com detalhes do registro.</p>
-            </div>
-            <div class="flex gap-2">
-              <button onclick="exportAuditCsv()" class="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900 flex items-center gap-2">
-                <i data-lucide="file-down" class="w-4 h-4"></i> Exportar CSV
-              </button>
-              <button onclick="clearAuditLog()" class="px-4 py-2 border border-red-300 text-red-700 rounded-xl text-sm font-semibold hover:bg-red-50 flex items-center gap-2">
-                <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar
-              </button>
-            </div>
-          </div>
-
-          <div class="mt-6 overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="text-left text-slate-600 border-b">
-                  <th class="py-3 pr-4">Data/Hora</th>
-                  <th class="py-3 pr-4">Usuário</th>
-                  <th class="py-3 pr-4">Perfil</th>
-                  <th class="py-3 pr-4">Ação</th>
-                  <th class="py-3 pr-4">Entidade</th>
-                  <th class="py-3 pr-4">Identificador</th>
-                  <th class="py-3">Detalhes</th>
-                </tr>
-              </thead>
-              <tbody id="audit-table-body" class="divide-y"></tbody>
-            </table>
-          </div>
-
-          <div id="audit-empty" class="mt-6 text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-2xl p-6">
-            Nenhuma modificação registrada ainda.
-          </div>
         </div>
       </div>
 
@@ -352,9 +292,9 @@
 
   <!-- Modal Processo -->
   <div id="modal-processo" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
       <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
-        <h2 class="font-extrabold text-xl text-slate-800">Novo Processo</h2>
+        <h2 class="font-bold text-xl text-slate-800">Novo Processo</h2>
         <button onclick="closeModal('processo')" class="text-slate-400 hover:text-slate-600">
           <i data-lucide="x" class="w-6 h-6"></i>
         </button>
@@ -363,15 +303,15 @@
       <form id="processo-form" class="p-6 space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Nº do Processo SEI *</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Nº do Processo SEI *</label>
             <input type="text" id="processo_numero" required
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Eixo *</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Eixo *</label>
             <select id="eixo" onchange="toggleEixoOutro()" required
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <option value="">Selecione...</option>
               <option value="Orçamento e Estoques">Orçamento e Estoques</option>
               <option value="Demandas Judiciais">Demandas Judiciais</option>
@@ -379,50 +319,50 @@
               <option value="Outro">Outro</option>
             </select>
             <input type="text" id="eixo_outro" placeholder="Digite o nome do novo eixo..." style="display:none;"
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Unidade/Local da Auditoria *</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Unidade *</label>
             <input type="text" id="unidade" required placeholder="Hospital/Setor"
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Período *</label>
-            <input type="text" id="periodo" required placeholder="Janeiro/2026"
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Período *</label>
+            <input type="text" id="periodo" required placeholder="Janeiro/2024"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <div class="md:col-span-2">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Objeto da Auditoria *</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Objeto da Auditoria *</label>
             <input type="text" id="objeto" required
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Responsável (Gestor da unidade)</label>
-            <input type="text" id="responsavel" placeholder="Nome do responsável"
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Responsável</label>
+            <input type="text" id="responsavel" placeholder="Gestor da unidade"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Auditor Responsável</label>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Auditor Responsável</label>
             <input type="text" id="auditor"
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <div class="md:col-span-2">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Setores/Áreas Envolvidos *</label>
-            <p class="text-xs text-blue-600 mb-2">Esses setores entram automaticamente na lista do login (Setor Responsável)</p>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Setores/Áreas Envolvidos *</label>
+            <p class="text-xs text-blue-600 mb-2">Técnicos destes setores poderão acessar e editar este processo</p>
 
             <div id="setores-processo-container" class="space-y-2 mb-2"></div>
 
             <div class="flex gap-2">
-              <input type="text" id="setor_processo_input" placeholder="Ex: CAS, SUAH, Jurídico, Contratos..."
-                class="flex-1 px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <input type="text" id="setor_processo_input" placeholder="Ex: CAS, SUAH, Hospital Walfredo Gurgel..."
+                class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <button type="button" onclick="adicionarSetorProcesso()"
-                class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 flex items-center gap-2 font-semibold">
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
                 <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
               </button>
             </div>
@@ -430,11 +370,86 @@
         </div>
 
         <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
-          <button type="button" onclick="closeModal('processo')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 font-semibold">
+          <button type="button" onclick="closeModal('processo')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
             Cancelar
           </button>
-          <button type="submit" id="submit-processo-btn" class="bg-slate-800 text-white px-6 py-2 rounded-xl hover:bg-slate-900 font-semibold">
+          <button type="submit" id="submit-processo-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
             <span id="submit-processo-text">Salvar Processo</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Achado -->
+  <div id="modal-achado" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-xl text-slate-800">Novo Achado</h2>
+        <button onclick="closeModal('achado')" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <form id="achado-form" class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Nº do Achado *</label>
+            <input type="text" id="achado_numero" required placeholder="001"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label>
+            <input type="text" id="achado_subitem" placeholder="a, b, c..."
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Grau de Risco *</label>
+            <select id="grau_risco" required
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Selecione...</option>
+              <option value="Alto">Alto</option>
+              <option value="Médio">Médio</option>
+              <option value="Baixo">Baixo</option>
+            </select>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Descrição do Achado *</label>
+            <textarea id="achado_descricao" required rows="4"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Impacto</label>
+            <select id="impacto" onchange="toggleImpactoOutro()"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Selecione...</option>
+              <option value="Financeiro">Financeiro</option>
+              <option value="Operacional">Operacional</option>
+              <option value="Legal">Legal</option>
+              <option value="Reputacional">Reputacional</option>
+              <option value="Outro">Outro</option>
+            </select>
+            <input type="text" id="impacto_outro" placeholder="Especifique o impacto..." style="display:none;"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Evidência</label>
+            <input type="text" id="evidencia" placeholder="Número do documento"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </div>
+
+        <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeModal('achado')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
+            Cancelar
+          </button>
+          <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+            <span id="submit-achado-text">Salvar Achado</span>
           </button>
         </div>
       </form>
@@ -443,77 +458,79 @@
 
   <!-- Modal Export -->
   <div id="modal-export" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
       <div class="p-6 border-b border-slate-200 flex items-center justify-between">
-        <h2 class="font-extrabold text-xl text-slate-800">Exportar PDF</h2>
+        <h2 class="font-bold text-xl text-slate-800">Exportar PDF</h2>
         <button onclick="closeModal('export')" class="text-slate-400 hover:text-slate-600">
           <i data-lucide="x" class="w-6 h-6"></i>
         </button>
       </div>
 
       <div class="p-6 space-y-6">
-        <div class="border-2 border-blue-300 bg-blue-50 rounded-2xl p-4">
-          <h3 class="font-extrabold text-blue-900 mb-3 text-lg flex items-center gap-2">
-            <i data-lucide="clipboard-list" class="w-6 h-6"></i> Plano de Ação (5W2H)
+        <div class="border-2 border-blue-300 bg-blue-50 rounded-xl p-4 mb-4">
+          <h3 class="font-bold text-blue-900 mb-3 text-lg flex items-center gap-2">
+            <i data-lucide="clipboard-list" class="w-6 h-6"></i> Plano de Ação (Ações múltiplas)
           </h3>
+
           <div class="space-y-3">
-            <div class="bg-white border border-blue-200 rounded-xl p-4 hover:border-blue-400 transition-all cursor-pointer" onclick="exportPDFGeral()">
+            <div class="bg-white border border-blue-200 rounded-lg p-4 hover:border-blue-400 transition-all cursor-pointer" onclick="exportPDFGeral()">
               <div class="flex items-start gap-4">
-                <div class="bg-blue-100 rounded-xl p-3">
+                <div class="bg-blue-100 rounded-lg p-3">
                   <i data-lucide="file-text" class="w-7 h-7 text-blue-600"></i>
                 </div>
                 <div class="flex-1">
-                  <h4 class="font-extrabold text-slate-800 mb-1">Relatório Geral</h4>
-                  <p class="text-sm text-slate-600">Recomendações e ações (5W2H)</p>
+                  <h4 class="font-bold text-slate-800 mb-1">Relatório Geral</h4>
+                  <p class="text-sm text-slate-600">Exporta todas as recomendações e suas ações</p>
                 </div>
                 <i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
               </div>
             </div>
 
-            <div class="bg-white border border-blue-200 rounded-xl p-4">
+            <div class="bg-white border border-blue-200 rounded-lg p-4">
               <div class="flex items-start gap-4 mb-3">
-                <div class="bg-blue-100 rounded-xl p-3">
+                <div class="bg-blue-100 rounded-lg p-3">
                   <i data-lucide="folder" class="w-7 h-7 text-blue-600"></i>
                 </div>
                 <div class="flex-1">
-                  <h4 class="font-extrabold text-slate-800 mb-1">Por Processo</h4>
-                  <p class="text-sm text-slate-600">Plano de ação de um processo específico</p>
+                  <h4 class="font-bold text-slate-800 mb-1">Por Processo</h4>
+                  <p class="text-sm text-slate-600">Exporta recomendações de um processo específico</p>
                 </div>
               </div>
-              <div id="processos-plano-list" class="space-y-2 pl-14 max-h-56 overflow-y-auto"></div>
+              <div id="processos-plano-list" class="space-y-2 pl-14 max-h-48 overflow-y-auto"></div>
             </div>
           </div>
         </div>
 
-        <div class="border-2 border-purple-300 bg-purple-50 rounded-2xl p-4">
-          <h3 class="font-extrabold text-purple-900 mb-3 text-lg flex items-center gap-2">
+        <div class="border-2 border-purple-300 bg-purple-50 rounded-xl p-4">
+          <h3 class="font-bold text-purple-900 mb-3 text-lg flex items-center gap-2">
             <i data-lucide="file-check" class="w-6 h-6"></i> Relatório Formal
           </h3>
+
           <div class="space-y-3">
-            <div class="bg-white border border-purple-200 rounded-xl p-4 hover:border-purple-400 transition-all cursor-pointer" onclick="exportPDFFormalGeral()">
+            <div class="bg-white border border-purple-200 rounded-lg p-4 hover:border-purple-400 transition-all cursor-pointer" onclick="exportPDFFormalGeral()">
               <div class="flex items-start gap-4">
-                <div class="bg-purple-100 rounded-xl p-3">
+                <div class="bg-purple-100 rounded-lg p-3">
                   <i data-lucide="file-check-2" class="w-7 h-7 text-purple-600"></i>
                 </div>
                 <div class="flex-1">
-                  <h4 class="font-extrabold text-slate-800 mb-1">Relatório Formal Geral</h4>
+                  <h4 class="font-bold text-slate-800 mb-1">Relatório Formal Geral</h4>
                   <p class="text-sm text-slate-600">Evidências, justificativas e resultados</p>
                 </div>
                 <i data-lucide="download" class="w-5 h-5 text-slate-400"></i>
               </div>
             </div>
 
-            <div class="bg-white border border-purple-200 rounded-xl p-4">
+            <div class="bg-white border border-purple-200 rounded-lg p-4">
               <div class="flex items-start gap-4 mb-3">
-                <div class="bg-purple-100 rounded-xl p-3">
+                <div class="bg-purple-100 rounded-lg p-3">
                   <i data-lucide="folder-check" class="w-7 h-7 text-purple-600"></i>
                 </div>
                 <div class="flex-1">
-                  <h4 class="font-extrabold text-slate-800 mb-1">Formal por Processo</h4>
+                  <h4 class="font-bold text-slate-800 mb-1">Formal por Processo</h4>
                   <p class="text-sm text-slate-600">Relatório formal de um processo específico</p>
                 </div>
               </div>
-              <div id="processos-formal-list" class="space-y-2 pl-14 max-h-56 overflow-y-auto"></div>
+              <div id="processos-formal-list" class="space-y-2 pl-14 max-h-48 overflow-y-auto"></div>
             </div>
           </div>
         </div>
@@ -522,26 +539,226 @@
     </div>
   </div>
 
+  <!-- Modal Recomendação -->
+  <div id="modal-recomendacao" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-xl text-slate-800">Recomendação e Plano de Ação (Ações múltiplas)</h2>
+        <button onclick="closeModal('recomendacao')" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <form id="recomendacao-form" class="p-6 space-y-6">
+
+        <!-- Dados da recomendação -->
+        <div>
+          <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Dados da Recomendação</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Nº da Recomendação *</label>
+              <input type="text" id="recomendacao_numero" required placeholder="R-001"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Subitem</label>
+              <input type="text" id="recomendacao_subitem" placeholder="a, b, c..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Prioridade *</label>
+              <select id="prioridade" required
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Selecione...</option>
+                <option value="Alta">Alta</option>
+                <option value="Média">Média</option>
+                <option value="Baixa">Baixa</option>
+              </select>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-2">Texto da Recomendação *</label>
+              <textarea id="recomendacao_texto" required rows="3"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Responsável pela Recomendação</label>
+              <input type="text" id="responsavel_recomendacao" placeholder="Nome do responsável direto"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <p class="text-xs text-slate-500 mt-1">Responsável direto pela execução</p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Prazo Global *</label>
+              <input type="text" id="prazo_global" required placeholder="60 dias"
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-2">Áreas/Setores Responsáveis *</label>
+              <div id="areas-container" class="space-y-2 mb-2"></div>
+              <div class="flex gap-2">
+                <input type="text" id="area_input" placeholder="Digite o nome da área ou setor..."
+                  class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" onclick="adicionarArea()"
+                  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
+                </button>
+              </div>
+              <p class="text-xs text-slate-500 mt-2">Exemplos: CAS, SUAH, Hospital Walfredo Gurgel, etc.</p>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 mb-2">Áreas Envolvidas no Plano de Ação</label>
+              <div id="areas-envolvidas-container" class="space-y-2 mb-2"></div>
+              <div class="flex gap-2">
+                <input type="text" id="area_envolvida_input" placeholder="Digite o nome da área envolvida..."
+                  class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                <button type="button" onclick="adicionarAreaEnvolvida()"
+                  class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
+                </button>
+              </div>
+              <p class="text-xs text-slate-500 mt-2">Áreas que participam da execução do plano</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ações do plano -->
+        <div class="border-t border-slate-200 pt-6">
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Ações do Plano de Ação</h3>
+              <p class="text-sm text-slate-600">O progresso é calculado automaticamente com base no andamento das ações.</p>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-semibold text-slate-500">Progresso calculado</div>
+              <div class="text-2xl font-bold text-slate-800"><span id="calc-progresso">0</span>%</div>
+              <div class="text-xs"><span id="calc-status" class="px-2 py-1 rounded bg-slate-100 text-slate-700">Pendente</span></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Descrição da ação *</label>
+                <input id="acao_desc" type="text" placeholder="Ex: Elaborar minuta, publicar portaria, treinar equipe..."
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Responsável</label>
+                <input id="acao_resp" type="text" placeholder="Nome ou setor"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Prazo</label>
+                <input id="acao_prazo" type="date"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Como</label>
+                <input id="acao_como" type="text" placeholder="Como será executado?"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Indicador</label>
+                <input id="acao_indicador" type="text" placeholder="Como acompanhar?"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Custo</label>
+                <input id="acao_custo" type="text" placeholder="R$ 0,00 ou sem custo"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Status da ação</label>
+                <select id="acao_status"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="Não iniciada">Não iniciada</option>
+                  <option value="Em andamento">Em andamento</option>
+                  <option value="Concluída">Concluída</option>
+                </select>
+              </div>
+
+              <div class="md:col-span-2 flex justify-end">
+                <button type="button" onclick="addAcaoToTemp()"
+                  class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Adicionar ação
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h4 class="text-sm font-semibold text-slate-700 mb-2">Lista de ações</h4>
+            <div id="acoes-temp-list" class="space-y-2"></div>
+            <div id="acoes-temp-empty" class="text-sm text-slate-500 bg-white border border-slate-200 rounded-xl p-4">
+              Nenhuma ação adicionada ainda. Adicione ao menos 1 ação para calcular progresso automaticamente.
+            </div>
+          </div>
+        </div>
+
+        <!-- Relatório formal -->
+        <div class="border-t border-slate-200 pt-6">
+          <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Informações para Relatório Formal</h3>
+          <p class="text-xs text-blue-600 mb-4 bg-blue-50 p-3 rounded-lg flex items-center gap-2">
+            <i data-lucide="info" class="w-4 h-4"></i>
+            <span>Campos usados no Relatório Formal. Podem ser preenchidos posteriormente.</span>
+          </p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Evidências do Cumprimento (Total ou Parcial)</label>
+              <textarea id="evidencias_cumprimento" rows="3" placeholder="Descreva as evidências..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Justificativa do Não Cumprimento Total ou Parcial</label>
+              <textarea id="justificativa_nao_cumprimento" rows="4" placeholder="Explique os motivos..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Resultados Percebidos</label>
+              <textarea id="resultados_percebidos" rows="3" placeholder="Descreva benefícios e melhorias..."
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 justify-end pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeModal('recomendacao')" class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
+            Cancelar
+          </button>
+          <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+            <span id="submit-recomendacao-text">Salvar Recomendação</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT PRINCIPAL -->
   <script>
-    // ============================================================
-    // 1) CORREÇÃO DO ERRO create undefined + persistência
-    // ============================================================
-    const STORAGE_KEY = "processos_auditados_v4";
-    const AUDIT_KEY = "processos_auditados_audit_v2";
-    const SETORES_KEY = "processos_auditados_setores_v1"; // cache dos setores para login
+    // ============================
+    // PATCH CRÍTICO: dataSdk fallback (GitHub Pages)
+    // ============================
+    const STORAGE_KEY = "processos_auditados_v2";
 
     function safeParse(json, fallback) { try { return JSON.parse(json) ?? fallback; } catch { return fallback; } }
     function getStoredData() { return safeParse(localStorage.getItem(STORAGE_KEY), []); }
     function setStoredData(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
-
-    function getStoredAudit() { return safeParse(localStorage.getItem(AUDIT_KEY), []); }
-    function setStoredAudit(arr) { localStorage.setItem(AUDIT_KEY, JSON.stringify(arr)); }
-
-    function getStoredSetores() { return safeParse(localStorage.getItem(SETORES_KEY), []); }
-    function setStoredSetores(arr) { localStorage.setItem(SETORES_KEY, JSON.stringify(arr)); }
-
-    function nowIso() { return new Date().toISOString(); }
-    function formatBR(iso) { try { return new Date(iso).toLocaleString("pt-BR"); } catch { return iso; } }
 
     function getIdFieldByTipo(tipo) {
       if (tipo === "processo") return "processo_id";
@@ -550,40 +767,6 @@
       return null;
     }
 
-    let userSession = null;
-    let allData = [];
-    let currentView = "dashboard";
-
-    // Auditoria: somente Admin vê a tela Auditoria, mas o registro acontece para o sistema funcionar
-    function auditLog({ action, entityType, entityId, details }) {
-      const session = userSession || { nome: "Desconhecido", perfil: "N/A" };
-      const entry = {
-        id: "aud_" + Date.now() + "_" + Math.random().toString(36).slice(2),
-        at: nowIso(),
-        user: session.nome || "Desconhecido",
-        perfil: session.perfil || "N/A",
-        action,
-        entityType,
-        entityId,
-        details: details || ""
-      };
-      const audit = getStoredAudit();
-      audit.unshift(entry);
-      if (audit.length > 1000) audit.length = 1000;
-      setStoredAudit(audit);
-
-      if (currentView === "auditoria") renderAuditView();
-    }
-
-    function summarizeEntity(item) {
-      if (!item || typeof item !== "object") return "";
-      if (item.tipo === "processo") return `Processo ${item.processo_numero || ""} | Unidade: ${item.unidade || ""}`;
-      if (item.tipo === "achado") return `Achado ${item.achado_numero || ""} | Risco: ${item.grau_risco || ""}`;
-      if (item.tipo === "recomendacao") return `Rec ${item.recomendacao_numero || ""} | Status: ${item.status || ""} | Progresso: ${item.progresso ?? ""}%`;
-      return "";
-    }
-
-    // SDK local
     const localSdk = {
       _onDataChanged: null,
       async init({ onDataChanged } = {}) {
@@ -603,8 +786,6 @@
         data.push(item);
         setStoredData(data);
         if (this._onDataChanged) this._onDataChanged(data);
-
-        auditLog({ action: "CREATE", entityType: item.tipo, entityId: item[idField], details: summarizeEntity(item) });
         return { isOk: true };
       },
       async update(item) {
@@ -618,8 +799,6 @@
         data[idx] = item;
         setStoredData(data);
         if (this._onDataChanged) this._onDataChanged(data);
-
-        auditLog({ action: "UPDATE", entityType: item.tipo, entityId: item[idField], details: summarizeEntity(item) });
         return { isOk: true };
       },
       async delete(item) {
@@ -630,70 +809,104 @@
         const next = data.filter(d => !(d.tipo === item.tipo && d[idField] === item[idField]));
         setStoredData(next);
         if (this._onDataChanged) this._onDataChanged(next);
-
-        auditLog({ action: "DELETE", entityType: item.tipo, entityId: item[idField], details: summarizeEntity(item) });
         return { isOk: true };
       }
     };
 
     function ensureDataSdk() {
-      if (!window.dataSdk || typeof window.dataSdk.init !== "function") window.dataSdk = localSdk;
-      if (typeof window.dataSdk.create !== "function" || typeof window.dataSdk.update !== "function" || typeof window.dataSdk.delete !== "function") {
-        window.dataSdk = localSdk;
-      }
+      if (!window.dataSdk || typeof window.dataSdk.create !== "function") window.dataSdk = localSdk;
     }
 
-    function refreshIcons() { try { if (window.lucide?.createIcons) window.lucide.createIcons(); } catch {} }
-
-    // ============================================================
-    // 2) SETORES: sincronizar automaticamente com login (lista suspensa)
-    // ============================================================
-    function getSetoresFromData(data) {
-      const processos = (Array.isArray(data) ? data : []).filter(d => d.tipo === "processo");
-      const setores = new Set();
-
-      processos.forEach(p => {
-        const txt = (p.setores_envolvidos || "");
-        txt.split(";").map(s => s.trim()).filter(Boolean).forEach(s => setores.add(s));
-      });
-
-      return [...setores].sort();
+    function refreshIcons() {
+      try { if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons(); } catch {}
     }
 
-    function rebuildSetorCatalog() {
-      const setores = getSetoresFromData(allData);
-      setStoredSetores(setores);
-      // se o login estiver aberto e o usuário for Técnico, atualiza a lista na hora
-      const loginScreenVisible = document.getElementById("login-screen")?.style?.display !== "none";
-      if (loginScreenVisible) popularSetoresLogin();
+    // ============================
+    // VARIÁVEIS GLOBAIS
+    // ============================
+    let allData = [];
+    let currentView = "dashboard";
+    let currentProcessoId = null;
+    let currentAchadoId = null;
+    let userSession = null;
+    let areasResponsaveis = [];
+    let areasEnvolvidas = [];
+    let setoresProcesso = [];
+    let currentEditingRec = null;
+
+    // Novo: ações (plano) temporárias no modal
+    let acoesTemp = [];
+
+    // filtros módulo recomendações
+    const recFilters = {
+      busca: "",
+      unidade: "",
+      processoId: "",
+      area: "",
+      status: "",
+      prioridade: "",
+      somenteAtrasadas: false
+    };
+
+    // Alias (compatibilidade)
+    function openNewProcessModal() { openNewProcessoModal(); }
+
+    // ============================
+    // REGRAS: progresso e status automáticos
+    // ============================
+    function normalizeDateOnly(d) {
+      const x = new Date(d);
+      x.setHours(0,0,0,0);
+      return x;
     }
 
-    function popularSetoresLogin() {
-      const setorSelect = document.getElementById("login-setor");
-      if (!setorSelect) return;
+    function computeProgressFromAcoes(acoes) {
+      const list = Array.isArray(acoes) ? acoes : [];
+      if (list.length === 0) return 0;
 
-      const setores = getStoredSetores();
-      setorSelect.innerHTML = '<option value="">Selecione seu setor...</option>';
+      const weight = (st) => {
+        if (st === "Concluída") return 1;
+        if (st === "Em andamento") return 0.5;
+        return 0;
+      };
 
-      if (setores.length) {
-        setores.forEach(setor => {
-          const option = document.createElement("option");
-          option.value = setor;
-          option.textContent = setor;
-          setorSelect.appendChild(option);
-        });
-      } else {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "Nenhum setor cadastrado ainda";
-        option.disabled = true;
-        setorSelect.appendChild(option);
-      }
+      const sum = list.reduce((acc, a) => acc + weight(a.status), 0);
+      return Math.round((sum / list.length) * 100);
     }
 
-    // ============================================================
-    // 3) LOGIN + CONTROLE DE VISIBILIDADE (somente admin vê Auditoria)
-    // ============================================================
+    function computeStatusFromAcoes(acoes) {
+      const list = Array.isArray(acoes) ? acoes : [];
+      if (list.length === 0) return "Pendente";
+
+      const today = normalizeDateOnly(new Date());
+      const anyOverdue = list.some(a => a.prazo && normalizeDateOnly(a.prazo) < today && a.status !== "Concluída");
+      if (anyOverdue) return "Atrasado";
+
+      const allDone = list.every(a => a.status === "Concluída");
+      if (allDone) return "Concluído";
+
+      const anyDoing = list.some(a => a.status === "Em andamento" || a.status === "Concluída");
+      return anyDoing ? "Em Execução" : "Pendente";
+    }
+
+    function applyDerivedFieldsToRec(rec) {
+      const acoes = rec.acoes || [];
+      rec.progresso = computeProgressFromAcoes(acoes);
+      rec.status = computeStatusFromAcoes(acoes);
+      return rec;
+    }
+
+    function getRecDerived(rec) {
+      const acoes = rec.acoes || [];
+      return {
+        progresso: Number.isFinite(Number(rec.progresso)) ? Number(rec.progresso) : computeProgressFromAcoes(acoes),
+        status: rec.status || computeStatusFromAcoes(acoes)
+      };
+    }
+
+    // ============================
+    // LOGIN
+    // ============================
     function toggleSetorField() {
       const perfil = document.getElementById("login-perfil").value;
       const setorField = document.getElementById("setor-field");
@@ -709,6 +922,36 @@
       }
     }
 
+    function popularSetoresLogin() {
+      const setorSelect = document.getElementById("login-setor");
+      setorSelect.innerHTML = '<option value="">Selecione seu setor...</option>';
+
+      const processos = allData.filter(d => d.tipo === "processo");
+      const setoresUnicos = new Set();
+
+      processos.forEach(p => {
+        if (p.setores_envolvidos) {
+          const setores = p.setores_envolvidos.split(";").map(s => s.trim()).filter(Boolean);
+          setores.forEach(s => setoresUnicos.add(s));
+        }
+      });
+
+      if (setoresUnicos.size > 0) {
+        [...setoresUnicos].sort().forEach(setor => {
+          const option = document.createElement("option");
+          option.value = setor;
+          option.textContent = setor;
+          setorSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "Nenhum setor cadastrado ainda";
+        option.disabled = true;
+        setorSelect.appendChild(option);
+      }
+    }
+
     document.getElementById("login-form").addEventListener("submit", function(e) {
       e.preventDefault();
 
@@ -716,10 +959,10 @@
       const nome = document.getElementById("login-nome").value;
       const setor = document.getElementById("login-setor").value;
 
-      if (!perfil || !nome) { showToast("Preencha os campos obrigatórios", "error"); return; }
-      if (perfil === "Técnico" && !setor) { showToast("Selecione seu setor", "error"); return; }
+      if (!perfil || !nome) { showToast("Por favor, preencha todos os campos obrigatórios", "error"); return; }
+      if (perfil === "Técnico" && !setor) { showToast("Por favor, selecione seu setor", "error"); return; }
 
-      userSession = { nome, perfil, setor: setor || null, loginTime: nowIso() };
+      userSession = { nome, perfil, setor: setor || null, loginTime: new Date().toISOString() };
       localStorage.setItem("userSession", JSON.stringify(userSession));
 
       document.getElementById("login-screen").style.display = "none";
@@ -740,31 +983,42 @@
 
       document.getElementById("user-name-sidebar").textContent = userSession.nome;
 
-      const isAdmin = userSession.perfil === "Administrador Geral - CAS ADM";
-      document.getElementById("user-role-sidebar").textContent = isAdmin ? "Administrador Geral" : "Técnico";
-
-      // Somente ADMIN enxerga a Auditoria
-      document.getElementById("nav-auditoria").style.display = isAdmin ? "flex" : "none";
-
-      if (isAdmin) {
+      if (userSession.perfil === "Administrador Geral - CAS ADM") {
+        document.getElementById("user-role-sidebar").textContent = "Administrador Geral - CAS ADM";
         document.getElementById("user-setor-badge").style.display = "none";
         document.getElementById("page-subtitle").textContent = "Visão completa de todos os processos";
       } else {
+        document.getElementById("user-role-sidebar").textContent = "Técnico";
         document.getElementById("user-setor-badge").style.display = "block";
         document.getElementById("user-setor-text").textContent = userSession.setor || "";
-        document.getElementById("page-subtitle").textContent = "Setor: " + (userSession.setor || "");
+        document.getElementById("page-subtitle").textContent = `Processos do setor: ${userSession.setor || ""}`;
       }
     }
 
     function logout() {
-      localStorage.removeItem("userSession");
-      userSession = null;
-      location.reload();
+      const modal = document.createElement("div");
+      modal.style.cssText = "position: fixed; inset: 0; background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999;";
+      modal.innerHTML = `
+        <div style="background:white; padding:24px; border-radius:12px; max-width:400px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);">
+          <h3 style="font-size:18px; font-weight:bold; color:#1e293b; margin-bottom:12px;">Confirmar Saída</h3>
+          <p style="color:#64748b; margin-bottom:24px;">Deseja realmente sair do sistema?</p>
+          <div style="display:flex; gap:12px; justify-content:flex-end;">
+            <button id="cancel-logout" style="padding:8px 16px; border:1px solid #cbd5e1; border-radius:8px; background:white; color:#475569; cursor:pointer; font-weight:500;">Cancelar</button>
+            <button id="confirm-logout" style="padding:8px 16px; border:none; border-radius:8px; background:#dc2626; color:white; cursor:pointer; font-weight:500;">Sair</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById("cancel-logout").onclick = () => document.body.removeChild(modal);
+      document.getElementById("confirm-logout").onclick = () => {
+        localStorage.removeItem("userSession");
+        userSession = null;
+        location.reload();
+      };
     }
 
-    // ============================================================
-    // 4) INIT
-    // ============================================================
+    // INIT
     window.addEventListener("DOMContentLoaded", async () => {
       const savedSession = localStorage.getItem("userSession");
       if (savedSession) {
@@ -772,37 +1026,26 @@
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("app").style.display = "flex";
         updateUserUI();
-      } else {
-        // Se estiver na tela de login, já carrega setores do cache
-        popularSetoresLogin();
       }
 
       ensureDataSdk();
-
-      await window.dataSdk.init({
+      const initResult = await window.dataSdk.init({
         onDataChanged: (data) => {
           allData = Array.isArray(data) ? data : [];
-          rebuildSetorCatalog();       // ✅ atualiza setores sempre que algo mudar
           renderCurrentView();
         }
       });
 
-      // no primeiro carregamento, garante o catálogo atualizado
-      rebuildSetorCatalog();
+      if (!initResult || initResult.isOk === false) console.error("Erro ao inicializar SDK:", initResult?.error);
 
       refreshIcons();
       renderCurrentView();
     });
 
-    // ============================================================
-    // 5) NAVEGAÇÃO + FILTRO POR USUÁRIO
-    // ============================================================
+    // ============================
+    // NAV + FILTRO DE DADOS POR USUÁRIO
+    // ============================
     function showView(view) {
-      if (view === "auditoria" && (!userSession || userSession.perfil !== "Administrador Geral - CAS ADM")) {
-        showToast("Acesso restrito ao Administrador", "error");
-        return;
-      }
-
       currentView = view;
 
       document.querySelectorAll('[id^="view-"]').forEach(v => v.style.display = "none");
@@ -813,7 +1056,7 @@
       const navElement = document.getElementById("nav-" + view);
       if (navElement) navElement.classList.add("active-link");
 
-      const titles = { dashboard: "Dashboard", processos: "Processos", recomendacoes: "Plano de Ação", auditoria: "Auditoria do Sistema" };
+      const titles = { dashboard: "Dashboard", processos: "Processos", recomendacoes: "Recomendações" };
       document.getElementById("page-title").textContent = titles[view] || view;
 
       renderCurrentView();
@@ -823,8 +1066,17 @@
       if (!userSession || userSession.perfil === "Administrador Geral - CAS ADM") return data;
 
       const userSetor = userSession.setor || "";
-      const processosPermitidos = data.filter(item => item.tipo === "processo" && (item.setores_envolvidos || "").includes(userSetor));
-      const processosIds = processosPermitidos.map(p => p.processo_id);
+      const processosPermitidos = data.filter(item => {
+        if (item.tipo === "processo") {
+          const setores = item.setores_envolvidos || "";
+          return setores.includes(userSetor);
+        }
+        return true;
+      });
+
+      const processosIds = processosPermitidos
+        .filter(p => p.tipo === "processo")
+        .map(p => p.processo_id);
 
       return data.filter(item => {
         if (item.tipo === "processo") return processosIds.includes(item.processo_id);
@@ -834,143 +1086,260 @@
     }
 
     function renderCurrentView() {
-      const filtered = filterDataByUser(allData);
+      const filteredData = filterDataByUser(allData);
 
-      if (currentView === "dashboard") renderDashboard(filtered);
-      else if (currentView === "processos") renderProcessos(filtered);
-      else if (currentView === "recomendacoes") renderRecomendacoes(filtered);
-      else if (currentView === "auditoria") renderAuditView();
+      if (currentView === "dashboard") renderDashboard(filteredData);
+      else if (currentView === "processos") renderProcessos(filteredData);
+      else if (currentView === "recomendacoes") renderRecomendacoes(filteredData);
     }
 
-    // ============================================================
-    // 6) DASHBOARD (mais interativo)
-    // ============================================================
-    function getRecDerived(rec) {
-      const acoes = Array.isArray(rec?.acoes) ? rec.acoes : [];
-      const w = (st) => st === "Concluída" ? 1 : (st === "Em andamento" ? 0.5 : 0);
-      const sum = acoes.reduce((acc, a) => acc + w(a.status), 0);
-      const progresso = acoes.length ? Math.round((sum / acoes.length) * 100) : (Number.isFinite(Number(rec.progresso)) ? Number(rec.progresso) : 0);
-
-      const today = new Date(); today.setHours(0,0,0,0);
-      const anyOverdue = acoes.some(a => a.when && (new Date(a.when).setHours(0,0,0,0) < today.getTime()) && a.status !== "Concluída");
-      let status = rec.status || "Pendente";
-      if (acoes.length) {
-        if (anyOverdue) status = "Atrasado";
-        else if (acoes.every(a => a.status === "Concluída")) status = "Concluído";
-        else if (acoes.some(a => a.status === "Em andamento" || a.status === "Concluída")) status = "Em Execução";
-        else status = "Pendente";
-      }
-      return { progresso, status };
-    }
-
+    // ============================
+    // DASHBOARD
+    // ============================
     function renderDashboard(data) {
       const processos = data.filter(d => d.tipo === "processo");
       const recomendacoes = data.filter(d => d.tipo === "recomendacao").map(r => ({...r, ...getRecDerived(r)}));
-      const locais = [...new Set(processos.map(p => p.unidade).filter(Boolean))];
+      const locaisUnicos = [...new Set(processos.map(p => p.unidade).filter(Boolean))];
 
-      document.getElementById("dash-total-locais").textContent = locais.length;
+      document.getElementById("dash-total-locais").textContent = locaisUnicos.length;
       document.getElementById("dash-total-processos").textContent = processos.length;
       document.getElementById("dash-total-recomendacoes").textContent = recomendacoes.length;
-      document.getElementById("dash-atrasadas").textContent = recomendacoes.filter(r => r.status === "Atrasado").length;
 
-      const box = document.getElementById("locais-dashboard");
-      const empty = document.getElementById("dashboard-empty");
+      const atrasadas = recomendacoes.filter(r => r.status === "Atrasado").length;
+      document.getElementById("dash-atrasadas").textContent = atrasadas;
 
-      if (!locais.length) {
-        box.innerHTML = "";
-        empty.style.display = "block";
-        refreshIcons();
-        return;
+      const locaisContainer = document.getElementById("locais-dashboard");
+      const emptyState = document.getElementById("dashboard-empty");
+
+      if (locaisUnicos.length === 0) {
+        locaisContainer.innerHTML = "";
+        emptyState.style.display = "block";
+      } else {
+        emptyState.style.display = "none";
+        locaisContainer.innerHTML = locaisUnicos.map(local => {
+          const processosLocal = processos.filter(p => p.unidade === local);
+          const recsLocal = recomendacoes.filter(r => {
+            const proc = processos.find(p => p.processo_id === r.processo_id);
+            return proc && proc.unidade === local;
+          });
+
+          const pendentes = recsLocal.filter(r => r.status === "Pendente" || r.status === "Em Execução").length;
+          const concluidas = recsLocal.filter(r => r.status === "Concluído").length;
+          const atrasadasLocal = recsLocal.filter(r => r.status === "Atrasado").length;
+
+          return `
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-lg text-slate-800 mb-1">${local}</h3>
+                  <p class="text-sm text-slate-500">${processosLocal.length} processo(s)</p>
+                </div>
+                <i data-lucide="building-2" class="w-8 h-8 text-slate-400"></i>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-slate-600">Total de Recomendações</span>
+                  <span class="font-bold text-slate-800">${recsLocal.length}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-amber-600">Pendentes/Em Execução</span>
+                  <span class="font-bold text-amber-600">${pendentes}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-emerald-600">Concluídas</span>
+                  <span class="font-bold text-emerald-600">${concluidas}</span>
+                </div>
+                ${atrasadasLocal > 0 ? `
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-red-600">Atrasadas</span>
+                  <span class="font-bold text-red-600">${atrasadasLocal}</span>
+                </div>` : ""}
+              </div>
+            </div>
+          `;
+        }).join("");
       }
-
-      empty.style.display = "none";
-
-      box.innerHTML = locais.map(local => {
-        const recsLocal = recomendacoes.filter(r => {
-          const proc = processos.find(p => p.processo_id === r.processo_id);
-          return proc && proc.unidade === local;
-        });
-
-        const concl = recsLocal.filter(r => r.status === "Concluído").length;
-        const total = recsLocal.length || 1;
-        const pct = Math.round((concl / total) * 100);
-
-        return `
-          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 hover:bg-white transition-all card-hover">
-            <div class="flex items-start justify-between mb-2">
-              <div>
-                <div class="font-extrabold text-slate-800">${escapeHtml(local)}</div>
-                <div class="text-xs text-slate-500">${recsLocal.length} recomendação(ões)</div>
-              </div>
-              <i data-lucide="building-2" class="w-6 h-6 text-slate-400"></i>
-            </div>
-
-            <div class="mt-3">
-              <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
-                <span class="font-bold">Conclusão</span><span class="font-extrabold">${pct}%</span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-2">
-                <div class="h-2 rounded-full bg-emerald-500" style="width:${pct}%"></div>
-              </div>
-            </div>
-
-            <div class="mt-3 text-xs text-slate-600">
-              <span class="font-bold">Processos:</span> ${processos.filter(p => p.unidade === local).length}
-            </div>
-          </div>
-        `;
-      }).join("");
 
       refreshIcons();
     }
 
-    // ============================================================
-    // 7) PROCESSOS (resumo)
-    // ============================================================
+    // ============================
+    // PROCESSOS (inclui agrupamento por áreas responsáveis)
+    // ============================
     function renderProcessos(data) {
       const processos = data.filter(d => d.tipo === "processo");
       const container = document.getElementById("processos-list");
-      const empty = document.getElementById("processos-empty");
+      const emptyState = document.getElementById("processos-empty");
 
-      if (!processos.length) {
+      if (processos.length === 0) {
         container.innerHTML = "";
-        empty.style.display = "block";
-        refreshIcons();
-        return;
-      }
+        emptyState.style.display = "block";
+      } else {
+        emptyState.style.display = "none";
+        container.innerHTML = processos.map(p => {
+          const achados = data.filter(d => d.tipo === "achado" && d.processo_id === p.processo_id);
+          const recsRaw = data.filter(d => d.tipo === "recomendacao" && d.processo_id === p.processo_id);
+          const recs = recsRaw.map(r => ({...r, ...getRecDerived(r)}));
 
-      empty.style.display = "none";
+          // agrupamento por área responsável
+          const groups = {};
+          recs.forEach(r => {
+            const areas = (r.area_responsavel || "Sem área definida").split(";").map(x => x.trim()).filter(Boolean);
+            if (areas.length === 0) areas.push("Sem área definida");
+            areas.forEach(a => {
+              if (!groups[a]) groups[a] = [];
+              groups[a].push(r);
+            });
+          });
 
-      container.innerHTML = processos
-        .sort((a,b) => (a.processo_numero||"").localeCompare(b.processo_numero||""))
-        .map(p => `
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 card-hover">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="text-lg font-extrabold text-slate-900">${escapeHtml(p.processo_numero || "-")}</div>
-                <div class="text-sm text-slate-600">${escapeHtml(p.unidade || "-")} • ${escapeHtml(p.periodo || "-")}</div>
-                <div class="text-sm text-slate-500 mt-2">${escapeHtml(p.objeto || "-")}</div>
-                <div class="text-xs text-slate-500 mt-3">
-                  <span class="font-bold">Setores:</span> ${escapeHtml(p.setores_envolvidos || "-")}
+          const groupHtml = Object.keys(groups).sort().map(area => {
+            const list = groups[area];
+            const atrasadas = list.filter(x => x.status === "Atrasado").length;
+            return `
+              <div class="bg-white border border-slate-200 rounded-lg p-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <div class="font-semibold text-slate-800">${area}</div>
+                    <div class="text-xs text-slate-500">${list.length} recomendação(ões) ${atrasadas ? `| <span class="text-red-600 font-semibold">${atrasadas} atrasada(s)</span>` : ""}</div>
+                  </div>
+                </div>
+                <div class="mt-3 space-y-2">
+                  ${list.map(r => `
+                    <div class="flex items-start justify-between gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                      <div class="flex-1">
+                        <div class="text-sm font-semibold text-slate-800">Rec. ${r.recomendacao_numero || ""}${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""}</div>
+                        <div class="text-xs text-slate-600 mt-1">${(r.recomendacao_texto || "").substring(0, 140)}${(r.recomendacao_texto || "").length > 140 ? "..." : ""}</div>
+                        <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                          <span class="px-2 py-1 rounded ${getStatusColor(r.status)}">${r.status}</span>
+                          <span class="px-2 py-1 rounded bg-slate-100 text-slate-700">Progresso: ${r.progresso}%</span>
+                          <span class="px-2 py-1 rounded ${
+                            r.prioridade === "Alta" ? "bg-red-100 text-red-700" :
+                            r.prioridade === "Média" ? "bg-amber-100 text-amber-700" :
+                            "bg-emerald-100 text-emerald-700"
+                          }">Prioridade: ${r.prioridade || "-"}</span>
+                        </div>
+                      </div>
+                      <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Abrir</button>
+                    </div>
+                  `).join("")}
                 </div>
               </div>
-              <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-extrabold">${escapeHtml(p.eixo || "-")}</span>
+            `;
+          }).join("");
+
+          return `
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 class="font-bold text-lg text-slate-800">${p.processo_numero || "-"}</h3>
+                    <p class="text-sm text-slate-500">${p.unidade || "-"} - ${p.periodo || "-"}</p>
+                  </div>
+                  <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">${p.eixo || "-"}</span>
+                </div>
+                <p class="text-sm text-slate-600 mb-4">${p.objeto || "-"}</p>
+                <div class="flex gap-6 text-sm text-slate-500 mb-4">
+                  <span><strong>${achados.length}</strong> achados</span>
+                  <span><strong>${recs.length}</strong> recomendações</span>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="openNewAchadoModal('${p.processo_id}')" class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 text-sm font-medium">
+                    + Achado
+                  </button>
+                  <button onclick="deleteProcesso('${p.processo_id}')" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium">
+                    Excluir
+                  </button>
+                </div>
+              </div>
+
+              ${achados.length > 0 ? `
+              <div class="border-t border-slate-200 bg-slate-50 p-4">
+                <h4 class="font-semibold text-sm text-slate-700 mb-3">Achados e Recomendações</h4>
+                <div class="space-y-3">
+                  ${achados.map(a => {
+                    const recsAchado = recs.filter(r => r.achado_id === a.achado_id);
+                    return `
+                      <div class="bg-white rounded-lg p-4 border border-slate-200">
+                        <div class="flex items-start justify-between mb-2">
+                          <div class="flex-1">
+                            <span class="font-bold text-slate-800">Achado ${a.achado_numero || ""}${a.achado_subitem ? " - " + a.achado_subitem : ""}</span>
+                            <span class="ml-2 px-2 py-1 text-xs font-semibold rounded ${
+                              a.grau_risco === "Alto" ? "bg-red-100 text-red-700" :
+                              a.grau_risco === "Médio" ? "bg-amber-100 text-amber-700" :
+                              "bg-emerald-100 text-emerald-700"
+                            }">Risco ${a.grau_risco || "-"}</span>
+                          </div>
+                          <div class="flex gap-2">
+                            <button onclick="openNewRecomendacaoModal('${p.processo_id}', '${a.achado_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                              + Recomendação
+                            </button>
+                            <button onclick="deleteAchado('${a.achado_id}')" class="text-red-600 hover:text-red-700 text-sm font-medium">
+                              Excluir
+                            </button>
+                          </div>
+                        </div>
+
+                        <p class="text-sm text-slate-600 mb-3">${a.achado_descricao || "-"}</p>
+
+                        ${recsAchado.length > 0 ? `
+                        <div class="pl-4 border-l-2 border-blue-200 space-y-2">
+                          ${recsAchado.map(r => `
+                            <div class="flex items-start justify-between bg-blue-50 p-3 rounded">
+                              <div class="flex-1">
+                                <span class="font-medium text-blue-900 text-sm">Rec. ${r.recomendacao_numero || ""}${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""}</span>
+                                <p class="text-xs text-slate-600 mt-1">${(r.recomendacao_texto || "").substring(0, 100)}${(r.recomendacao_texto || "").length > 100 ? "..." : ""}</p>
+                                <div class="flex flex-wrap gap-2 mt-2 text-xs">
+                                  <span class="px-2 py-1 rounded ${getStatusColor(r.status)}">${r.status}</span>
+                                  <span class="px-2 py-1 rounded bg-white border border-blue-200 text-blue-800">Progresso: ${r.progresso}%</span>
+                                  <span class="text-slate-500">Ações: ${(r.acoes || []).length}</span>
+                                </div>
+                              </div>
+                              <div class="flex gap-2">
+                                <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="text-blue-700 hover:text-blue-900 text-sm font-medium">Abrir</button>
+                                <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="text-red-600 hover:text-red-700 text-sm">Excluir</button>
+                              </div>
+                            </div>
+                          `).join("")}
+                        </div>
+                        ` : '<p class="text-xs text-slate-400 pl-4">Nenhuma recomendação cadastrada</p>'}
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+              </div>
+              ` : ""}
+
+              ${recs.length > 0 ? `
+              <div class="border-t border-slate-200 p-4 bg-white">
+                <div class="flex items-center gap-2 mb-3">
+                  <i data-lucide="layers" class="w-5 h-5 text-slate-500"></i>
+                  <h4 class="font-semibold text-sm text-slate-700">Recomendações por área responsável</h4>
+                </div>
+                <div class="space-y-3">
+                  ${groupHtml}
+                </div>
+              </div>
+              ` : ""}
             </div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
+      }
 
       refreshIcons();
     }
 
-    // ============================================================
-    // 8) RECOMENDAÇÕES (placeholder simples para manter arquivo rodando)
-    //    Se você quiser, eu te mando a versão completa com cards, ações 5W2H e agrupamento como no arquivo anterior.
-    // ============================================================
-    const recFilters = { busca:"", unidade:"", processoId:"", area:"", status:"", prioridade:"", somenteAtrasadas:false };
-
+    // ============================
+    // RECOMENDAÇÕES: filtros + agrupamento por Processo e Área responsável
+    // ============================
     function populateRecFilterOptions(data) {
       const processos = data.filter(d => d.tipo === "processo");
+      const recs = data.filter(d => d.tipo === "recomendacao");
       const unidades = [...new Set(processos.map(p => p.unidade).filter(Boolean))].sort();
+      const areas = new Set();
+
+      recs.forEach(r => {
+        (r.area_responsavel || "").split(";").map(x => x.trim()).filter(Boolean).forEach(a => areas.add(a));
+      });
 
       const unidadeSel = document.getElementById("filtro-unidade");
       const procSel = document.getElementById("filtro-processo");
@@ -978,10 +1347,20 @@
 
       if (!unidadeSel || !procSel || !areaSel) return;
 
-      unidadeSel.innerHTML = `<option value="">Todas</option>` + unidades.map(u => `<option value="${escapeAttr(u)}">${escapeHtml(u)}</option>`).join("");
-      procSel.innerHTML = `<option value="">Todos</option>` + processos.map(p => `<option value="${p.processo_id}">${escapeHtml(p.processo_numero || p.processo_id)}</option>`).join("");
+      unidadeSel.innerHTML = `<option value="">Todas</option>` + unidades.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join("");
+      procSel.innerHTML = `<option value="">Todos</option>` + processos
+        .sort((a,b) => (a.processo_numero||"").localeCompare(b.processo_numero||""))
+        .map(p => `<option value="${p.processo_id}">${escapeHtml(p.processo_numero || p.processo_id)}</option>`).join("");
+      areaSel.innerHTML = `<option value="">Todas</option>` + [...areas].sort().map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
 
-      areaSel.innerHTML = `<option value="">Todas</option>`;
+      // reaplica valores atuais
+      unidadeSel.value = recFilters.unidade;
+      procSel.value = recFilters.processoId;
+      areaSel.value = recFilters.area;
+      document.getElementById("filtro-status").value = recFilters.status;
+      document.getElementById("filtro-prioridade").value = recFilters.prioridade;
+      document.getElementById("filtro-busca").value = recFilters.busca;
+      document.getElementById("filtro-atrasadas").checked = recFilters.somenteAtrasadas;
     }
 
     function applyRecFilters() {
@@ -1009,109 +1388,178 @@
     function renderRecomendacoes(data) {
       populateRecFilterOptions(data);
 
+      const recomendacoesRaw = data.filter(d => d.tipo === "recomendacao");
+      const processos = data.filter(d => d.tipo === "processo");
       const container = document.getElementById("recomendacoes-grouped");
-      const empty = document.getElementById("recomendacoes-empty");
-      const recs = data.filter(d => d.tipo === "recomendacao");
+      const emptyState = document.getElementById("recomendacoes-empty");
 
-      if (!recs.length) {
+      // aplica derivação + filtros
+      const recomendacoes = recomendacoesRaw.map(r => {
+        const derived = getRecDerived(r);
+        return { ...r, ...derived };
+      }).filter(r => {
+        const proc = processos.find(p => p.processo_id === r.processo_id);
+        const unidade = proc?.unidade || "";
+
+        if (recFilters.unidade && unidade !== recFilters.unidade) return false;
+        if (recFilters.processoId && r.processo_id !== recFilters.processoId) return false;
+        if (recFilters.area) {
+          const areas = (r.area_responsavel || "").split(";").map(x => x.trim()).filter(Boolean);
+          if (!areas.includes(recFilters.area)) return false;
+        }
+        if (recFilters.status && r.status !== recFilters.status) return false;
+        if (recFilters.prioridade && r.prioridade !== recFilters.prioridade) return false;
+        if (recFilters.somenteAtrasadas && r.status !== "Atrasado") return false;
+
+        if (recFilters.busca) {
+          const hay = [
+            r.recomendacao_numero, r.recomendacao_subitem, r.recomendacao_texto,
+            r.area_responsavel, r.responsavel_recomendacao, r.prioridade, r.status,
+            proc?.processo_numero, proc?.unidade, proc?.eixo, proc?.periodo
+          ].join(" ").toLowerCase();
+          if (!hay.includes(recFilters.busca)) return false;
+        }
+
+        return true;
+      });
+
+      if (recomendacoes.length === 0) {
         container.innerHTML = "";
-        empty.style.display = "block";
+        emptyState.style.display = "block";
         refreshIcons();
         return;
       }
 
-      empty.style.display = "none";
-      container.innerHTML = `
-        <div class="bg-white border border-slate-200 rounded-2xl p-6">
-          <div class="font-extrabold text-slate-800">Módulo Plano de Ação</div>
-          <div class="text-sm text-slate-600 mt-1">Recomendações cadastradas: ${recs.length}</div>
-          <div class="text-xs text-slate-500 mt-3">Se você quiser, eu reenvio aqui a versão completa com 5W2H, progresso automático e agrupamento por processo e área.</div>
+      emptyState.style.display = "none";
+
+      // agrupamento: Processo -> Área responsável
+      const byProcess = {};
+      recomendacoes.forEach(r => {
+        if (!byProcess[r.processo_id]) byProcess[r.processo_id] = [];
+        byProcess[r.processo_id].push(r);
+      });
+
+      const processOrder = Object.keys(byProcess).sort((a,b) => {
+        const pa = processos.find(p => p.processo_id === a);
+        const pb = processos.find(p => p.processo_id === b);
+        return (pa?.processo_numero || a).localeCompare(pb?.processo_numero || b);
+      });
+
+      container.innerHTML = processOrder.map(procId => {
+        const proc = processos.find(p => p.processo_id === procId);
+        const recs = byProcess[procId] || [];
+
+        const byArea = {};
+        recs.forEach(r => {
+          const areas = (r.area_responsavel || "Sem área definida").split(";").map(x => x.trim()).filter(Boolean);
+          if (areas.length === 0) areas.push("Sem área definida");
+          areas.forEach(a => {
+            if (!byArea[a]) byArea[a] = [];
+            byArea[a].push(r);
+          });
+        });
+
+        const areaBlocks = Object.keys(byArea).sort().map(area => {
+          const list = byArea[area];
+
+          return `
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div class="p-4 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-3">
+                <div>
+                  <div class="font-bold text-slate-800">${escapeHtml(area)}</div>
+                  <div class="text-xs text-slate-500">${list.length} recomendação(ões)</div>
+                </div>
+                <div class="text-xs text-slate-600">
+                  <span class="px-2 py-1 rounded bg-slate-100 text-slate-700">Unidade: ${escapeHtml(proc?.unidade || "-")}</span>
+                </div>
+              </div>
+
+              <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                ${list.map(r => recCardHtml(r, proc)).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <div class="space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="text-lg font-bold text-slate-800">Processo ${escapeHtml(proc?.processo_numero || procId)}</h3>
+                <p class="text-sm text-slate-600">${escapeHtml(proc?.unidade || "-")} | ${escapeHtml(proc?.periodo || "-")} | ${escapeHtml(proc?.eixo || "-")}</p>
+              </div>
+              <button onclick="showView('processos');" class="text-sm font-medium text-blue-600 hover:text-blue-700">Ver no módulo Processos</button>
+            </div>
+            ${areaBlocks}
+          </div>
+        `;
+      }).join("");
+
+      refreshIcons();
+    }
+
+    function recCardHtml(r, proc) {
+      const isTecnico = userSession && userSession.perfil === "Técnico";
+      const acoesCount = Array.isArray(r.acoes) ? r.acoes.length : 0;
+
+      return `
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow">
+          <div class="p-5">
+            <div class="flex items-start justify-between mb-3 gap-3">
+              <div>
+                <div class="text-base font-bold text-slate-800">Rec. ${escapeHtml(r.recomendacao_numero || "")}${r.recomendacao_subitem ? "-" + escapeHtml(r.recomendacao_subitem) : ""}</div>
+                <div class="text-xs text-slate-500 mt-1">${escapeHtml(proc?.unidade || "-")}</div>
+              </div>
+              <span class="px-3 py-1 text-xs font-semibold rounded ${
+                r.prioridade === "Alta" ? "bg-red-100 text-red-700" :
+                r.prioridade === "Média" ? "bg-amber-100 text-amber-700" :
+                "bg-emerald-100 text-emerald-700"
+              }">${escapeHtml(r.prioridade || "-")}</span>
+            </div>
+
+            <div class="text-sm text-slate-600 mb-3">${escapeHtml((r.recomendacao_texto || "").substring(0, 180))}${(r.recomendacao_texto || "").length > 180 ? "..." : ""}</div>
+
+            <div class="mb-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-600">Progresso</span>
+                <span class="text-xs font-bold ${getProgressColor(r.progresso)}">${r.progresso}%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-2">
+                <div class="h-2 rounded-full transition-all ${getProgressBarColor(r.progresso)}" style="width:${r.progresso}%"></div>
+              </div>
+              <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                <span class="px-2 py-1 rounded ${getStatusColor(r.status)}">${escapeHtml(r.status)}</span>
+                <span class="px-2 py-1 rounded bg-slate-100 text-slate-700">Ações: ${acoesCount}</span>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-xs text-slate-600 mb-4">
+              ${r.area_responsavel ? `
+                <div class="flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4 text-slate-400"></i>
+                  <span>${escapeHtml(r.area_responsavel)}</span>
+                </div>
+              ` : ""}
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="flex-1 px-4 py-2 ${isTecnico ? "bg-blue-600 text-white hover:bg-blue-700" : "border border-slate-300 text-slate-700 hover:bg-slate-50"} rounded-lg text-sm font-medium">
+                ${isTecnico ? "Atualizar ações" : "Abrir"}
+              </button>
+              ${isTecnico ? "" : `
+                <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 text-sm font-medium">
+                  Excluir
+                </button>
+              `}
+            </div>
+          </div>
         </div>
       `;
-      refreshIcons();
     }
 
-    // ============================================================
-    // 9) AUDITORIA (somente admin)
-    // ============================================================
-    function renderAuditView() {
-      const tbody = document.getElementById("audit-table-body");
-      const empty = document.getElementById("audit-empty");
-      if (!tbody || !empty) return;
-
-      const audit = getStoredAudit();
-
-      if (!audit.length) {
-        tbody.innerHTML = "";
-        empty.style.display = "block";
-        refreshIcons();
-        return;
-      }
-
-      empty.style.display = "none";
-      tbody.innerHTML = audit.slice(0, 300).map(a => `
-        <tr class="hover:bg-slate-50">
-          <td class="py-3 pr-4 text-slate-700 font-semibold">${escapeHtml(formatBR(a.at))}</td>
-          <td class="py-3 pr-4 text-slate-800 font-extrabold">${escapeHtml(a.user)}</td>
-          <td class="py-3 pr-4 text-slate-600">${escapeHtml(a.perfil)}</td>
-          <td class="py-3 pr-4">
-            <span class="text-[11px] px-2 py-1 rounded-full font-extrabold ${
-              a.action === "DELETE" ? "bg-red-100 text-red-700" :
-              a.action === "UPDATE" ? "bg-amber-100 text-amber-700" :
-              "bg-emerald-100 text-emerald-700"
-            }">${escapeHtml(a.action)}</span>
-          </td>
-          <td class="py-3 pr-4 text-slate-700">${escapeHtml(a.entityType)}</td>
-          <td class="py-3 pr-4 text-slate-500 text-xs break-all">${escapeHtml(a.entityId || "")}</td>
-          <td class="py-3 text-slate-600 text-xs">${escapeHtml(a.details || "")}</td>
-        </tr>
-      `).join("");
-
-      refreshIcons();
-    }
-
-    function clearAuditLog() {
-      if (!userSession || userSession.perfil !== "Administrador Geral - CAS ADM") return;
-      showConfirmModal("Limpar auditoria", "Deseja limpar o registro de auditoria? Isso remove o histórico.", () => {
-        setStoredAudit([]);
-        renderAuditView();
-        showToast("Auditoria limpa.", "success");
-      });
-    }
-
-    function exportAuditCsv() {
-      if (!userSession || userSession.perfil !== "Administrador Geral - CAS ADM") return;
-
-      const audit = getStoredAudit();
-      if (!audit.length) { showToast("Sem dados para exportar", "error"); return; }
-
-      const headers = ["DataHora","Usuario","Perfil","Acao","Entidade","Identificador","Detalhes"];
-      const rows = audit.map(a => [
-        formatBR(a.at),
-        a.user,
-        a.perfil,
-        a.action,
-        a.entityType,
-        a.entityId || "",
-        (a.details || "").replaceAll("\n"," ").replaceAll("\r"," ")
-      ]);
-
-      const csv = [headers.join(";"), ...rows.map(r => r.map(x => `"${String(x||"").replaceAll('"','""')}"`).join(";"))].join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "auditoria_modificacoes.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast("CSV exportado!", "success");
-    }
-
-    // ============================================================
-    // 10) MODAL Processo: setores sincronizam com login
-    // ============================================================
-    function closeModal(type) { document.getElementById("modal-" + type).style.display = "none"; }
-
+    // ============================
+    // MODAIS
+    // ============================
     function openNewProcessoModal() {
       setoresProcesso = [];
       renderSetoresProcesso();
@@ -1121,12 +1569,185 @@
       refreshIcons();
     }
 
+    function openNewAchadoModal(processoId) {
+      currentProcessoId = processoId;
+      document.getElementById("modal-achado").style.display = "flex";
+      document.getElementById("achado-form").reset();
+      document.getElementById("impacto_outro").style.display = "none";
+      refreshIcons();
+    }
+
+    function openNewRecomendacaoModal(processoId, achadoId) {
+      currentProcessoId = processoId;
+      currentAchadoId = achadoId;
+      currentEditingRec = null;
+
+      areasResponsaveis = [];
+      areasEnvolvidas = [];
+      acoesTemp = [];
+
+      document.getElementById("recomendacao-form").reset();
+      renderAreas();
+      renderAcoesTemp();
+
+      // reabilita campos base
+      ["recomendacao_numero","recomendacao_subitem","recomendacao_texto","prioridade","prazo_global"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = false;
+      });
+
+      document.getElementById("modal-recomendacao").style.display = "flex";
+      refreshIcons();
+    }
+
+    function closeModal(type) { document.getElementById("modal-" + type).style.display = "none"; }
+
     function toggleEixoOutro() {
       const eixo = document.getElementById("eixo").value;
       document.getElementById("eixo_outro").style.display = (eixo === "Outro") ? "block" : "none";
     }
 
-    let setoresProcesso = [];
+    function toggleImpactoOutro() {
+      const impacto = document.getElementById("impacto").value;
+      document.getElementById("impacto_outro").style.display = (impacto === "Outro") ? "block" : "none";
+    }
+
+    // ============================
+    // AÇÕES (PLANO) no modal
+    // ============================
+    function addAcaoToTemp() {
+      const desc = (document.getElementById("acao_desc").value || "").trim();
+      if (!desc) { showToast("Informe a descrição da ação", "error"); return; }
+
+      const acao = {
+        id: "acao_" + Date.now() + "_" + Math.random().toString(36).slice(2),
+        desc,
+        responsavel: (document.getElementById("acao_resp").value || "").trim(),
+        prazo: document.getElementById("acao_prazo").value || "",
+        como: (document.getElementById("acao_como").value || "").trim(),
+        indicador: (document.getElementById("acao_indicador").value || "").trim(),
+        custo: (document.getElementById("acao_custo").value || "").trim(),
+        status: document.getElementById("acao_status").value || "Não iniciada",
+        updated_at: new Date().toISOString()
+      };
+
+      acoesTemp.push(acao);
+
+      // limpa campos rápidos
+      document.getElementById("acao_desc").value = "";
+      document.getElementById("acao_resp").value = "";
+      document.getElementById("acao_prazo").value = "";
+      document.getElementById("acao_como").value = "";
+      document.getElementById("acao_indicador").value = "";
+      document.getElementById("acao_custo").value = "";
+      document.getElementById("acao_status").value = "Não iniciada";
+
+      renderAcoesTemp();
+    }
+
+    function removeAcaoTemp(id) {
+      acoesTemp = acoesTemp.filter(a => a.id !== id);
+      renderAcoesTemp();
+    }
+
+    function updateAcaoTemp(id, field, value) {
+      const idx = acoesTemp.findIndex(a => a.id === id);
+      if (idx === -1) return;
+      acoesTemp[idx] = { ...acoesTemp[idx], [field]: value, updated_at: new Date().toISOString() };
+      renderCalcFromTemp();
+    }
+
+    function renderCalcFromTemp() {
+      const progresso = computeProgressFromAcoes(acoesTemp.map(a => ({ status: a.status, prazo: a.prazo })));
+      const status = computeStatusFromAcoes(acoesTemp.map(a => ({ status: a.status, prazo: a.prazo })));
+      document.getElementById("calc-progresso").textContent = progresso;
+
+      const statusEl = document.getElementById("calc-status");
+      statusEl.textContent = status;
+      statusEl.className = `px-2 py-1 rounded ${getStatusColor(status)}`;
+    }
+
+    function renderAcoesTemp() {
+      const list = document.getElementById("acoes-temp-list");
+      const empty = document.getElementById("acoes-temp-empty");
+
+      if (!Array.isArray(acoesTemp) || acoesTemp.length === 0) {
+        list.innerHTML = "";
+        empty.style.display = "block";
+        renderCalcFromTemp();
+        refreshIcons();
+        return;
+      }
+
+      empty.style.display = "none";
+
+      list.innerHTML = acoesTemp.map(a => `
+        <div class="bg-white border border-slate-200 rounded-xl p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1">
+              <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Descrição</label>
+                  <input value="${escapeAttr(a.desc || "")}" oninput="updateAcaoTemp('${a.id}','desc',this.value)"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Responsável</label>
+                  <input value="${escapeAttr(a.responsavel || "")}" oninput="updateAcaoTemp('${a.id}','responsavel',this.value)"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Prazo</label>
+                  <input type="date" value="${escapeAttr(a.prazo || "")}" onchange="updateAcaoTemp('${a.id}','prazo',this.value)"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+                  <select onchange="updateAcaoTemp('${a.id}','status',this.value)"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="Não iniciada" ${a.status==="Não iniciada"?"selected":""}>Não iniciada</option>
+                    <option value="Em andamento" ${a.status==="Em andamento"?"selected":""}>Em andamento</option>
+                    <option value="Concluída" ${a.status==="Concluída"?"selected":""}>Concluída</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Custo</label>
+                  <input value="${escapeAttr(a.custo || "")}" oninput="updateAcaoTemp('${a.id}','custo',this.value)"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="md:col-span-3">
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Como</label>
+                  <input value="${escapeAttr(a.como || "")}" oninput="updateAcaoTemp('${a.id}','como',this.value)"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="md:col-span-3">
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Indicador</label>
+                  <input value="${escapeAttr(a.indicador || "")}" oninput="updateAcaoTemp('${a.id}','indicador',this.value)"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+              </div>
+            </div>
+
+            <button type="button" onclick="removeAcaoTemp('${a.id}')" class="text-red-600 hover:text-red-700">
+              <i data-lucide="trash-2" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      `).join("");
+
+      renderCalcFromTemp();
+      refreshIcons();
+    }
+
+    // ============================
+    // ÁREAS / SETORES
+    // ============================
     function adicionarSetorProcesso() {
       const input = document.getElementById("setor_processo_input");
       const setor = (input.value || "").trim();
@@ -1138,12 +1759,14 @@
         renderSetoresProcesso();
       } else showToast("Este setor já foi adicionado", "error");
     }
+
     function removerSetorProcesso(index) { setoresProcesso.splice(index, 1); renderSetoresProcesso(); }
+
     function renderSetoresProcesso() {
       const container = document.getElementById("setores-processo-container");
       container.innerHTML = setoresProcesso.map((setor, index) => `
-        <div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-xl border border-blue-100">
-          <span class="flex-1 text-sm text-blue-900 font-extrabold">${escapeHtml(setor)}</span>
+        <div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+          <span class="flex-1 text-sm text-blue-900 font-medium">${escapeHtml(setor)}</span>
           <button type="button" onclick="removerSetorProcesso(${index})" class="text-red-600 hover:text-red-700">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
@@ -1152,6 +1775,56 @@
       refreshIcons();
     }
 
+    function adicionarArea() {
+      const input = document.getElementById("area_input");
+      const area = (input.value || "").trim();
+      if (area && !areasResponsaveis.includes(area)) {
+        areasResponsaveis.push(area);
+        input.value = "";
+        renderAreas();
+      }
+    }
+
+    function adicionarAreaEnvolvida() {
+      const input = document.getElementById("area_envolvida_input");
+      const area = (input.value || "").trim();
+      if (area && !areasEnvolvidas.includes(area)) {
+        areasEnvolvidas.push(area);
+        input.value = "";
+        renderAreas();
+      }
+    }
+
+    function removerArea(index) { areasResponsaveis.splice(index, 1); renderAreas(); }
+    function removerAreaEnvolvida(index) { areasEnvolvidas.splice(index, 1); renderAreas(); }
+
+    function renderAreas() {
+      const container = document.getElementById("areas-container");
+      container.innerHTML = areasResponsaveis.map((area, index) => `
+        <div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+          <span class="flex-1 text-sm text-blue-900">${escapeHtml(area)}</span>
+          <button type="button" onclick="removerArea(${index})" class="text-red-600 hover:text-red-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      `).join("");
+
+      const containerEnv = document.getElementById("areas-envolvidas-container");
+      containerEnv.innerHTML = areasEnvolvidas.map((area, index) => `
+        <div class="flex items-center gap-2 bg-purple-50 px-3 py-2 rounded-lg">
+          <span class="flex-1 text-sm text-purple-900">${escapeHtml(area)}</span>
+          <button type="button" onclick="removerAreaEnvolvida(${index})" class="text-red-600 hover:text-red-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      `).join("");
+
+      refreshIcons();
+    }
+
+    // ============================
+    // SUBMIT: PROCESSO
+    // ============================
     document.getElementById("processo-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       ensureDataSdk();
@@ -1193,25 +1866,20 @@
           responsavel: (document.getElementById("responsavel").value || "").trim(),
           auditor: (document.getElementById("auditor").value || "").trim(),
           setores_envolvidos: setoresProcesso.join("; "),
-          created_at: nowIso(),
-          updated_at: nowIso(),
-          updated_by: userSession ? userSession.nome : "Sistema"
+          created_at: new Date().toISOString(),
+          updated_by: userSession ? userSession.nome : "Administrador"
         };
 
         const result = await window.dataSdk.create(processo);
 
         if (result && result.isOk) {
-          // ✅ sincroniza os setores imediatamente para a lista suspensa do login
-          rebuildSetorCatalog();
-          popularSetoresLogin();
-
           setoresProcesso = [];
           renderSetoresProcesso();
           document.getElementById("processo-form").reset();
           document.getElementById("eixo_outro").style.display = "none";
           closeModal("processo");
           showToast("Processo cadastrado com sucesso!", "success");
-        } else showToast("Erro ao salvar processo: " + (result?.error || "Falha"), "error");
+        } else showToast("Erro ao salvar processo. " + (result?.error ? String(result.error) : ""), "error");
       } catch (error) {
         console.error("Erro no cadastro:", error);
         showToast("Erro inesperado ao cadastrar processo: " + String(error.message || error), "error");
@@ -1220,54 +1888,254 @@
       }
     });
 
-    // ============================================================
-    // 11) EXPORT PDF (mantive menu, você pode plugar seus PDFs do arquivo anterior)
-    // ============================================================
-    function exportMenuOpen() {
-      const filteredData = filterDataByUser(allData);
-      const processos = filteredData.filter(d => d.tipo === "processo");
+    // ============================
+    // SUBMIT: ACHADO
+    // ============================
+    document.getElementById("achado-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      ensureDataSdk();
 
-      const planoList = document.getElementById("processos-plano-list");
-      const formalList = document.getElementById("processos-formal-list");
+      const btn = document.getElementById("submit-achado-btn");
+      btn.disabled = true;
+      document.getElementById("submit-achado-text").textContent = "Salvando...";
 
-      if (!processos.length) {
-        planoList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo cadastrado</p>';
-        formalList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo cadastrado</p>';
-      } else {
-        planoList.innerHTML = processos.map(p => `
-          <button type="button" onclick="exportPDFProcesso('${p.processo_id}')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-blue-100 text-sm text-slate-700 transition-colors font-semibold">
-            ${escapeHtml(p.processo_numero)} - ${escapeHtml(p.unidade)}
-          </button>
-        `).join("");
+      try {
+        let impacto = document.getElementById("impacto").value;
+        if (impacto === "Outro") impacto = document.getElementById("impacto_outro").value || "Outro";
 
-        formalList.innerHTML = processos.map(p => `
-          <button type="button" onclick="exportPDFFormalProcesso('${p.processo_id}')" class="w-full text-left px-3 py-2 rounded-xl hover:bg-purple-100 text-sm text-slate-700 transition-colors font-semibold">
-            ${escapeHtml(p.processo_numero)} - ${escapeHtml(p.unidade)}
-          </button>
-        `).join("");
+        const achado = {
+          tipo: "achado",
+          processo_id: currentProcessoId,
+          achado_id: "achado_" + Date.now() + "_" + Math.random().toString(36).slice(2),
+          achado_numero: document.getElementById("achado_numero").value,
+          achado_subitem: document.getElementById("achado_subitem").value,
+          achado_descricao: document.getElementById("achado_descricao").value,
+          grau_risco: document.getElementById("grau_risco").value,
+          impacto: impacto,
+          evidencia: document.getElementById("evidencia").value,
+          created_at: new Date().toISOString()
+        };
+
+        const result = await window.dataSdk.create(achado);
+
+        if (result.isOk) {
+          closeModal("achado");
+          showToast("Achado cadastrado com sucesso!", "success");
+        } else showToast("Erro ao salvar achado. " + (result?.error ? String(result.error) : ""), "error");
+      } catch (err) {
+        console.error(err);
+        showToast("Erro inesperado ao salvar achado", "error");
+      } finally {
+        btn.disabled = false;
+        document.getElementById("submit-achado-text").textContent = "Salvar Achado";
       }
+    });
 
-      document.getElementById("modal-export").style.display = "flex";
+    // ============================
+    // SUBMIT: RECOMENDAÇÃO (com ações múltiplas + progresso automático)
+    // ============================
+    document.getElementById("recomendacao-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      ensureDataSdk();
+
+      if (areasResponsaveis.length === 0) { showToast("Adicione pelo menos uma área/setor responsável", "error"); return; }
+
+      const btn = document.getElementById("submit-recomendacao-btn");
+      btn.disabled = true;
+      document.getElementById("submit-recomendacao-text").textContent = "Salvando...";
+
+      const isEdit = !!currentEditingRec;
+
+      try {
+        // ações do plano: exige ao menos 1 para progresso automático
+        if (!acoesTemp || acoesTemp.length === 0) {
+          showToast("Adicione pelo menos 1 ação do plano para calcular progresso", "error");
+          return;
+        }
+
+        const baseRec = {
+          tipo: "recomendacao",
+          processo_id: currentProcessoId,
+          achado_id: currentAchadoId,
+          recomendacao_id: currentEditingRec || ("rec_" + Date.now() + "_" + Math.random().toString(36).slice(2)),
+          recomendacao_numero: document.getElementById("recomendacao_numero").value,
+          recomendacao_subitem: document.getElementById("recomendacao_subitem").value,
+          recomendacao_texto: document.getElementById("recomendacao_texto").value,
+          area_responsavel: areasResponsaveis.join("; "),
+          responsavel_recomendacao: document.getElementById("responsavel_recomendacao").value,
+          areas_envolvidas: areasEnvolvidas.join("; "),
+          prioridade: document.getElementById("prioridade").value,
+          prazo_global: document.getElementById("prazo_global").value,
+
+          // AÇÕES (plano)
+          acoes: acoesTemp.map(a => ({
+            id: a.id,
+            desc: a.desc || "",
+            responsavel: a.responsavel || "",
+            prazo: a.prazo || "",
+            como: a.como || "",
+            indicador: a.indicador || "",
+            custo: a.custo || "",
+            status: a.status || "Não iniciada",
+            updated_at: a.updated_at || new Date().toISOString()
+          })),
+
+          // Relatório formal
+          evidencias_cumprimento: document.getElementById("evidencias_cumprimento").value,
+          justificativa_nao_cumprimento: document.getElementById("justificativa_nao_cumprimento").value,
+          resultados_percebidos: document.getElementById("resultados_percebidos").value,
+
+          ultima_atualizacao: new Date().toISOString(),
+          updated_by: userSession ? userSession.nome : "Sistema",
+          created_at: isEdit
+            ? (allData.find(d => d.recomendacao_id === currentEditingRec)?.created_at || new Date().toISOString())
+            : new Date().toISOString()
+        };
+
+        // aplica status/progresso calculados automaticamente
+        const recomendacao = applyDerivedFieldsToRec(baseRec);
+
+        let result;
+        if (isEdit) {
+          const existing = allData.find(d => d.recomendacao_id === currentEditingRec);
+          if (existing) result = await window.dataSdk.update({ ...existing, ...recomendacao });
+          else result = await window.dataSdk.create(recomendacao);
+        } else {
+          result = await window.dataSdk.create(recomendacao);
+        }
+
+        if (result && result.isOk) {
+          closeModal("recomendacao");
+          showToast(isEdit ? "Recomendação atualizada com sucesso!" : "Recomendação salva com sucesso!", "success");
+          currentEditingRec = null;
+        } else showToast("Erro ao salvar recomendação. " + (result?.error ? String(result.error) : ""), "error");
+      } catch (err) {
+        console.error(err);
+        showToast("Erro inesperado ao salvar recomendação", "error");
+      } finally {
+        btn.disabled = false;
+        document.getElementById("submit-recomendacao-text").textContent = "Salvar Recomendação";
+      }
+    });
+
+    // ============================
+    // EDITAR RECOMENDAÇÃO (ações editáveis + recalcula status/progresso)
+    // ============================
+    function openEditRecomendacao(recId) {
+      const rec = allData.find(d => d.recomendacao_id === recId);
+      if (!rec) return;
+
+      currentEditingRec = recId;
+      currentProcessoId = rec.processo_id;
+      currentAchadoId = rec.achado_id;
+
+      areasResponsaveis = rec.area_responsavel ? rec.area_responsavel.split(";").map(s => s.trim()).filter(Boolean) : [];
+      areasEnvolvidas = rec.areas_envolvidas ? rec.areas_envolvidas.split(";").map(s => s.trim()).filter(Boolean) : [];
+
+      acoesTemp = Array.isArray(rec.acoes) ? rec.acoes.map(a => ({ ...a })) : [];
+
+      document.getElementById("recomendacao_numero").value = rec.recomendacao_numero || "";
+      document.getElementById("recomendacao_subitem").value = rec.recomendacao_subitem || "";
+      document.getElementById("recomendacao_texto").value = rec.recomendacao_texto || "";
+      document.getElementById("responsavel_recomendacao").value = rec.responsavel_recomendacao || "";
+      document.getElementById("prioridade").value = rec.prioridade || "";
+      document.getElementById("prazo_global").value = rec.prazo_global || "";
+
+      document.getElementById("evidencias_cumprimento").value = rec.evidencias_cumprimento || "";
+      document.getElementById("justificativa_nao_cumprimento").value = rec.justificativa_nao_cumprimento || "";
+      document.getElementById("resultados_percebidos").value = rec.resultados_percebidos || "";
+
+      renderAreas();
+      renderAcoesTemp();
+
+      const isTecnico = userSession && userSession.perfil === "Técnico";
+      // Técnico pode atualizar ações e campos formais, mas não altera identificação da recomendação
+      ["recomendacao_numero","recomendacao_subitem","recomendacao_texto","prioridade","prazo_global"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.disabled = !!isTecnico;
+      });
+
+      document.getElementById("modal-recomendacao").style.display = "flex";
       refreshIcons();
     }
-    function exportPDFGeral(){ showToast("Conecte aqui o PDF do módulo completo (5W2H).", "error"); }
-    function exportPDFProcesso(){ showToast("Conecte aqui o PDF por processo (5W2H).", "error"); }
-    function exportPDFFormalGeral(){ showToast("Conecte aqui o PDF formal geral.", "error"); }
-    function exportPDFFormalProcesso(){ showToast("Conecte aqui o PDF formal por processo.", "error"); }
 
-    // ============================================================
-    // 12) CONFIRM + TOAST + ESCAPE
-    // ============================================================
+    // ============================
+    // DELETE
+    // ============================
+    async function deleteProcesso(processoId) {
+      const item = allData.find(d => d.processo_id === processoId && d.tipo === "processo");
+      if (!item) return;
+
+      showConfirmModal("Excluir Processo", "Deseja realmente excluir este processo? Esta ação não pode ser desfeita.", async () => {
+        ensureDataSdk();
+        const related = allData.filter(d => d.processo_id === processoId);
+        for (const r of related) await window.dataSdk.delete(r);
+        showToast("Processo excluído com sucesso!", "success");
+      });
+    }
+
+    async function deleteAchado(achadoId) {
+      const item = allData.find(d => d.achado_id === achadoId && d.tipo === "achado");
+      if (!item) return;
+
+      showConfirmModal("Excluir Achado", "Deseja realmente excluir este achado?", async () => {
+        ensureDataSdk();
+        const relatedRecs = allData.filter(d => d.tipo === "recomendacao" && d.achado_id === achadoId);
+        for (const r of relatedRecs) await window.dataSdk.delete(r);
+        const result = await window.dataSdk.delete(item);
+        if (!result.isOk) showToast("Erro ao excluir achado", "error");
+        else showToast("Achado excluído!", "success");
+      });
+    }
+
+    async function deleteRecomendacao(recomendacaoId) {
+      const item = allData.find(d => d.recomendacao_id === recomendacaoId && d.tipo === "recomendacao");
+      if (!item) return;
+
+      showConfirmModal("Excluir Recomendação", "Deseja realmente excluir esta recomendação?", async () => {
+        ensureDataSdk();
+        const result = await window.dataSdk.delete(item);
+        if (!result.isOk) showToast("Erro ao excluir recomendação", "error");
+        else showToast("Recomendação excluída!", "success");
+      });
+    }
+
+    // ============================
+    // UI HELPERS
+    // ============================
+    function getProgressColor(p) {
+      if (p >= 75) return "text-emerald-600";
+      if (p >= 50) return "text-blue-600";
+      if (p >= 25) return "text-amber-600";
+      return "text-slate-600";
+    }
+    function getProgressBarColor(p) {
+      if (p >= 75) return "bg-emerald-500";
+      if (p >= 50) return "bg-blue-500";
+      if (p >= 25) return "bg-amber-500";
+      return "bg-slate-400";
+    }
+    function getStatusColor(status) {
+      const colors = {
+        "Pendente": "bg-slate-100 text-slate-700",
+        "Em Execução": "bg-blue-100 text-blue-700",
+        "Atrasado": "bg-red-100 text-red-700",
+        "Concluído": "bg-emerald-100 text-emerald-700"
+      };
+      return colors[status] || "bg-slate-100 text-slate-700";
+    }
+
     function showConfirmModal(title, message, onConfirm) {
       const modal = document.createElement("div");
       modal.style.cssText = "position: fixed; inset: 0; background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999;";
       modal.innerHTML = `
-        <div style="background:white; padding:24px; border-radius:16px; max-width:420px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);">
-          <h3 style="font-size:18px; font-weight:800; color:#0f172a; margin-bottom:12px;">${escapeHtml(title)}</h3>
-          <p style="color:#475569; margin-bottom:24px;">${escapeHtml(message)}</p>
+        <div style="background:white; padding:24px; border-radius:12px; max-width:420px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);">
+          <h3 style="font-size:18px; font-weight:bold; color:#1e293b; margin-bottom:12px;">${escapeHtml(title)}</h3>
+          <p style="color:#64748b; margin-bottom:24px;">${escapeHtml(message)}</p>
           <div style="display:flex; gap:12px; justify-content:flex-end;">
-            <button id="cancel-action" style="padding:10px 16px; border:1px solid #cbd5e1; border-radius:12px; background:white; color:#334155; cursor:pointer; font-weight:700;">Cancelar</button>
-            <button id="confirm-action" style="padding:10px 16px; border:none; border-radius:12px; background:#dc2626; color:white; cursor:pointer; font-weight:800;">Confirmar</button>
+            <button id="cancel-action" style="padding:8px 16px; border:1px solid #cbd5e1; border-radius:8px; background:white; color:#475569; cursor:pointer; font-weight:500;">Cancelar</button>
+            <button id="confirm-action" style="padding:8px 16px; border:none; border-radius:8px; background:#dc2626; color:white; cursor:pointer; font-weight:500;">Confirmar</button>
           </div>
         </div>
       `;
@@ -1283,16 +2151,16 @@
     function showToast(message, type = "success") {
       const toast = document.createElement("div");
       const bgColor = type === "error" ? "#dc2626" : "#10b981";
-      toast.style.cssText = `position: fixed; top: 20px; right: 20px; background: ${bgColor}; color: white; padding: 14px 18px; border-radius: 14px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12); z-index: 9999; font-weight: 800; max-width: 360px;`;
+      toast.style.cssText = `position: fixed; top: 20px; right: 20px; background: ${bgColor}; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 9999; font-weight: 500;`;
       toast.textContent = message;
 
       document.body.appendChild(toast);
 
       setTimeout(() => {
-        toast.style.transition = "opacity 0.25s";
+        toast.style.transition = "opacity 0.3s";
         toast.style.opacity = "0";
-        setTimeout(() => { try { document.body.removeChild(toast); } catch {} }, 260);
-      }, 2600);
+        setTimeout(() => { try { document.body.removeChild(toast); } catch {} }, 300);
+      }, 3000);
     }
 
     function escapeHtml(str) {
@@ -1304,6 +2172,375 @@
         .replace(/'/g, "&#039;");
     }
     function escapeAttr(str) { return escapeHtml(str).replace(/"/g, "&quot;"); }
+
+    // ============================
+    // EXPORT PDF (ajustado para ações)
+    // ============================
+    function exportMenuOpen() {
+      const filteredData = filterDataByUser(allData);
+      const processos = filteredData.filter(d => d.tipo === "processo");
+
+      const planoList = document.getElementById("processos-plano-list");
+      const formalList = document.getElementById("processos-formal-list");
+
+      if (processos.length === 0) {
+        planoList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo cadastrado</p>';
+        formalList.innerHTML = '<p class="text-sm text-slate-400">Nenhum processo cadastrado</p>';
+      } else {
+        planoList.innerHTML = processos.map(p => `
+          <button type="button" onclick="exportPDFProcesso('${p.processo_id}')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-blue-100 text-sm text-slate-700 transition-colors">
+            ${escapeHtml(p.processo_numero)} - ${escapeHtml(p.unidade)}
+          </button>
+        `).join("");
+
+        formalList.innerHTML = processos.map(p => `
+          <button type="button" onclick="exportPDFFormalProcesso('${p.processo_id}')" class="w-full text-left px-3 py-2 rounded-lg hover:bg-purple-100 text-sm text-slate-700 transition-colors">
+            ${escapeHtml(p.processo_numero)} - ${escapeHtml(p.unidade)}
+          </button>
+        `).join("");
+      }
+
+      document.getElementById("modal-export").style.display = "flex";
+      refreshIcons();
+    }
+
+    function ensurePdfLib() {
+      if (!window.jspdf || !window.jspdf.jsPDF) { showToast("Biblioteca do PDF não carregou. Verifique a internet.", "error"); return false; }
+      return true;
+    }
+    function pdfSetFont(doc, style) { try { doc.setFont("helvetica", style); } catch {} }
+
+    function recAcoesToPdfLines(rec) {
+      const acoes = Array.isArray(rec.acoes) ? rec.acoes : [];
+      if (acoes.length === 0) return [{ label: "Ação 1", text: "Sem ações registradas" }];
+
+      return acoes.map((a, i) => {
+        const prazo = a.prazo ? new Date(a.prazo).toLocaleDateString("pt-BR") : "Sem prazo";
+        const resp = a.responsavel || "Não informado";
+        const st = a.status || "Não iniciada";
+        const como = a.como ? ` | Como: ${a.como}` : "";
+        const ind = a.indicador ? ` | Indicador: ${a.indicador}` : "";
+        const custo = a.custo ? ` | Custo: ${a.custo}` : "";
+        return { label: `Ação ${i+1}`, text: `${a.desc || "Sem descrição"} | Responsável: ${resp} | Prazo: ${prazo} | Status: ${st}${como}${ind}${custo}` };
+      });
+    }
+
+    async function exportPDFGeral() {
+      try {
+        if (!ensurePdfLib()) return;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const filteredData = filterDataByUser(allData);
+        const recomendacoesRaw = filteredData.filter(d => d.tipo === "recomendacao");
+        const processos = filteredData.filter(d => d.tipo === "processo");
+        const recomendacoes = recomendacoesRaw.map(r => ({...r, ...getRecDerived(r)}));
+
+        if (recomendacoes.length === 0) { showToast("Nenhuma recomendação para exportar", "error"); return; }
+
+        let yPos = 20;
+
+        doc.setFontSize(16); pdfSetFont(doc, "bold");
+        doc.text("PLANO DE AÇÃO - RELATÓRIO GERAL", 105, yPos, { align: "center" });
+        yPos += 10;
+
+        doc.setFontSize(10); pdfSetFont(doc, "normal");
+        doc.text("SESAP/RN - Secretaria de Estado da Saúde Pública", 105, yPos, { align: "center" });
+        yPos += 5;
+        doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 105, yPos, { align: "center" });
+        yPos += 15;
+
+        recomendacoes.forEach((rec) => {
+          const processo = processos.find(p => p.processo_id === rec.processo_id);
+
+          if (yPos > 250) { doc.addPage(); yPos = 20; }
+
+          doc.setFontSize(12); pdfSetFont(doc, "bold");
+          doc.text(`Recomendação ${rec.recomendacao_numero || ""}${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`, 20, yPos);
+          yPos += 6;
+
+          doc.setFontSize(9); pdfSetFont(doc, "italic");
+          doc.text(`Status: ${rec.status} | Progresso: ${rec.progresso}% | Prioridade: ${rec.prioridade || "-"}`, 20, yPos);
+          yPos += 5;
+
+          if (processo) {
+            pdfSetFont(doc, "normal");
+            doc.text(`Processo: ${processo.processo_numero || "-"} | Unidade: ${processo.unidade || "-"}`, 20, yPos);
+            yPos += 5;
+          }
+
+          pdfSetFont(doc, "normal");
+          const textoSplit = doc.splitTextToSize(rec.recomendacao_texto || "Não informado", 170);
+          doc.text(textoSplit, 20, yPos);
+          yPos += (textoSplit.length * 5) + 6;
+
+          doc.setFontSize(10); pdfSetFont(doc, "bold");
+          doc.text("AÇÕES DO PLANO:", 20, yPos);
+          yPos += 6;
+
+          doc.setFontSize(9); pdfSetFont(doc, "normal");
+          const lines = recAcoesToPdfLines(rec);
+          lines.forEach(l => {
+            if (yPos > 270) { doc.addPage(); yPos = 20; }
+            pdfSetFont(doc, "bold"); doc.text(`${l.label}:`, 20, yPos);
+            pdfSetFont(doc, "normal");
+            const split = doc.splitTextToSize(l.text, 165);
+            doc.text(split, 35, yPos);
+            yPos += (split.length * 5) + 3;
+          });
+
+          yPos += 4;
+          doc.setDrawColor(200, 200, 200);
+          doc.line(20, yPos, 190, yPos);
+          yPos += 10;
+        });
+
+        doc.save("Plano_Acoes_Geral.pdf");
+        showToast("PDF gerado com sucesso!", "success");
+        closeModal("export");
+      } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        showToast("Erro ao gerar PDF. Verifique o console.", "error");
+      }
+    }
+
+    async function exportPDFProcesso(processoId) {
+      try {
+        if (!ensurePdfLib()) return;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const filteredData = filterDataByUser(allData);
+        const processo = filteredData.find(d => d.processo_id === processoId && d.tipo === "processo");
+        const recomendacoesRaw = filteredData.filter(d => d.tipo === "recomendacao" && d.processo_id === processoId);
+        const recomendacoes = recomendacoesRaw.map(r => ({...r, ...getRecDerived(r)}));
+
+        if (!processo) { showToast("Processo não encontrado", "error"); return; }
+        if (recomendacoes.length === 0) { showToast("Este processo não possui recomendações", "error"); return; }
+
+        let yPos = 20;
+
+        doc.setFontSize(16); pdfSetFont(doc, "bold");
+        doc.text("PLANO DE AÇÃO - POR PROCESSO", 105, yPos, { align: "center" });
+        yPos += 8;
+
+        doc.setFontSize(12); pdfSetFont(doc, "bold");
+        doc.text(`Processo: ${processo.processo_numero || "-"}`, 105, yPos, { align: "center" });
+        yPos += 12;
+
+        doc.setFontSize(10); pdfSetFont(doc, "normal");
+        doc.text(`Unidade: ${processo.unidade || "-"}`, 20, yPos); yPos += 5;
+        doc.text(`Eixo: ${processo.eixo || "-"}`, 20, yPos); yPos += 5;
+        doc.text(`Período: ${processo.periodo || "-"}`, 20, yPos); yPos += 8;
+
+        recomendacoes.forEach(rec => {
+          if (yPos > 250) { doc.addPage(); yPos = 20; }
+
+          doc.setFontSize(12); pdfSetFont(doc, "bold");
+          doc.text(`Recomendação ${rec.recomendacao_numero || ""}${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`, 20, yPos);
+          yPos += 6;
+
+          doc.setFontSize(9); pdfSetFont(doc, "italic");
+          doc.text(`Status: ${rec.status} | Progresso: ${rec.progresso}% | Prioridade: ${rec.prioridade || "-"}`, 20, yPos);
+          yPos += 5;
+
+          doc.setFontSize(9); pdfSetFont(doc, "normal");
+          const textoSplit = doc.splitTextToSize(rec.recomendacao_texto || "Não informado", 170);
+          doc.text(textoSplit, 20, yPos);
+          yPos += (textoSplit.length * 5) + 6;
+
+          doc.setFontSize(10); pdfSetFont(doc, "bold");
+          doc.text("AÇÕES:", 20, yPos);
+          yPos += 6;
+
+          doc.setFontSize(9); pdfSetFont(doc, "normal");
+          const lines = recAcoesToPdfLines(rec);
+          lines.forEach(l => {
+            if (yPos > 270) { doc.addPage(); yPos = 20; }
+            pdfSetFont(doc, "bold"); doc.text(`${l.label}:`, 20, yPos);
+            pdfSetFont(doc, "normal");
+            const split = doc.splitTextToSize(l.text, 165);
+            doc.text(split, 35, yPos);
+            yPos += (split.length * 5) + 3;
+          });
+
+          yPos += 4;
+          doc.setDrawColor(200, 200, 200);
+          doc.line(20, yPos, 190, yPos);
+          yPos += 10;
+        });
+
+        doc.save(`Plano_Acoes_${(processo.processo_numero || "processo").replaceAll("/", "-")}.pdf`);
+        showToast("PDF gerado com sucesso!", "success");
+        closeModal("export");
+      } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        showToast("Erro ao gerar PDF", "error");
+      }
+    }
+
+    async function exportPDFFormalGeral() {
+      try {
+        if (!ensurePdfLib()) return;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const filteredData = filterDataByUser(allData);
+        const recomendacoesRaw = filteredData.filter(d => d.tipo === "recomendacao");
+        const processos = filteredData.filter(d => d.tipo === "processo");
+        const recomendacoes = recomendacoesRaw.map(r => ({...r, ...getRecDerived(r)}));
+
+        if (recomendacoes.length === 0) { showToast("Nenhuma recomendação para exportar", "error"); return; }
+
+        let yPos = 20;
+
+        doc.setFontSize(16); pdfSetFont(doc, "bold");
+        doc.text("RELATÓRIO FORMAL DE ACOMPANHAMENTO", 105, yPos, { align: "center" });
+        yPos += 10;
+
+        doc.setFontSize(10); pdfSetFont(doc, "normal");
+        doc.text("SESAP/RN - Secretaria de Estado da Saúde Pública", 105, yPos, { align: "center" });
+        yPos += 5;
+        doc.text(`Data de Geração: ${new Date().toLocaleDateString("pt-BR")}`, 105, yPos, { align: "center" });
+        yPos += 15;
+
+        recomendacoes.forEach(rec => {
+          const processo = processos.find(p => p.processo_id === rec.processo_id);
+
+          if (yPos > 240) { doc.addPage(); yPos = 20; }
+
+          doc.setFontSize(12); pdfSetFont(doc, "bold");
+          doc.text(`Recomendação ${rec.recomendacao_numero || ""}${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`, 20, yPos);
+          yPos += 6;
+
+          doc.setFontSize(9); pdfSetFont(doc, "italic");
+          doc.text(`Status: ${rec.status} | Progresso: ${rec.progresso}% | Prioridade: ${rec.prioridade || "-"}`, 20, yPos);
+          yPos += 5;
+
+          if (processo) {
+            pdfSetFont(doc, "normal");
+            doc.text(`Processo: ${processo.processo_numero || "-"} | Unidade: ${processo.unidade || "-"}`, 20, yPos);
+            yPos += 5;
+          }
+
+          doc.setFontSize(9); pdfSetFont(doc, "normal");
+          const textoSplit = doc.splitTextToSize(rec.recomendacao_texto || "Não informado", 170);
+          doc.text(textoSplit, 20, yPos);
+          yPos += (textoSplit.length * 5) + 7;
+
+          pdfSetFont(doc, "bold"); doc.text("EVIDÊNCIAS DO CUMPRIMENTO:", 20, yPos); yPos += 5;
+          pdfSetFont(doc, "normal");
+          const evidSplit = doc.splitTextToSize(rec.evidencias_cumprimento || "Não informado", 170);
+          doc.text(evidSplit, 20, yPos);
+          yPos += (evidSplit.length * 5) + 5;
+
+          pdfSetFont(doc, "bold"); doc.text("JUSTIFICATIVA DO NÃO CUMPRIMENTO:", 20, yPos); yPos += 5;
+          pdfSetFont(doc, "normal");
+          const justSplit = doc.splitTextToSize(rec.justificativa_nao_cumprimento || "Não informado", 170);
+          doc.text(justSplit, 20, yPos);
+          yPos += (justSplit.length * 5) + 5;
+
+          pdfSetFont(doc, "bold"); doc.text("RESULTADOS PERCEBIDOS:", 20, yPos); yPos += 5;
+          pdfSetFont(doc, "normal");
+          const resSplit = doc.splitTextToSize(rec.resultados_percebidos || "Não informado", 170);
+          doc.text(resSplit, 20, yPos);
+          yPos += (resSplit.length * 5) + 10;
+
+          doc.setDrawColor(200, 200, 200);
+          doc.line(20, yPos, 190, yPos);
+          yPos += 10;
+        });
+
+        doc.save("Relatorio_Formal_Geral.pdf");
+        showToast("PDF gerado com sucesso!", "success");
+        closeModal("export");
+      } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        showToast("Erro ao gerar PDF", "error");
+      }
+    }
+
+    async function exportPDFFormalProcesso(processoId) {
+      try {
+        if (!ensurePdfLib()) return;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const filteredData = filterDataByUser(allData);
+        const processo = filteredData.find(d => d.processo_id === processoId && d.tipo === "processo");
+        const recomendacoesRaw = filteredData.filter(d => d.tipo === "recomendacao" && d.processo_id === processoId);
+        const recomendacoes = recomendacoesRaw.map(r => ({...r, ...getRecDerived(r)}));
+
+        if (!processo) { showToast("Processo não encontrado", "error"); return; }
+        if (recomendacoes.length === 0) { showToast("Este processo não possui recomendações", "error"); return; }
+
+        let yPos = 20;
+
+        doc.setFontSize(16); pdfSetFont(doc, "bold");
+        doc.text("RELATÓRIO FORMAL DE ACOMPANHAMENTO", 105, yPos, { align: "center" });
+        yPos += 8;
+
+        doc.setFontSize(12); pdfSetFont(doc, "bold");
+        doc.text(`Processo: ${processo.processo_numero || "-"}`, 105, yPos, { align: "center" });
+        yPos += 15;
+
+        doc.setFontSize(10); pdfSetFont(doc, "bold");
+        doc.text("DADOS DO PROCESSO:", 20, yPos);
+        yPos += 7;
+
+        pdfSetFont(doc, "normal");
+        doc.text(`Unidade: ${processo.unidade || "-"}`, 20, yPos); yPos += 5;
+        doc.text(`Eixo: ${processo.eixo || "-"}`, 20, yPos); yPos += 5;
+        doc.text(`Período: ${processo.periodo || "-"}`, 20, yPos); yPos += 10;
+
+        recomendacoes.forEach(rec => {
+          if (yPos > 230) { doc.addPage(); yPos = 20; }
+
+          doc.setFontSize(12); pdfSetFont(doc, "bold");
+          doc.text(`Recomendação ${rec.recomendacao_numero || ""}${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`, 20, yPos);
+          yPos += 6;
+
+          doc.setFontSize(9); pdfSetFont(doc, "italic");
+          doc.text(`Status: ${rec.status} | Progresso: ${rec.progresso}% | Prioridade: ${rec.prioridade || "-"}`, 20, yPos);
+          yPos += 5;
+
+          doc.setFontSize(9); pdfSetFont(doc, "normal");
+          const textoSplit = doc.splitTextToSize(rec.recomendacao_texto || "Não informado", 170);
+          doc.text(textoSplit, 20, yPos);
+          yPos += (textoSplit.length * 5) + 7;
+
+          pdfSetFont(doc, "bold"); doc.text("EVIDÊNCIAS DO CUMPRIMENTO:", 20, yPos); yPos += 5;
+          pdfSetFont(doc, "normal");
+          const evidSplit = doc.splitTextToSize(rec.evidencias_cumprimento || "Não informado", 170);
+          doc.text(evidSplit, 20, yPos);
+          yPos += (evidSplit.length * 5) + 5;
+
+          pdfSetFont(doc, "bold"); doc.text("JUSTIFICATIVA:", 20, yPos); yPos += 5;
+          pdfSetFont(doc, "normal");
+          const justSplit = doc.splitTextToSize(rec.justificativa_nao_cumprimento || "Não informado", 170);
+          doc.text(justSplit, 20, yPos);
+          yPos += (justSplit.length * 5) + 5;
+
+          pdfSetFont(doc, "bold"); doc.text("RESULTADOS:", 20, yPos); yPos += 5;
+          pdfSetFont(doc, "normal");
+          const resSplit = doc.splitTextToSize(rec.resultados_percebidos || "Não informado", 170);
+          doc.text(resSplit, 20, yPos);
+          yPos += (resSplit.length * 5) + 10;
+
+          doc.setDrawColor(200, 200, 200);
+          doc.line(20, yPos, 190, yPos);
+          yPos += 10;
+        });
+
+        doc.save(`Relatorio_Formal_${(processo.processo_numero || "processo").replaceAll("/", "-")}.pdf`);
+        showToast("PDF gerado com sucesso!", "success");
+        closeModal("export");
+      } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        showToast("Erro ao gerar PDF", "error");
+      }
+    }
   </script>
+
 </body>
 </html>
