@@ -1263,172 +1263,218 @@
     }
 
     // ============================
-    // PROCESSOS (inclui agrupamento por áreas responsáveis)
-    // ============================
-    function renderProcessos(data) {
-      const processos = data.filter(d => d.tipo === "processo");
-      const container = document.getElementById("processos-list");
-      const emptyState = document.getElementById("processos-empty");
+// PROCESSOS (corrigido)
+// - Remove referência inválida a variável "a" fora do achados.map
+// - Adiciona botão "+ Achado" no nível do processo
+// - Em cada achado: Editar, Excluir, + Recomendação
+// - Recomendações continuam vinculadas ao achado (fluxo correto)
+// ============================
+function renderProcessos(data) {
+  const processos = data.filter(d => d.tipo === "processo");
+  const container = document.getElementById("processos-list");
+  const emptyState = document.getElementById("processos-empty");
 
-      if (processos.length === 0) {
-        container.innerHTML = "";
-        emptyState.style.display = "block";
-      } else {
-        emptyState.style.display = "none";
-        container.innerHTML = processos.map(p => {
-          const achados = data.filter(d => d.tipo === "achado" && d.processo_id === p.processo_id);
-          const recsRaw = data.filter(d => d.tipo === "recomendacao" && d.processo_id === p.processo_id);
-          const recs = recsRaw.map(r => ({...r, ...getRecDerived(r)}));
+  const adminLike = !userSession || userSession.perfil === "Administrador Geral - CAS ADM";
 
-          // agrupamento por área responsável
-          const groups = {};
-          recs.forEach(r => {
-            const areas = (r.area_responsavel || "Sem área definida").split(";").map(x => x.trim()).filter(Boolean);
-            if (areas.length === 0) areas.push("Sem área definida");
-            areas.forEach(a => {
-              if (!groups[a]) groups[a] = [];
-              groups[a].push(r);
-            });
-          });
+  if (processos.length === 0) {
+    container.innerHTML = "";
+    emptyState.style.display = "block";
+    refreshIcons();
+    return;
+  }
 
-          const groupHtml = Object.keys(groups).sort().map(area => {
-            const list = groups[area];
-            const atrasadas = list.filter(x => x.status === "Atrasado").length;
-            return `
-              <div class="bg-white border border-slate-200 rounded-lg p-4">
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <div class="font-semibold text-slate-800">${area}</div>
-                    <div class="text-xs text-slate-500">${list.length} recomendação(ões) ${atrasadas ? `| <span class="text-red-600 font-semibold">${atrasadas} atrasada(s)</span>` : ""}</div>
+  emptyState.style.display = "none";
+
+  container.innerHTML = processos.map(p => {
+    const achados = data.filter(d => d.tipo === "achado" && d.processo_id === p.processo_id);
+    const recsRaw = data.filter(d => d.tipo === "recomendacao" && d.processo_id === p.processo_id);
+    const recs = recsRaw.map(r => ({ ...r, ...getRecDerived(r) }));
+
+    // agrupamento por área responsável (visão geral no final)
+    const groups = {};
+    recs.forEach(r => {
+      const areas = (r.area_responsavel || "Sem área definida").split(";").map(x => x.trim()).filter(Boolean);
+      const finalAreas = areas.length ? areas : ["Sem área definida"];
+      finalAreas.forEach(a => {
+        if (!groups[a]) groups[a] = [];
+        groups[a].push(r);
+      });
+    });
+
+    const groupHtml = Object.keys(groups).sort().map(area => {
+      const list = groups[area];
+      const atrasadas = list.filter(x => x.status === "Atrasado").length;
+
+      return `
+        <div class="bg-white border border-slate-200 rounded-lg p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="font-semibold text-slate-800">${escapeHtml(area)}</div>
+              <div class="text-xs text-slate-500">
+                ${list.length} recomendação(ões)
+                ${atrasadas ? `| <span class="text-red-600 font-semibold">${atrasadas} atrasada(s)</span>` : ""}
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 space-y-2">
+            ${list.map(r => `
+              <div class="flex items-start justify-between gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                <div class="flex-1">
+                  <div class="text-sm font-semibold text-slate-800">
+                    Rec. ${escapeHtml(r.recomendacao_numero || "")}${r.recomendacao_subitem ? "-" + escapeHtml(r.recomendacao_subitem) : ""}
+                  </div>
+                  <div class="text-xs text-slate-600 mt-1">
+                    ${escapeHtml((r.recomendacao_texto || "").substring(0, 140))}${(r.recomendacao_texto || "").length > 140 ? "..." : ""}
+                  </div>
+
+                  <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                    <span class="px-2 py-1 rounded ${getStatusColor(r.status)}">${escapeHtml(r.status)}</span>
+                    <span class="px-2 py-1 rounded bg-slate-100 text-slate-700">Progresso: ${r.progresso}%</span>
+                    <span class="px-2 py-1 rounded ${
+                      r.prioridade === "Alta" ? "bg-red-100 text-red-700" :
+                      r.prioridade === "Média" ? "bg-amber-100 text-amber-700" :
+                      "bg-emerald-100 text-emerald-700"
+                    }">Prioridade: ${escapeHtml(r.prioridade || "-")}</span>
                   </div>
                 </div>
-                <div class="mt-3 space-y-2">
-                  ${list.map(r => `
-                    <div class="flex items-start justify-between gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
-                      <div class="flex-1">
-                        <div class="text-sm font-semibold text-slate-800">Rec. ${r.recomendacao_numero || ""}${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""}</div>
-                        <div class="text-xs text-slate-600 mt-1">${(r.recomendacao_texto || "").substring(0, 140)}${(r.recomendacao_texto || "").length > 140 ? "..." : ""}</div>
-                        <div class="mt-2 flex flex-wrap gap-2 text-xs">
-                          <span class="px-2 py-1 rounded ${getStatusColor(r.status)}">${r.status}</span>
-                          <span class="px-2 py-1 rounded bg-slate-100 text-slate-700">Progresso: ${r.progresso}%</span>
-                          <span class="px-2 py-1 rounded ${
-                            r.prioridade === "Alta" ? "bg-red-100 text-red-700" :
-                            r.prioridade === "Média" ? "bg-amber-100 text-amber-700" :
-                            "bg-emerald-100 text-emerald-700"
-                          }">Prioridade: ${r.prioridade || "-"}</span>
-                        </div>
-                      </div>
-                      <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Abrir</button>
-                    </div>
-                  `).join("")}
+
+                <div class="flex gap-2">
+                  <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Abrir</button>
+                  ${adminLike ? `<button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="text-red-600 hover:text-red-700 text-sm font-medium">Excluir</button>` : ""}
                 </div>
               </div>
-            `;
-          }).join("");
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }).join("");
 
-          return `
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-              <div class="p-6">
-                <div class="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 class="font-bold text-lg text-slate-800">${p.processo_numero || "-"}</h3>
-                    <p class="text-sm text-slate-500">${p.unidade || "-"} - ${p.periodo || "-"}</p>
-                  </div>
-                  <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">${p.eixo || "-"}</span>
-                </div>
-                <p class="text-sm text-slate-600 mb-4">${p.objeto || "-"}</p>
-                <div class="flex gap-6 text-sm text-slate-500 mb-4">
-                  <span><strong>${achados.length}</strong> achados</span>
-                  <span><strong>${recs.length}</strong> recomendações</span>
-                </div>
-               <div class="flex gap-2">
-               <button onclick="openNewRecomendacaoModal('${p.processo_id}', '${a.achado_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-               + Recomendação
-               </button>
-               <button onclick="openEditAchado('${a.achado_id}')" class="text-slate-700 hover:text-slate-900 text-sm font-medium">
-               Editar
-               </button>
-               <button onclick="deleteAchado('${a.achado_id}')" class="text-red-600 hover:text-red-700 text-sm font-medium">
-               Excluir
-               </button>
-               </div>
-              </div>
+    return `
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4 gap-3">
+            <div>
+              <h3 class="font-bold text-lg text-slate-800">${escapeHtml(p.processo_numero || "-")}</h3>
+              <p class="text-sm text-slate-500">${escapeHtml(p.unidade || "-")} - ${escapeHtml(p.periodo || "-")}</p>
+            </div>
 
-              ${achados.length > 0 ? `
-              <div class="border-t border-slate-200 bg-slate-50 p-4">
-                <h4 class="font-semibold text-sm text-slate-700 mb-3">Achados e Recomendações</h4>
-                <div class="space-y-3">
-                  ${achados.map(a => {
-                    const recsAchado = recs.filter(r => r.achado_id === a.achado_id);
-                    return `
-                      <div class="bg-white rounded-lg p-4 border border-slate-200">
-                        <div class="flex items-start justify-between mb-2">
-                          <div class="flex-1">
-                            <span class="font-bold text-slate-800">Achado ${a.achado_numero || ""}${a.achado_subitem ? " - " + a.achado_subitem : ""}</span>
-                            <span class="ml-2 px-2 py-1 text-xs font-semibold rounded ${
-                              a.grau_risco === "Alto" ? "bg-red-100 text-red-700" :
-                              a.grau_risco === "Médio" ? "bg-amber-100 text-amber-700" :
-                              "bg-emerald-100 text-emerald-700"
-                            }">Risco ${a.grau_risco || "-"}</span>
-                          </div>
-                          <div class="flex gap-2">
-                            <button onclick="openNewRecomendacaoModal('${p.processo_id}', '${a.achado_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                              + Recomendação
-                            </button>
-                            <button onclick="deleteAchado('${a.achado_id}')" class="text-red-600 hover:text-red-700 text-sm font-medium">
-                              Excluir
-                            </button>
-                          </div>
-                        </div>
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">${escapeHtml(p.eixo || "-")}</span>
 
-                        <p class="text-sm text-slate-600 mb-3">${a.achado_descricao || "-"}</p>
+              <button onclick="openNewAchadoModal('${p.processo_id}')" class="px-3 py-1.5 bg-slate-700 text-white rounded-lg text-xs font-semibold hover:bg-slate-800">
+                + Achado
+              </button>
 
-                        ${recsAchado.length > 0 ? `
-                        <div class="pl-4 border-l-2 border-blue-200 space-y-2">
-                          ${recsAchado.map(r => `
-                            <div class="flex items-start justify-between bg-blue-50 p-3 rounded">
-                              <div class="flex-1">
-                                <span class="font-medium text-blue-900 text-sm">Rec. ${r.recomendacao_numero || ""}${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""}</span>
-                                <p class="text-xs text-slate-600 mt-1">${(r.recomendacao_texto || "").substring(0, 100)}${(r.recomendacao_texto || "").length > 100 ? "..." : ""}</p>
-                                <div class="flex flex-wrap gap-2 mt-2 text-xs">
-                                  <span class="px-2 py-1 rounded ${getStatusColor(r.status)}">${r.status}</span>
-                                  <span class="px-2 py-1 rounded bg-white border border-blue-200 text-blue-800">Progresso: ${r.progresso}%</span>
-                                  <span class="text-slate-500">Ações: ${(r.acoes || []).length}</span>
-                                </div>
-                              </div>
-                              <div class="flex gap-2">
-                                <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="text-blue-700 hover:text-blue-900 text-sm font-medium">Abrir</button>
-                                <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="text-red-600 hover:text-red-700 text-sm">Excluir</button>
-                              </div>
-                            </div>
-                          `).join("")}
-                        </div>
-                        ` : '<p class="text-xs text-slate-400 pl-4">Nenhuma recomendação cadastrada</p>'}
-                      </div>
-                    `;
-                  }).join("")}
-                </div>
-              </div>
-              ` : ""}
-
-              ${recs.length > 0 ? `
-              <div class="border-t border-slate-200 p-4 bg-white">
-                <div class="flex items-center gap-2 mb-3">
-                  <i data-lucide="layers" class="w-5 h-5 text-slate-500"></i>
-                  <h4 class="font-semibold text-sm text-slate-700">Recomendações por área responsável</h4>
-                </div>
-                <div class="space-y-3">
-                  ${groupHtml}
-                </div>
-              </div>
+              ${adminLike ? `
+                <button onclick="deleteProcesso('${p.processo_id}')" class="px-3 py-1.5 border border-red-300 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-50">
+                  Excluir processo
+                </button>
               ` : ""}
             </div>
-          `;
-        }).join("");
-      }
+          </div>
 
-      refreshIcons();
-    }
+          <p class="text-sm text-slate-600 mb-4">${escapeHtml(p.objeto || "-")}</p>
+
+          <div class="flex gap-6 text-sm text-slate-500">
+            <span><strong>${achados.length}</strong> achados</span>
+            <span><strong>${recs.length}</strong> recomendações</span>
+          </div>
+        </div>
+
+        ${achados.length > 0 ? `
+          <div class="border-t border-slate-200 bg-slate-50 p-4">
+            <h4 class="font-semibold text-sm text-slate-700 mb-3">Achados e Recomendações</h4>
+
+            <div class="space-y-3">
+              ${achados.map(a => {
+                const recsAchado = recs.filter(r => r.achado_id === a.achado_id);
+
+                return `
+                  <div class="bg-white rounded-lg p-4 border border-slate-200">
+                    <div class="flex items-start justify-between mb-2 gap-3">
+                      <div class="flex-1">
+                        <span class="font-bold text-slate-800">
+                          Achado ${escapeHtml(a.achado_numero || "")}${a.achado_subitem ? " - " + escapeHtml(a.achado_subitem) : ""}
+                        </span>
+
+                        <span class="ml-2 px-2 py-1 text-xs font-semibold rounded ${
+                          a.grau_risco === "Alto" ? "bg-red-100 text-red-700" :
+                          a.grau_risco === "Médio" ? "bg-amber-100 text-amber-700" :
+                          "bg-emerald-100 text-emerald-700"
+                        }">Risco ${escapeHtml(a.grau_risco || "-")}</span>
+                      </div>
+
+                      <div class="flex flex-wrap gap-2">
+                        <button onclick="openEditAchado('${a.achado_id}')" class="text-slate-700 hover:text-slate-900 text-sm font-medium">Editar</button>
+
+                        <button onclick="openNewRecomendacaoModal('${p.processo_id}', '${a.achado_id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                          + Recomendação
+                        </button>
+
+                        ${adminLike ? `
+                          <button onclick="deleteAchado('${a.achado_id}')" class="text-red-600 hover:text-red-700 text-sm font-medium">
+                            Excluir
+                          </button>
+                        ` : ""}
+                      </div>
+                    </div>
+
+                    <p class="text-sm text-slate-600 mb-3">${escapeHtml(a.achado_descricao || "-")}</p>
+
+                    ${recsAchado.length > 0 ? `
+                      <div class="pl-4 border-l-2 border-blue-200 space-y-2">
+                        ${recsAchado.map(r => `
+                          <div class="flex items-start justify-between bg-blue-50 p-3 rounded">
+                            <div class="flex-1">
+                              <span class="font-medium text-blue-900 text-sm">
+                                Rec. ${escapeHtml(r.recomendacao_numero || "")}${r.recomendacao_subitem ? "-" + escapeHtml(r.recomendacao_subitem) : ""}
+                              </span>
+
+                              <p class="text-xs text-slate-600 mt-1">
+                                ${escapeHtml((r.recomendacao_texto || "").substring(0, 100))}${(r.recomendacao_texto || "").length > 100 ? "..." : ""}
+                              </p>
+
+                              <div class="flex flex-wrap gap-2 mt-2 text-xs">
+                                <span class="px-2 py-1 rounded ${getStatusColor(r.status)}">${escapeHtml(r.status)}</span>
+                                <span class="px-2 py-1 rounded bg-white border border-blue-200 text-blue-800">Progresso: ${r.progresso}%</span>
+                                <span class="text-slate-500">Ações: ${(r.acoes || []).length}</span>
+                              </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                              <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="text-blue-700 hover:text-blue-900 text-sm font-medium">Abrir</button>
+                              ${adminLike ? `<button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="text-red-600 hover:text-red-700 text-sm">Excluir</button>` : ""}
+                            </div>
+                          </div>
+                        `).join("")}
+                      </div>
+                    ` : `
+                      <p class="text-xs text-slate-400 pl-4">Nenhuma recomendação cadastrada</p>
+                    `}
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        ` : ""}
+
+        ${recs.length > 0 ? `
+          <div class="border-t border-slate-200 p-4 bg-white">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="layers" class="w-5 h-5 text-slate-500"></i>
+              <h4 class="font-semibold text-sm text-slate-700">Recomendações por área responsável</h4>
+            </div>
+            <div class="space-y-3">${groupHtml}</div>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }).join("");
+
+  refreshIcons();
+}
+
 
     // ============================
     // RECOMENDAÇÕES: filtros + agrupamento por Processo e Área responsável
