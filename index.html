@@ -17,49 +17,175 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-  <style>
   :root{
-    --sys-blue-900:#0B2A6F;
-    --sys-blue-800:#123B92;
-    --sys-blue-700:#1D4ED8;
-    --sys-bg:#F5F7FB;
-    --sys-card:#FFFFFF;
-    --sys-border:#E6EAF2;
-    --sys-radius:18px;
+    --bg:#F6F8FC;
+    --card:#FFFFFF;
+    --text:#0F172A;
+    --muted:#64748B;
+    --border:#E6EAF2;
+    --shadow: 0 10px 30px rgba(2, 8, 23, 0.08);
+    --shadow2: 0 6px 16px rgba(2, 8, 23, 0.06);
+    --radius: 18px;
+
+    --primary:#1D4ED8;
+    --primary2:#0B2A6F;
+
+    --ok:#16A34A;
+    --warn:#F59E0B;
+    --bad:#EF4444;
   }
 
-  body{ background: var(--sys-bg) !important; }
-
-  /* Cards e containers comuns */
-  .card, .panel, .box, .container-card{
-    background: var(--sys-card);
-    border: 1px solid var(--sys-border);
-    border-radius: var(--sys-radius);
-    box-shadow: 0 6px 18px rgba(2,8,23,0.06);
+  body{
+    background: var(--bg) !important;
+    color: var(--text);
   }
 
-  /* Header/topo: tenta pegar o que você já tem */
-  header{
-    background: linear-gradient(135deg, var(--sys-blue-900), var(--sys-blue-800));
-    color: #fff;
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
+  /* “container de plataforma”: se você já tem um wrapper, aplique a classe .app-shell nele */
+  .app-shell{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 18px 40px;
   }
 
-  header input, header select{
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.18);
-    color: #fff;
+  /* Títulos mais “dashboard” */
+  h1, .page-title{
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
-  header input::placeholder{ color: rgba(255,255,255,0.70); }
+  .subtitle, .page-subtitle{
+    color: var(--muted);
+    font-size: 13px;
+  }
 
-  /* Sidebar (se existir) */
-  aside{
-    background: linear-gradient(180deg, #071C4D, #051536);
-    color: rgba(255,255,255,0.86);
+  /* Card base */
+  .card-ui{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow2);
+  }
+  .card-ui:hover{
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+    transition: 180ms ease;
+  }
+
+  /* Cards de métrica */
+  .metric{
+    padding: 18px 18px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .metric .icon{
+    width:40px; height:40px;
+    border-radius: 14px;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(29,78,216,0.10);
+    border: 1px solid rgba(29,78,216,0.18);
+    color: var(--primary);
+    flex: 0 0 auto;
+  }
+  .metric .label{ color: var(--muted); font-size: 12px; font-weight: 600; }
+  .metric .value{ font-size: 28px; font-weight: 900; line-height: 1; margin-top: 4px; }
+  .metric .hint{ color: var(--muted); font-size: 12px; margin-top: 6px; }
+
+  .metric.ok .icon{ background: rgba(22,163,74,0.10); border-color: rgba(22,163,74,0.18); color: var(--ok); }
+  .metric.warn .icon{ background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.20); color: var(--warn); }
+  .metric.bad .icon{ background: rgba(239,68,68,0.10); border-color: rgba(239,68,68,0.18); color: var(--bad); }
+
+  /* Seção “Auditórias por Local” */
+  .section-title{
+    display:flex; align-items:center; gap:10px;
+    font-size: 18px; font-weight: 900; letter-spacing: -0.01em;
+    margin-top: 12px;
+  }
+
+  /* Card de local mais visual */
+  .local-card{
+    padding: 18px;
+  }
+  .local-card .top{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    gap:12px;
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .kpi-line{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(230,234,242,0.9);
+    font-size: 13px;
+  }
+  .kpi-line:last-child{ border-bottom: 0; }
+  .kpi-line .n{ font-weight: 900; }
+  .kpi-line .ok{ color: var(--ok); font-weight: 800; }
+  .kpi-line .warn{ color: var(--warn); font-weight: 800; }
+  .kpi-line .bad{ color: var(--bad); font-weight: 800; }
+
+  /* Barra de filtros como card de plataforma */
+  .filters-card{
+    padding: 14px;
+    position: sticky;
+    bottom: 10px; /* se preferir no topo, troco pra top */
+    z-index: 20;
+  }
+  .filters-grid{
+    display:grid;
+    grid-template-columns: 1.2fr repeat(5, 0.5fr) auto auto;
+    gap: 10px;
+    align-items:end;
+  }
+  .filters-grid label{
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 700;
+    display:block;
+    margin-bottom: 6px;
+  }
+  .filters-grid input, .filters-grid select{
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #fff;
+    outline: none;
+  }
+  .filters-grid input:focus, .filters-grid select:focus{
+    border-color: rgba(29,78,216,0.45);
+    box-shadow: 0 0 0 4px rgba(29,78,216,0.10);
+  }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--primary2), var(--primary));
+    color:#fff;
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-weight: 800;
+  }
+  .btn-ghost{
+    background:#fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  @media (max-width: 1024px){
+    .filters-grid{ grid-template-columns: 1fr 1fr; }
   }
 </style>
-</style>
+
 </head>
 
 <body class="bg-slate-50 text-slate-900 h-full">
@@ -3206,6 +3332,7 @@ logout = function() {
 
 </body>
 </html>
+
 
 
 
