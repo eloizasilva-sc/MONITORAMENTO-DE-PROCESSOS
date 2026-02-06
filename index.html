@@ -211,24 +211,7 @@
 
       <!-- Recomendações View -->
       <div id="view-recomendacoes" style="display:none;" class="p-8 max-w-7xl mx-auto">
-        <!-- View Auditoria -->
-<div id="view-auditoria" style="display:none;" class="p-8 max-w-7xl mx-auto">
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-    <div class="flex items-start justify-between gap-4 flex-col lg:flex-row">
-      <div>
-        <h2 class="text-xl font-bold text-slate-800">Auditoria do Sistema</h2>
-        <p class="text-sm text-slate-600 mt-1">Registro de logins, cadastros, edições e exclusões (somente Administrador Geral).</p>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="exportAuditJSON()"
-          class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 flex items-center gap-2">
-          <i data-lucide="download" class="w-4 h-4"></i> Exportar JSON
-        </button>
-        <button onclick="clearAuditLog()"
-          class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 flex items-center gap-2">
-          <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar log
-        </button>
-      </div>
+       
     </div>
   </div>
 
@@ -368,6 +351,24 @@
             </div>
           </div>
         </div>
+   <!-- View Auditoria -->
+<div id="view-auditoria" style="display:none;" class="p-8 max-w-7xl mx-auto">
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+    <div class="flex items-start justify-between gap-4 flex-col lg:flex-row">
+      <div>
+        <h2 class="text-xl font-bold text-slate-800">Auditoria do Sistema</h2>
+        <p class="text-sm text-slate-600 mt-1">Registro de logins, cadastros, edições e exclusões (somente Administrador Geral).</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="exportAuditJSON()"
+          class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 flex items-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i> Exportar JSON
+        </button>
+        <button onclick="clearAuditLog()"
+          class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 flex items-center gap-2">
+          <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar log
+        </button>
+      </div>
 
         <!-- Conteúdo agrupado -->
         <div id="recomendacoes-grouped" class="space-y-6"></div>
@@ -3052,3 +3053,4 @@ logout = function() {
 
 </body>
 </html>
+
