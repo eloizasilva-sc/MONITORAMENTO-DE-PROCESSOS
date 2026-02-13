@@ -406,125 +406,155 @@
   </div>
 
   <!-- MODAL RECOMENDAÇÃO / PLANO -->
-  <div id="modal-recomendacao" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-      <div class="p-6 border-b flex justify-between sticky top-0 bg-white z-10">
-        <h2 class="font-bold text-xl">Plano de Ação</h2>
-        <button onclick="closeModal('recomendacao')"><i data-lucide="x"></i></button>
+ <div id="modal-recomendacao" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+    <div class="p-6 border-b flex justify-between sticky top-0 bg-white z-10">
+      <h2 class="font-bold text-xl">Plano de Ação</h2>
+      <button onclick="closeModal('recomendacao')"><i data-lucide="x"></i></button>
+    </div>
+
+    <form id="recomendacao-form" class="p-6 space-y-6">
+
+      <!-- BLOCO SUPERIOR -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- NOVO: VÍNCULO À RECOMENDAÇÃO (substitui "Vinculado ao Achado") -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-1">Recomendação Vinculada</label>
+          <select id="recomendacao_vinculada_id"
+            class="w-full border px-4 py-2 rounded-lg"
+            onchange="renderRecomendacaoPreviewInModal()">
+            <option value="">(Opcional) Selecione uma recomendação...</option>
+          </select>
+          <p id="recomendacao-preview" class="text-xs text-slate-500 mt-2"></p>
+        </div>
+
+        <input id="recomendacao_numero" required placeholder="Nº Rec" class="border px-4 py-2 rounded-lg">
+        <input id="recomendacao_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg">
+
+        <select id="prioridade" required class="border px-4 py-2 rounded-lg">
+          <option value="">Prioridade...</option>
+          <option value="Alta">Alta</option>
+          <option value="Média">Média</option>
+          <option value="Baixa">Baixa</option>
+        </select>
+
+        <input id="prazo_global" required placeholder="Prazo Global" class="border px-4 py-2 rounded-lg">
+
+        <textarea id="recomendacao_texto" required rows="3" placeholder="O que deve ser feito (Recomendação)"
+          class="border px-4 py-2 rounded-lg md:col-span-2"></textarea>
+
+        <!-- Já existia, mantém -->
+        <input id="responsavel_recomendacao" placeholder="Responsável Principal" class="border px-4 py-2 rounded-lg">
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium">Áreas Responsáveis</label>
+          <div id="areas-container" class="space-y-1 mb-2"></div>
+          <div class="flex gap-2">
+            <input id="area_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
+            <button type="button" onclick="adicionarArea()" class="bg-blue-600 text-white px-4 rounded-lg">Add</button>
+          </div>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium">Áreas Envolvidas</label>
+          <div id="areas-envolvidas-container" class="space-y-1 mb-2"></div>
+          <div class="flex gap-2">
+            <input id="area_envolvida_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
+            <button type="button" onclick="adicionarAreaEnvolvida()" class="bg-purple-600 text-white px-4 rounded-lg">Add</button>
+          </div>
+        </div>
+
       </div>
 
-      <form id="recomendacao-form" class="p-6 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input id="recomendacao_numero" required placeholder="Nº Rec" class="border px-4 py-2 rounded-lg">
-          <input id="recomendacao_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg">
+      <!-- ETAPAS -->
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-lg mb-2">Etapas / Ações</h3>
 
-          <!-- VÍNCULO AO ACHADO + NOME DO ACHADO -->
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium mb-1">Vinculado ao Achado</label>
-            <select id="recomendacao_achado_id" class="w-full border px-4 py-2 rounded-lg" onchange="renderAchadoPreviewInRecModal()">
-              <option value="">(Opcional) Selecione um achado...</option>
-            </select>
-            <p id="achado-preview" class="text-xs text-slate-500 mt-2"></p>
+        <div class="flex justify-between items-end mb-4 bg-slate-50 p-3 rounded-lg">
+          <div>
+            <span class="text-xs text-slate-500 font-bold uppercase">Progresso Calculado</span>
+            <div class="text-2xl font-bold"><span id="calc-progresso">0</span>%</div>
           </div>
+          <span id="calc-status" class="px-2 py-1 bg-slate-200 rounded text-xs font-bold">Pendente</span>
+        </div>
 
-          <select id="prioridade" required class="border px-4 py-2 rounded-lg">
-            <option value="">Prioridade...</option>
-            <option value="Alta">Alta</option>
-            <option value="Média">Média</option>
-            <option value="Baixa">Baixa</option>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 p-4 border rounded-xl">
+          <input id="acao_desc" placeholder="Descrição da etapa" class="border px-3 py-2 rounded-lg md:col-span-2">
+          <input id="acao_resp" placeholder="Responsável" class="border px-3 py-2 rounded-lg">
+          <input id="acao_prazo" type="date" class="border px-3 py-2 rounded-lg">
+          <input id="acao_custo" placeholder="Custo (R$)" class="border px-3 py-2 rounded-lg">
+
+          <select id="acao_status" class="border px-3 py-2 rounded-lg">
+            <option value="Não iniciada">Não iniciada</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Concluída">Concluída</option>
           </select>
 
-          <input id="prazo_global" required placeholder="Prazo Global" class="border px-4 py-2 rounded-lg">
-
-          <textarea id="recomendacao_texto" required rows="3" placeholder="O que deve ser feito (Recomendação)" class="border px-4 py-2 rounded-lg md:col-span-2"></textarea>
-
-          <!-- INDICADOR E RESULTADO -->
-          <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Indicador</label>
-              <input id="indicador" placeholder="Ex: % de recomendações concluídas no prazo" class="w-full border px-4 py-2 rounded-lg">
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Resultado</label>
-              <input id="resultado" placeholder="Ex: redução de 30% no tempo de resposta" class="w-full border px-4 py-2 rounded-lg">
-            </div>
-          </div>
-
-          <input id="responsavel_recomendacao" placeholder="Responsável Principal" class="border px-4 py-2 rounded-lg">
-
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium">Áreas Responsáveis</label>
-            <div id="areas-container" class="space-y-1 mb-2"></div>
-            <div class="flex gap-2">
-              <input id="area_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
-              <button type="button" onclick="adicionarArea()" class="bg-blue-600 text-white px-4 rounded-lg">Add</button>
-            </div>
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium">Áreas Envolvidas</label>
-            <div id="areas-envolvidas-container" class="space-y-1 mb-2"></div>
-            <div class="flex gap-2">
-              <input id="area_envolvida_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
-              <button type="button" onclick="adicionarAreaEnvolvida()" class="bg-purple-600 text-white px-4 rounded-lg">Add</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ETAPAS / AÇÕES -->
-        <div class="border-t pt-4">
-          <h3 class="font-bold text-lg mb-2">Etapas / Ações</h3>
-
-          <div class="flex justify-between items-end mb-4 bg-slate-50 p-3 rounded-lg">
-            <div>
-              <span class="text-xs text-slate-500 font-bold uppercase">Progresso Calculado</span>
-              <div class="text-2xl font-bold"><span id="calc-progresso">0</span>%</div>
-            </div>
-            <span id="calc-status" class="px-2 py-1 bg-slate-200 rounded text-xs font-bold">Pendente</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 p-4 border rounded-xl">
-            <input id="acao_desc" placeholder="Descrição da etapa" class="border px-3 py-2 rounded-lg md:col-span-2">
-            <input id="acao_resp" placeholder="Responsável" class="border px-3 py-2 rounded-lg">
-            <input id="acao_prazo" type="date" class="border px-3 py-2 rounded-lg">
-            <input id="acao_custo" placeholder="Custo (R$)" class="border px-3 py-2 rounded-lg">
-            <select id="acao_status" class="border px-3 py-2 rounded-lg">
-              <option value="Não iniciada">Não iniciada</option>
-              <option value="Em andamento">Em andamento</option>
-              <option value="Concluída">Concluída</option>
-            </select>
-
-            <button type="button" onclick="addOrUpdateAcaoTemp()" id="acao_submit_btn"
-              class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-bold">
-              + Adicionar Etapa
-            </button>
-            <button type="button" onclick="cancelEditAcaoTemp()" id="acao_cancel_btn"
-              class="md:col-span-2 border py-2 rounded-lg font-bold hidden">
-              Cancelar edição
-            </button>
-          </div>
-
-          <div id="acoes-temp-list" class="space-y-2"></div>
-          <div id="acoes-temp-empty" class="text-slate-400 text-center text-sm">Nenhuma etapa adicionada.</div>
-        </div>
-
-        <!-- RELATÓRIO FORMAL -->
-        <div class="border-t pt-4">
-          <h3 class="font-bold text-sm text-slate-500 uppercase mb-2">Relatório Formal (Opcional)</h3>
-          <textarea id="evidencias_cumprimento" rows="2" placeholder="Evidências..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
-          <textarea id="justificativa_nao_cumprimento" rows="2" placeholder="Justificativas..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
-          <textarea id="resultados_percebidos" rows="2" placeholder="Resultados..." class="w-full border px-3 py-2 rounded-lg"></textarea>
-        </div>
-
-        <div class="flex justify-end gap-3 border-t pt-4">
-          <button type="button" onclick="closeModal('recomendacao')" class="border px-6 py-2 rounded-lg">Cancelar</button>
-          <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">
-            <span id="submit-recomendacao-text">Salvar Plano</span>
+          <button type="button" onclick="addAcaoToTemp()" class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-bold">
+            + Adicionar Etapa
           </button>
         </div>
-      </form>
-    </div>
+
+        <div id="acoes-temp-list" class="space-y-2"></div>
+        <div id="acoes-temp-empty" class="text-slate-400 text-center text-sm">Nenhuma etapa adicionada.</div>
+      </div>
+
+      <!-- SEÇÃO DE BAIXO (COM INDICADOR / RESULTADO / RESPONSÁVEL PRINCIPAL) -->
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-lg mb-3">Síntese do Plano (Indicador e Resultado)</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Indicador
+            </label>
+            <input id="indicador_plano" type="text"
+              placeholder="Ex: % de recomendações concluídas no prazo"
+              class="w-full border px-4 py-2 rounded-lg bg-white">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Resultado
+            </label>
+            <input id="resultado_plano" type="text"
+              placeholder="Ex: redução de 30% no tempo de resposta"
+              class="w-full border px-4 py-2 rounded-lg bg-white">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Responsável Principal
+            </label>
+            <input id="responsavel_principal_bottom" type="text"
+              placeholder="Será preenchido automaticamente, mas você pode ajustar"
+              class="w-full border px-4 py-2 rounded-lg bg-white">
+            <p class="text-xs text-slate-500 mt-1">
+              Esse campo espelha o “Responsável Principal” do topo, para ficar visível na seção final do plano.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RELATÓRIO FORMAL -->
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-sm text-slate-500 uppercase mb-2">Relatório Formal (Opcional)</h3>
+        <textarea id="evidencias_cumprimento" rows="2" placeholder="Evidências..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
+        <textarea id="justificativa_nao_cumprimento" rows="2" placeholder="Justificativas..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
+        <textarea id="resultados_percebidos" rows="2" placeholder="Resultados..." class="w-full border px-3 py-2 rounded-lg"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 border-t pt-4">
+        <button type="button" onclick="closeModal('recomendacao')" class="border px-6 py-2 rounded-lg">Cancelar</button>
+        <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">
+          <span id="submit-recomendacao-text">Salvar Plano</span>
+        </button>
+      </div>
+
+    </form>
   </div>
+</div>
 
   <!-- MODAL EXPORT (placeholder) -->
   <div id="modal-export" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -1308,9 +1338,9 @@
       renderAcoesTemp();
       setAcaoFormMode(false);
 
-      // populate achados do processo (para mostrar nome do achado)
-      populateAchadoSelect(processoId);
-      renderAchadoPreviewInRecModal();
+      // populate recomendações do processo (para mostrar nome do achado)
+ populateRecomendacaoSelect(processoId);
+renderRecomendacaoPreviewInModal();
 
       document.getElementById("modal-recomendacao").style.display = "flex";
       refreshIcons();
@@ -1537,32 +1567,66 @@
     // =========================
     // ACHADO SELECT (NOME DO ACHADO)
     // =========================
-    function populateAchadoSelect(processoId) {
-      const sel = document.getElementById("recomendacao_achado_id");
-      const achados = allData.filter(d => d.tipo === "achado" && d.processo_id === processoId);
+   function populateRecomendacaoSelect(processoId) {
 
-      sel.innerHTML = `<option value="">(Opcional) Selecione um achado...</option>` + achados.map(a => {
-        const label = `Achado ${a.achado_numero}${a.achado_subitem ? "-"+a.achado_subitem : ""} - ${String(a.achado_descricao || "").slice(0, 80)}${String(a.achado_descricao||"").length > 80 ? "..." : ""}`;
-        return `<option value="${escapeHtml(a.achado_id)}">${escapeHtml(label)}</option>`;
-      }).join("");
+  const sel = document.getElementById("recomendacao_vinculada_id");
+
+  const recs = allData.filter(d =>
+    d.tipo === "recomendacao" &&
+    d.processo_id === processoId
+  );
+
+  sel.innerHTML =
+    `<option value="">(Opcional) Selecione uma recomendação...</option>` +
+
+    recs.map(r => {
+
+      const label =
+        `Rec. ${r.recomendacao_numero}` +
+        `${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""}` +
+        ` - ${String(r.recomendacao_texto || "").slice(0,80)}` +
+        (r.recomendacao_texto?.length > 80 ? "..." : "");
+
+      return `
+        <option value="${r.recomendacao_id}">
+          ${label}
+        </option>
+      `;
+
+    }).join("");
     }
 
-    function renderAchadoPreviewInRecModal() {
-      const sel = document.getElementById("recomendacao_achado_id");
-      const preview = document.getElementById("achado-preview");
-      const id = sel.value;
-      if (!id) {
-        preview.textContent = "";
-        return;
-      }
-      const a = getAchadoById(id);
-      if (!a) {
-        preview.textContent = "";
-        return;
-      }
-      const name = `Achado ${a.achado_numero}${a.achado_subitem ? "-"+a.achado_subitem : ""}`;
-      preview.textContent = `${name} • ${a.grau_risco || ""} • ${String(a.achado_descricao || "").slice(0, 140)}${String(a.achado_descricao||"").length > 140 ? "..." : ""}`;
-    }
+  function renderRecomendacaoPreviewInModal() {
+
+  const sel = document.getElementById("recomendacao_vinculada_id");
+  const preview = document.getElementById("recomendacao-preview");
+
+  const id = sel.value;
+
+  if (!id) {
+    preview.textContent = "";
+    return;
+  }
+
+  const rec = allData.find(d =>
+    d.tipo === "recomendacao" &&
+    d.recomendacao_id === id
+  );
+
+  if (!rec) {
+    preview.textContent = "";
+    return;
+  }
+
+  const name =
+    `Rec. ${rec.recomendacao_numero}` +
+    `${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`;
+
+  preview.textContent =
+    `${name} • ${rec.recomendacao_texto.slice(0,140)}` +
+    (rec.recomendacao_texto.length > 140 ? "..." : "");
+}
+
 
     // =========================
     // CRUD: PROCESSO / ACHADO / RECOMENDAÇÃO
@@ -1880,3 +1944,4 @@
 
 </body>
 </html>
+
