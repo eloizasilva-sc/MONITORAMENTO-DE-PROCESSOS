@@ -7,15 +7,13 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- SDKs (se existirem no ambiente). Se der 404, cai no localStorage automaticamente -->
+  <!-- SDKs (quando existir no ambiente). Se não existir, cai no localStorage. -->
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
@@ -30,6 +28,7 @@
       --green:#16a34a;
       --red:#ef4444;
     }
+
     body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background-color: #f8fafc; }
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     .progress-glow { box-shadow: 0 0 15px rgba(37, 99, 235, 0.3); }
@@ -38,11 +37,12 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     .dash-card:hover{ box-shadow:var(--shadow2); transform:translateY(-2px); transition:0.2s; }
     .active-link { background-color: rgba(37, 99, 235, 0.1); color: #2563eb; font-weight: 600; border-right: 3px solid #2563eb; }
-    .tag { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; }
-    .tag-slate { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
-    .tag-blue { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
-    .tag-emerald { background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; }
-    .tag-red { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+    .badge { display:inline-flex; align-items:center; gap:.375rem; padding:.25rem .6rem; border-radius:999px; font-weight:800; font-size:11px; }
+    .badge-slate { background:#f1f5f9; color:#475569; }
+    .badge-blue { background:#dbeafe; color:#1d4ed8; }
+    .badge-emerald { background:#d1fae5; color:#047857; }
+    .badge-amber { background:#fef3c7; color:#b45309; }
+    .badge-red { background:#fee2e2; color:#b91c1c; }
   </style>
 </head>
 
@@ -68,6 +68,7 @@
               <option value="Técnico">Técnico (Por Setor)</option>
             </select>
           </div>
+
           <div id="setor-field" style="display:none;">
             <label class="block text-sm font-medium text-slate-700 mb-2">Setor Responsável *</label>
             <select id="login-setor"
@@ -76,16 +77,19 @@
             </select>
             <p class="text-xs text-slate-500 mt-2">Você verá apenas processos do seu setor cadastrados pelo Administrador</p>
           </div>
+
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Nome Completo *</label>
             <input type="text" id="login-nome" required placeholder="Digite seu nome"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
+
           <button type="submit" id="login-btn"
             class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl">
             Entrar no Sistema
           </button>
         </form>
+
         <div class="mt-6 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
           <p>Sistema de Gestão de Auditorias</p>
           <p class="mt-1">Desenvolvido por Maria Eloiza da Silva - CAS-Administrativo</p>
@@ -97,6 +101,7 @@
   <!-- APP -->
   <div id="app" style="display:none;" class="flex h-full overflow-hidden w-full">
 
+    <!-- SIDEBAR -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
       <div class="p-6 flex items-center gap-3 text-white border-b border-slate-800">
         <i data-lucide="shield-check" class="text-slate-400"></i>
@@ -126,12 +131,9 @@
         <a href="#" onclick="showView('recomendacoes'); return false;" id="nav-recomendacoes" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
           <i data-lucide="list-checks" class="w-5 h-5"></i> Planos de Ação
         </a>
-
-        <!-- Agora aparece SOMENTE para Administrador Geral -->
-        <a href="#" onclick="showView('auditoria'); return false;" id="nav-auditoria" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all hidden">
-          <i data-lucide="file-search" class="w-5 h-5"></i> Auditoria do Sistema
+        <a href="#" onclick="showView('auditoria'); return false;" id="nav-auditoria" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all" style="display:none;">
+          <i data-lucide="file-search" class="w-5 h-5"></i> Auditoria Sistema
         </a>
-
         <a href="#" onclick="exportMenuOpen(); return false;" class="sidebar-item flex items-center gap-3 p-3 rounded-lg transition-all">
           <i data-lucide="download" class="w-5 h-5"></i> Exportar PDF
         </a>
@@ -147,8 +149,10 @@
       </div>
     </aside>
 
+    <!-- MAIN -->
     <main class="flex-1 overflow-y-auto bg-[#f8fafc]">
 
+      <!-- TOPBAR -->
       <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
         <div>
           <h1 id="page-title" class="font-bold text-lg text-slate-800">Dashboard</h1>
@@ -188,7 +192,7 @@
           <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
             <i data-lucide="map-pin" class="w-7 h-7 text-slate-600"></i> Auditorias por Local
           </h2>
-          <p class="text-slate-500 mt-1">Clique em um local para ver os detalhes</p>
+          <p class="text-slate-500 mt-1">Clique em um local para ver os detalhes das recomendações</p>
         </div>
 
         <div id="locais-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -203,9 +207,10 @@
         </div>
       </div>
 
-      <!-- PROCESSOS (AGORA COM Nº PROCESSO + ACHADOS + RECOMENDAÇÕES VINCULADAS) -->
+      <!-- PROCESSOS -->
       <div id="view-processos" style="display:none;" class="p-8 max-w-[1600px] mx-auto">
         <div id="processos-list" class="space-y-6"></div>
+
         <div id="processos-empty" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
           <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
@@ -215,13 +220,15 @@
         </div>
       </div>
 
-      <!-- PLANOS DE AÇÃO -->
+      <!-- PLANOS -->
       <div id="view-recomendacoes" style="display:none;" class="p-8 max-w-[1600px] mx-auto">
+
         <div class="glass-card rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
           <div class="flex flex-col lg:flex-row gap-4 items-end">
             <div class="flex-1 w-full">
               <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Buscar</label>
-              <input id="filtro-busca" type="text" placeholder="Pesquisar por termo..." oninput="applyRecFilters()" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500">
+              <input id="filtro-busca" type="text" placeholder="Pesquisar por termo..." oninput="applyRecFilters()"
+                class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
               <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Status</label>
@@ -233,6 +240,7 @@
                 <option value="Concluído">Concluído</option>
               </select>
             </div>
+
             <button onclick="resetRecFilters()" class="px-4 py-2 text-slate-500 hover:text-blue-600 font-bold text-sm">Limpar</button>
           </div>
         </div>
@@ -245,13 +253,13 @@
         </div>
       </div>
 
-      <!-- AUDITORIA DO SISTEMA (SOMENTE ADM) -->
+      <!-- AUDITORIA SISTEMA (ADM GERAL) -->
       <div id="view-auditoria" style="display:none;" class="p-8 max-w-[1600px] mx-auto">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
           <div class="flex items-start justify-between gap-4 flex-col lg:flex-row">
             <div>
               <h2 class="text-xl font-bold text-slate-800">Auditoria do Sistema</h2>
-              <p class="text-sm text-slate-600 mt-1">Registro de logs: login, create, update, delete, exportações.</p>
+              <p class="text-sm text-slate-600 mt-1">Registro de logs do sistema.</p>
             </div>
             <div class="flex gap-2">
               <button onclick="exportAuditJSON()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 flex items-center gap-2">
@@ -270,18 +278,15 @@
             <select id="audit-acao" onchange="renderAuditView()" class="w-full px-3 py-2 border rounded-lg">
               <option value="">Todas Ações</option>
               <option value="LOGIN">LOGIN</option>
-              <option value="LOGOUT">LOGOUT</option>
               <option value="CREATE">CREATE</option>
               <option value="UPDATE">UPDATE</option>
               <option value="DELETE">DELETE</option>
-              <option value="EXPORT">EXPORT</option>
             </select>
             <select id="audit-tipo" onchange="renderAuditView()" class="w-full px-3 py-2 border rounded-lg">
               <option value="">Todos Tipos</option>
               <option value="processo">Processo</option>
               <option value="achado">Achado</option>
               <option value="recomendacao">Recomendação</option>
-              <option value="sistema">Sistema</option>
             </select>
             <button onclick="resetAuditFilters()" class="border px-3 py-2 rounded-lg">Limpar</button>
           </div>
@@ -295,7 +300,6 @@
                   <th class="px-4 py-3 text-left">Data</th>
                   <th class="px-4 py-3 text-left">Usuário</th>
                   <th class="px-4 py-3 text-left">Ação</th>
-                  <th class="px-4 py-3 text-left">Tipo</th>
                   <th class="px-4 py-3 text-left">Resumo</th>
                 </tr>
               </thead>
@@ -316,6 +320,7 @@
         <h2 class="font-bold text-xl text-slate-800" id="modal-processo-title">Novo Processo</h2>
         <button onclick="closeModal('processo')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
       </div>
+
       <form id="processo-form" class="p-6 space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input type="text" id="processo_numero" required placeholder="Nº Processo SEI" class="w-full px-4 py-2 border rounded-lg">
@@ -326,10 +331,15 @@
             <option value="Contratos">Contratos</option>
             <option value="Outro">Outro</option>
           </select>
-          <input type="text" id="eixo_outro" placeholder="Novo eixo..." style="display:none;" class="w-full px-4 py-2 border rounded-lg mt-2">
-          <input type="text" id="unidade" required placeholder="Local auditado (Unidade/Hospital)" class="w-full px-4 py-2 border rounded-lg">
+
+          <input type="text" id="eixo_outro" placeholder="Novo eixo..." style="display:none;" class="w-full px-4 py-2 border rounded-lg md:col-span-2">
+          <input type="text" id="unidade" required placeholder="Unidade/Hospital (Local auditado)" class="w-full px-4 py-2 border rounded-lg">
           <input type="text" id="periodo" required placeholder="Período (ex: Jan/2024)" class="w-full px-4 py-2 border rounded-lg">
-          <div class="md:col-span-2"><input type="text" id="objeto" required placeholder="Objeto da Auditoria" class="w-full px-4 py-2 border rounded-lg"></div>
+
+          <div class="md:col-span-2">
+            <input type="text" id="objeto" required placeholder="Objeto da Auditoria" class="w-full px-4 py-2 border rounded-lg">
+          </div>
+
           <input type="text" id="responsavel" placeholder="Responsável Unidade" class="w-full px-4 py-2 border rounded-lg">
           <input type="text" id="auditor" placeholder="Auditor Responsável" class="w-full px-4 py-2 border rounded-lg">
 
@@ -356,55 +366,90 @@
   <!-- MODAL ACHADO -->
   <div id="modal-achado" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-      <div class="p-6 border-b flex justify-between items-center">
+      <div class="p-6 border-b flex justify-between">
         <h2 class="font-bold text-xl" id="modal-achado-title">Novo Achado</h2>
         <button onclick="closeModal('achado')"><i data-lucide="x"></i></button>
       </div>
+
       <form id="achado-form" class="p-6 space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <input id="achado_numero" required placeholder="Nº Achado" class="border px-4 py-2 rounded-lg">
           <input id="achado_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg">
           <select id="grau_risco" required class="border px-4 py-2 rounded-lg">
-            <option value="">Risco...</option><option value="Alto">Alto</option><option value="Médio">Médio</option><option value="Baixo">Baixo</option>
+            <option value="">Risco...</option>
+            <option value="Alto">Alto</option>
+            <option value="Médio">Médio</option>
+            <option value="Baixo">Baixo</option>
           </select>
           <select id="impacto" onchange="toggleImpactoOutro()" class="border px-4 py-2 rounded-lg">
-            <option value="">Impacto...</option><option value="Financeiro">Financeiro</option><option value="Operacional">Operacional</option><option value="Outro">Outro</option>
+            <option value="">Impacto...</option>
+            <option value="Financeiro">Financeiro</option>
+            <option value="Operacional">Operacional</option>
+            <option value="Outro">Outro</option>
           </select>
+
           <input id="impacto_outro" placeholder="Outro impacto" style="display:none;" class="border px-4 py-2 rounded-lg col-span-2">
+
           <textarea id="achado_descricao" required rows="3" placeholder="Descrição do Achado" class="border px-4 py-2 rounded-lg col-span-2"></textarea>
           <input id="responsavel_achado" placeholder="Responsável pelo Achado" class="border px-4 py-2 rounded-lg col-span-2">
           <input id="evidencia" placeholder="Evidência" class="border px-4 py-2 rounded-lg col-span-2">
         </div>
+
         <div class="flex justify-end gap-3">
           <button type="button" onclick="closeModal('achado')" class="border px-4 py-2 rounded-lg">Cancelar</button>
-          <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg"><span id="submit-achado-text">Salvar</span></button>
+          <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+            <span id="submit-achado-text">Salvar</span>
+          </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL RECOMENDAÇÃO (PLANO DE AÇÃO) -->
+  <!-- MODAL RECOMENDAÇÃO / PLANO -->
   <div id="modal-recomendacao" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
       <div class="p-6 border-b flex justify-between sticky top-0 bg-white z-10">
         <h2 class="font-bold text-xl">Plano de Ação</h2>
         <button onclick="closeModal('recomendacao')"><i data-lucide="x"></i></button>
       </div>
+
       <form id="recomendacao-form" class="p-6 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input id="recomendacao_numero" required placeholder="Nº Rec" class="border px-4 py-2 rounded-lg">
           <input id="recomendacao_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg">
 
-          <!-- VÍNCULO COM ACHADO (CHAVE PARA SINCRONIZAR PROCESSO -> ACHADO -> RECOMENDAÇÃO -> PLANO) -->
-          <select id="recomendacao_achado_id" class="border px-4 py-2 rounded-lg md:col-span-2">
-            <option value="">Vincular a qual Achado? (opcional)</option>
-          </select>
+          <!-- VÍNCULO AO ACHADO + NOME DO ACHADO -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-1">Vinculado ao Achado</label>
+            <select id="recomendacao_achado_id" class="w-full border px-4 py-2 rounded-lg" onchange="renderAchadoPreviewInRecModal()">
+              <option value="">(Opcional) Selecione um achado...</option>
+            </select>
+            <p id="achado-preview" class="text-xs text-slate-500 mt-2"></p>
+          </div>
 
           <select id="prioridade" required class="border px-4 py-2 rounded-lg">
-            <option value="">Prioridade...</option><option value="Alta">Alta</option><option value="Média">Média</option><option value="Baixa">Baixa</option>
+            <option value="">Prioridade...</option>
+            <option value="Alta">Alta</option>
+            <option value="Média">Média</option>
+            <option value="Baixa">Baixa</option>
           </select>
+
           <input id="prazo_global" required placeholder="Prazo Global" class="border px-4 py-2 rounded-lg">
+
           <textarea id="recomendacao_texto" required rows="3" placeholder="O que deve ser feito (Recomendação)" class="border px-4 py-2 rounded-lg md:col-span-2"></textarea>
+
+          <!-- INDICADOR E RESULTADO -->
+          <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Indicador</label>
+              <input id="indicador" placeholder="Ex: % de recomendações concluídas no prazo" class="w-full border px-4 py-2 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Resultado</label>
+              <input id="resultado" placeholder="Ex: redução de 30% no tempo de resposta" class="w-full border px-4 py-2 rounded-lg">
+            </div>
+          </div>
+
           <input id="responsavel_recomendacao" placeholder="Responsável Principal" class="border px-4 py-2 rounded-lg">
 
           <div class="md:col-span-2">
@@ -426,8 +471,10 @@
           </div>
         </div>
 
+        <!-- ETAPAS / AÇÕES -->
         <div class="border-t pt-4">
           <h3 class="font-bold text-lg mb-2">Etapas / Ações</h3>
+
           <div class="flex justify-between items-end mb-4 bg-slate-50 p-3 rounded-lg">
             <div>
               <span class="text-xs text-slate-500 font-bold uppercase">Progresso Calculado</span>
@@ -446,13 +493,22 @@
               <option value="Em andamento">Em andamento</option>
               <option value="Concluída">Concluída</option>
             </select>
-            <button type="button" onclick="addAcaoToTemp()" class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-bold">+ Adicionar Etapa</button>
+
+            <button type="button" onclick="addOrUpdateAcaoTemp()" id="acao_submit_btn"
+              class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-bold">
+              + Adicionar Etapa
+            </button>
+            <button type="button" onclick="cancelEditAcaoTemp()" id="acao_cancel_btn"
+              class="md:col-span-2 border py-2 rounded-lg font-bold hidden">
+              Cancelar edição
+            </button>
           </div>
 
           <div id="acoes-temp-list" class="space-y-2"></div>
           <div id="acoes-temp-empty" class="text-slate-400 text-center text-sm">Nenhuma etapa adicionada.</div>
         </div>
 
+        <!-- RELATÓRIO FORMAL -->
         <div class="border-t pt-4">
           <h3 class="font-bold text-sm text-slate-500 uppercase mb-2">Relatório Formal (Opcional)</h3>
           <textarea id="evidencias_cumprimento" rows="2" placeholder="Evidências..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
@@ -470,7 +526,7 @@
     </div>
   </div>
 
-  <!-- MODAL EXPORT -->
+  <!-- MODAL EXPORT (placeholder) -->
   <div id="modal-export" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
       <div class="flex justify-between mb-4">
@@ -480,22 +536,36 @@
       <div class="space-y-4">
         <button onclick="exportPDFGeral()" class="w-full text-left p-4 border rounded-lg hover:bg-blue-50 flex items-center gap-3">
           <i data-lucide="file-text" class="text-blue-600"></i>
-          <div><p class="font-bold">Relatório Geral</p><p class="text-xs text-slate-500">Todas as recomendações</p></div>
+          <div>
+            <p class="font-bold">Relatório Geral</p>
+            <p class="text-xs text-slate-500">Todas as recomendações</p>
+          </div>
         </button>
 
         <div class="border rounded-lg p-4">
-          <p class="font-bold mb-2 flex items-center gap-2"><i data-lucide="folder" class="text-blue-600 w-4 h-4"></i> Por Processo</p>
-          <div id="processos-plano-list" class="max-h-32 overflow-y-auto space-y-1"></div>
+          <p class="font-bold mb-2 flex items-center gap-2">
+            <i data-lucide="folder" class="text-blue-600 w-4 h-4"></i> Por Processo
+          </p>
+          <div id="processos-plano-list" class="max-h-32 overflow-y-auto space-y-1 text-sm text-slate-600">
+            <p class="text-xs text-slate-400 italic">Em desenvolvimento</p>
+          </div>
         </div>
 
         <button onclick="exportPDFFormalGeral()" class="w-full text-left p-4 border rounded-lg hover:bg-purple-50 flex items-center gap-3">
           <i data-lucide="file-check-2" class="text-purple-600"></i>
-          <div><p class="font-bold">Formal Geral</p><p class="text-xs text-slate-500">Com evidências e justificativas</p></div>
+          <div>
+            <p class="font-bold">Formal Geral</p>
+            <p class="text-xs text-slate-500">Com evidências e justificativas</p>
+          </div>
         </button>
 
         <div class="border rounded-lg p-4">
-          <p class="font-bold mb-2 flex items-center gap-2"><i data-lucide="folder-check" class="text-purple-600 w-4 h-4"></i> Formal por Processo</p>
-          <div id="processos-formal-list" class="max-h-32 overflow-y-auto space-y-1"></div>
+          <p class="font-bold mb-2 flex items-center gap-2">
+            <i data-lucide="folder-check" class="text-purple-600 w-4 h-4"></i> Formal por Processo
+          </p>
+          <div id="processos-formal-list" class="max-h-32 overflow-y-auto space-y-1 text-sm text-slate-600">
+            <p class="text-xs text-slate-400 italic">Em desenvolvimento</p>
+          </div>
         </div>
       </div>
     </div>
@@ -503,10 +573,10 @@
 
   <script>
     // =========================
-    // STORAGE + SDK FALLBACK
+    // STORAGE & SDK
     // =========================
-    const STORAGE_KEY = "processos_auditados_v3"; // versão nova
-    const AUDIT_KEY = "audit_log_v1";
+    const STORAGE_KEY = "processos_auditados_v3";
+    const AUDIT_KEY   = "processos_auditados_audit_v1";
 
     function safeParse(json, fallback) { try { return JSON.parse(json) ?? fallback; } catch { return fallback; } }
     function getStoredData() { return safeParse(localStorage.getItem(STORAGE_KEY), []); }
@@ -515,8 +585,9 @@
     function getAuditLog() { return safeParse(localStorage.getItem(AUDIT_KEY), []); }
     function setAuditLog(arr) { localStorage.setItem(AUDIT_KEY, JSON.stringify(arr)); }
 
-    function nowISO() { return new Date().toISOString(); }
-    function uid(prefix) { return prefix + "_" + Date.now() + "_" + Math.random().toString(16).slice(2); }
+    function uid(prefix="id") {
+      return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
 
     function getIdFieldByTipo(tipo) {
       if (tipo === "processo") return "processo_id";
@@ -525,6 +596,7 @@
       return null;
     }
 
+    // Local SDK fallback
     const localSdk = {
       _onDataChanged: null,
       async init({ onDataChanged } = {}) {
@@ -564,43 +636,77 @@
     };
 
     function ensureDataSdk() {
-      if (!window.dataSdk || typeof window.dataSdk.create !== "function") window.dataSdk = localSdk;
+      if (!window.dataSdk || typeof window.dataSdk.create !== "function") {
+        window.dataSdk = localSdk;
+      }
     }
 
     // =========================
-    // AUDIT LOGGER (ADM VIEW)
+    // GLOBAL STATE
     // =========================
-    function auditLog(action, tipo, summary, extra = {}) {
+    let allData = [];
+    let currentView = "dashboard";
+    let userSession = null;
+
+    // Edit contexts
+    let currentProcessoId = null;
+    let currentAchadoId = null;
+    let currentEditingRec = null;
+    let currentEditingProc = null;
+
+    let setoresProcesso = [];
+    let areasResponsaveis = [];
+    let areasEnvolvidas = [];
+    let acoesTemp = [];
+    let editingAcaoIndex = null;
+
+    const recFilters = { busca: "", status: "" };
+
+    // =========================
+    // UI HELPERS
+    // =========================
+    function refreshIcons() { try { if (window.lucide) window.lucide.createIcons(); } catch {} }
+    function escapeHtml(str) {
+      return (str || "")
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+    function isAdmin() {
+      return !!userSession && userSession.perfil === "Administrador Geral - CAS ADM";
+    }
+    function fmtDateTime(iso) {
+      try { return new Date(iso).toLocaleString("pt-BR"); } catch { return iso || ""; }
+    }
+
+    // =========================
+    // AUDIT LOG (ADM)
+    // =========================
+    function auditAdd(action, tipo, summary) {
       const log = getAuditLog();
       log.unshift({
-        ts: nowISO(),
+        at: new Date().toISOString(),
         user: userSession?.nome || "N/A",
-        perfil: userSession?.perfil || "N/A",
         action,
         tipo,
-        summary: summary?.toString?.() || "",
-        extra
+        summary: summary || ""
       });
-      setAuditLog(log.slice(0, 2000)); // limite
+      setAuditLog(log.slice(0, 2000));
     }
 
     function exportAuditJSON() {
-      auditLog("EXPORT", "sistema", "Exportou auditoria (JSON)");
-      const data = JSON.stringify(getAuditLog(), null, 2);
-      const blob = new Blob([data], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
+      const log = getAuditLog();
+      const blob = new Blob([JSON.stringify(log, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
-      a.href = url;
+      a.href = URL.createObjectURL(blob);
       a.download = "auditoria_sistema.json";
       a.click();
-      URL.revokeObjectURL(url);
+      URL.revokeObjectURL(a.href);
     }
 
     function clearAuditLog() {
-      if (!isAdmin()) return alert("Apenas Administrador Geral pode limpar a auditoria.");
-      if (!confirm("Tem certeza que deseja limpar o log de auditoria do sistema?")) return;
+      if (!confirm("Limpar todos os registros de auditoria?")) return;
       setAuditLog([]);
-      auditLog("DELETE", "sistema", "Limpou auditoria do sistema");
       renderAuditView();
     }
 
@@ -612,87 +718,73 @@
     }
 
     function renderAuditView() {
-      if (!isAdmin()) {
-        document.getElementById("audit-table-body").innerHTML = "";
-        document.getElementById("audit-empty").style.display = "block";
-        return;
-      }
-      const q = (document.getElementById("audit-busca").value || "").toLowerCase();
-      const acao = document.getElementById("audit-acao").value || "";
-      const tipo = document.getElementById("audit-tipo").value || "";
+      if (!isAdmin()) return;
 
-      const rows = getAuditLog().filter(r => {
-        if (acao && r.action !== acao) return false;
-        if (tipo && r.tipo !== tipo) return false;
-        if (q) {
-          const hay = [r.user, r.perfil, r.action, r.tipo, r.summary, JSON.stringify(r.extra || {})].join(" ").toLowerCase();
-          if (!hay.includes(q)) return false;
+      const busca = (document.getElementById("audit-busca")?.value || "").toLowerCase();
+      const acao = document.getElementById("audit-acao")?.value || "";
+      const tipo = document.getElementById("audit-tipo")?.value || "";
+
+      let log = getAuditLog();
+
+      log = log.filter(l => {
+        if (acao && l.action !== acao) return false;
+        if (tipo && l.tipo !== tipo) return false;
+        if (busca) {
+          const hay = `${l.user} ${l.action} ${l.tipo} ${l.summary}`.toLowerCase();
+          if (!hay.includes(busca)) return false;
         }
         return true;
       });
 
       const tbody = document.getElementById("audit-table-body");
       const empty = document.getElementById("audit-empty");
-      if (!rows.length) {
+
+      if (log.length === 0) {
         tbody.innerHTML = "";
         empty.style.display = "block";
-        return;
+      } else {
+        empty.style.display = "none";
+        tbody.innerHTML = log.map(l => `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="px-4 py-3 whitespace-nowrap text-slate-600">${escapeHtml(fmtDateTime(l.at))}</td>
+            <td class="px-4 py-3 whitespace-nowrap font-semibold text-slate-800">${escapeHtml(l.user)}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="badge ${l.action === 'DELETE' ? 'badge-red' : l.action === 'UPDATE' ? 'badge-amber' : l.action === 'CREATE' ? 'badge-emerald' : 'badge-blue'}">${escapeHtml(l.action)}</span>
+              <span class="ml-2 text-xs text-slate-500 font-bold uppercase">${escapeHtml(l.tipo || '')}</span>
+            </td>
+            <td class="px-4 py-3 text-slate-700">${escapeHtml(l.summary || '')}</td>
+          </tr>
+        `).join("");
       }
-      empty.style.display = "none";
-      tbody.innerHTML = rows.map(r => `
-        <tr class="border-b last:border-b-0 hover:bg-slate-50">
-          <td class="px-4 py-3 whitespace-nowrap">${new Date(r.ts).toLocaleString("pt-BR")}</td>
-          <td class="px-4 py-3">${escapeHtml(r.user)}</td>
-          <td class="px-4 py-3 font-bold">${escapeHtml(r.action)}</td>
-          <td class="px-4 py-3">${escapeHtml(r.tipo)}</td>
-          <td class="px-4 py-3 text-slate-600">${escapeHtml(r.summary)}</td>
-        </tr>
-      `).join("");
       refreshIcons();
     }
 
     // =========================
-    // GLOBAL STATE
+    // FILTER BY USER (TÉCNICO)
     // =========================
-    let allData = [];
-    let currentView = "dashboard";
-    let userSession = null;
+    function filterDataByUser(data) {
+      if (!userSession || isAdmin()) return data;
 
-    // Contexto de edição
-    let currentProcessoId = null;
-    let currentAchadoId = null;
-    let currentEditingRec = null;
+      const userSetor = userSession.setor || "";
+      const processosPermitidos = data.filter(item => {
+        if (item.tipo === "processo") return (item.setores_envolvidos || "").includes(userSetor);
+        return true;
+      });
+      const procsIds = processosPermitidos.filter(p => p.tipo === "processo").map(p => p.processo_id);
 
-    let setoresProcesso = [];
-    let areasResponsaveis = [];
-    let areasEnvolvidas = [];
-    let acoesTemp = [];
-
-    const recFilters = { busca: "", status: "" };
-
-    // =========================
-    // HELPERS
-    // =========================
-    function isAdmin() {
-      return userSession?.perfil === "Administrador Geral - CAS ADM";
+      return data.filter(item => {
+        if (item.tipo === "processo") return procsIds.includes(item.processo_id);
+        if (item.tipo === "achado" || item.tipo === "recomendacao") return procsIds.includes(item.processo_id);
+        return false;
+      });
     }
 
-    function refreshIcons() {
-      try { if (window.lucide) window.lucide.createIcons(); } catch {}
-    }
-
-    function escapeHtml(str) {
-      return (str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
-
+    // =========================
+    // DERIVED RECOMMENDATION
+    // =========================
     function computeProgressFromAcoes(acoes) {
       if (!Array.isArray(acoes) || acoes.length === 0) return 0;
-      const sum = acoes.reduce((acc, a) =>
-        acc + (a.status === "Concluída" ? 1 : a.status === "Em andamento" ? 0.5 : 0), 0
-      );
+      const sum = acoes.reduce((acc, a) => acc + (a.status === "Concluída" ? 1 : a.status === "Em andamento" ? 0.5 : 0), 0);
       return Math.round((sum / acoes.length) * 100);
     }
 
@@ -714,22 +806,30 @@
       };
     }
 
-    function filterDataByUser(data) {
-      if (!userSession || isAdmin()) return data;
-      const userSetor = userSession.setor || "";
+    // =========================
+    // NAV
+    // =========================
+    function showView(view) {
+      currentView = view;
 
-      const processosPermitidos = data.filter(item => {
-        if (item.tipo === "processo") return (item.setores_envolvidos || "").includes(userSetor);
-        return true;
-      });
+      document.querySelectorAll('[id^="view-"]').forEach(v => v.style.display = "none");
+      const target = document.getElementById("view-" + view);
+      if (target) target.style.display = "block";
 
-      const procsIds = processosPermitidos.filter(p => p.tipo === "processo").map(p => p.processo_id);
+      document.querySelectorAll('[id^="nav-"]').forEach(n => n.classList.remove("active-link"));
+      const nav = document.getElementById("nav-" + view);
+      if (nav) nav.classList.add("active-link");
 
-      return data.filter(item => {
-        if (item.tipo === "processo") return procsIds.includes(item.processo_id);
-        if (item.tipo === "achado" || item.tipo === "recomendacao") return procsIds.includes(item.processo_id);
-        return false;
-      });
+      const titles = {
+        dashboard: ["Dashboard", "Visão geral de locais, processos e planos"],
+        processos: ["Processos", "Cadastro de processos, achados e recomendações"],
+        recomendacoes: ["Planos de Ação", "Acompanhamento 5W2H por recomendação"],
+        auditoria: ["Auditoria do Sistema", "Logs e rastreabilidade de ações"]
+      };
+      document.getElementById("page-title").textContent = titles[view]?.[0] || "Sistema";
+      document.getElementById("page-subtitle").textContent = titles[view]?.[1] || "";
+
+      renderCurrentView();
     }
 
     function renderCurrentView() {
@@ -738,31 +838,6 @@
       else if (currentView === "processos") renderProcessos(filteredData);
       else if (currentView === "recomendacoes") renderRecomendacoes(filteredData);
       else if (currentView === "auditoria") renderAuditView();
-    }
-
-    function showView(view) {
-      // trava: auditoria só para admin
-      if (view === "auditoria" && !isAdmin()) return alert("Acesso restrito ao Administrador Geral.");
-
-      currentView = view;
-      document.querySelectorAll('[id^="view-"]').forEach(v => v.style.display = "none");
-      const el = document.getElementById("view-" + view);
-      if (el) el.style.display = "block";
-
-      document.querySelectorAll('[id^="nav-"]').forEach(n => n.classList.remove("active-link"));
-      const nav = document.getElementById("nav-" + view);
-      if (nav) nav.classList.add("active-link");
-
-      // títulos
-      const titleMap = {
-        dashboard: "Dashboard",
-        processos: "Processos",
-        recomendacoes: "Planos de Ação",
-        auditoria: "Auditoria do Sistema"
-      };
-      document.getElementById("page-title").textContent = titleMap[view] || "Sistema";
-
-      renderCurrentView();
     }
 
     // =========================
@@ -786,14 +861,14 @@
         document.getElementById("dashboard-empty").style.display = "none";
         container.innerHTML = locais.map(local => {
           const pLocal = processos.filter(p => p.unidade === local);
-          const procIds = pLocal.map(p => p.processo_id);
-          const rLocal = recs.filter(r => procIds.includes(r.processo_id));
+          const pIds = pLocal.map(p => p.processo_id);
+          const rLocal = recs.filter(r => pIds.includes(r.processo_id));
           const pendentes = rLocal.filter(r => r.status === "Pendente" || r.status === "Em Execução").length;
           const concluidas = rLocal.filter(r => r.status === "Concluído").length;
 
-          const total = rLocal.length || 1;
           return `
-            <button onclick="focusLocal('${escapeHtml(local)}')" class="text-left glass-card p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-all">
+            <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-all cursor-pointer"
+                 onclick="goToLocal('${escapeHtml(local)}')">
               <div class="flex justify-between items-start mb-4">
                 <div>
                   <h3 class="font-bold text-lg text-slate-800">${escapeHtml(local)}</h3>
@@ -807,33 +882,30 @@
                   <span class="font-bold text-slate-800">${rLocal.length}</span>
                 </div>
                 <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">
-                  <div class="bg-emerald-500 h-full" style="width: ${(concluidas/total*100)||0}%"></div>
-                  <div class="bg-amber-400 h-full" style="width: ${(pendentes/total*100)||0}%"></div>
+                  <div class="bg-emerald-500 h-full" style="width: ${(concluidas/rLocal.length*100)||0}%"></div>
+                  <div class="bg-amber-400 h-full" style="width: ${(pendentes/rLocal.length*100)||0}%"></div>
                 </div>
                 <div class="flex gap-4 text-xs font-bold mt-2">
                   <span class="flex items-center gap-1 text-emerald-600"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> ${concluidas} OK</span>
                   <span class="flex items-center gap-1 text-amber-500"><span class="w-2 h-2 rounded-full bg-amber-500"></span> ${pendentes} Pend.</span>
                 </div>
               </div>
-            </button>
+            </div>
           `;
         }).join("");
       }
       refreshIcons();
     }
 
-    function focusLocal(local) {
-      // vai para Processos e filtra por local auditado (unidade)
+    function goToLocal(local) {
+      // filtra visualmente indo para Processos (simples)
       showView("processos");
-      // truque simples: rolar para o primeiro processo daquele local
-      setTimeout(() => {
-        const el = document.querySelector(`[data-local="${CSS.escape(local)}"]`);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 50);
+      const el = document.querySelector(`[data-local="${CSS.escape(local)}"]`);
+      if (el) el.scrollIntoView({ behavior:"smooth", block:"start" });
     }
 
     // =========================
-    // PROCESSOS (LISTA + VÍNCULOS)
+    // PROCESSOS (COM Nº PROCESSO, LOCAL, ACHADOS, RECOMENDAÇÕES)
     // =========================
     function renderProcessos(data) {
       const processos = data.filter(d => d.tipo === "processo");
@@ -843,7 +915,7 @@
       const list = document.getElementById("processos-list");
       const empty = document.getElementById("processos-empty");
 
-      if (!processos.length) {
+      if (processos.length === 0) {
         list.innerHTML = "";
         empty.style.display = "block";
         refreshIcons();
@@ -851,123 +923,146 @@
       }
       empty.style.display = "none";
 
-      list.innerHTML = processos
-        .sort((a,b) => (b.updated_at||b.created_at||"").localeCompare(a.updated_at||a.created_at||""))
-        .map(p => {
-          const aDoProc = achados.filter(a => a.processo_id === p.processo_id);
-          const rDoProc = recs.filter(r => r.processo_id === p.processo_id);
-          const atrasadas = rDoProc.filter(r => r.status === "Atrasado").length;
+      list.innerHTML = processos.map(p => {
+        const aProc = achados.filter(a => a.processo_id === p.processo_id);
+        const rProc = recs.filter(r => r.processo_id === p.processo_id);
 
-          const setores = (p.setores_envolvidos || "").split("|").map(s => s.trim()).filter(Boolean);
+        const pend = rProc.filter(r => r.status !== "Concluído").length;
+        const ok = rProc.filter(r => r.status === "Concluído").length;
 
-          return `
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" data-local="${escapeHtml(p.unidade||"")}">
-              <div class="p-6">
-                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                  <div class="min-w-0">
-                    <div class="flex items-center gap-2 flex-wrap">
-                      <h3 class="text-xl font-black text-slate-800">Processo ${escapeHtml(p.processo_numero || p.processo_id)}</h3>
-                      <span class="tag tag-slate"><i data-lucide="map-pin" class="w-3 h-3"></i>${escapeHtml(p.unidade || "S/ local")}</span>
-                      <span class="tag tag-blue"><i data-lucide="calendar" class="w-3 h-3"></i>${escapeHtml(p.periodo || "S/ período")}</span>
-                      ${atrasadas ? `<span class="tag tag-red"><i data-lucide="alert-triangle" class="w-3 h-3"></i>${atrasadas} atrasada(s)</span>` : `<span class="tag tag-emerald"><i data-lucide="check-circle" class="w-3 h-3"></i>OK</span>`}
-                    </div>
-                    <p class="text-slate-600 mt-2 text-sm"><span class="font-bold">Objeto:</span> ${escapeHtml(p.objeto || "-")}</p>
-
-                    <div class="mt-3 flex flex-wrap gap-2">
-                      <span class="tag tag-slate"><i data-lucide="file-text" class="w-3 h-3"></i>${aDoProc.length} achado(s)</span>
-                      <span class="tag tag-slate"><i data-lucide="list-checks" class="w-3 h-3"></i>${rDoProc.length} recomendação(ões)</span>
-                      ${setores.length ? `<span class="tag tag-slate"><i data-lucide="users" class="w-3 h-3"></i>${escapeHtml(setores.join(", "))}</span>` : ""}
-                    </div>
-                  </div>
-
-                  <div class="flex gap-2 shrink-0">
-                    <button onclick="openEditProcessModal('${p.processo_id}')" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-sm font-bold flex items-center gap-2">
-                      <i data-lucide="edit-3" class="w-4 h-4"></i> Editar
-                    </button>
-                    <button onclick="openNewAchadoModal('${p.processo_id}')" class="px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-blue-600 text-sm font-bold flex items-center gap-2">
-                      <i data-lucide="plus" class="w-4 h-4"></i> Novo Achado
-                    </button>
-                    <button onclick="openNewRecomendacaoModal('${p.processo_id}')" class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-sm font-bold flex items-center gap-2">
-                      <i data-lucide="list-checks" class="w-4 h-4"></i> Novo Plano
-                    </button>
-                  </div>
+        return `
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" data-local="${escapeHtml(p.unidade || '')}">
+            <div class="p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="text-xl font-extrabold text-slate-800">Processo ${escapeHtml(p.processo_numero || p.processo_id)}</h3>
+                  <span class="badge badge-slate"><i data-lucide="map-pin" class="w-3 h-3"></i> ${escapeHtml(p.unidade || "Sem local")}</span>
+                  <span class="badge badge-blue"><i data-lucide="calendar" class="w-3 h-3"></i> ${escapeHtml(p.periodo || "S/ período")}</span>
+                </div>
+                <p class="text-sm text-slate-500 mt-2">${escapeHtml(p.objeto || "")}</p>
+                <div class="mt-2 text-xs text-slate-500 flex flex-wrap gap-2">
+                  <span><b>Eixo:</b> ${escapeHtml(p.eixo || "")}</span>
+                  <span><b>Auditor:</b> ${escapeHtml(p.auditor || "-")}</span>
+                  <span><b>Resp. Unidade:</b> ${escapeHtml(p.responsavel || "-")}</span>
                 </div>
               </div>
 
-              <div class="bg-slate-50 border-t border-slate-200 p-6">
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  <div class="bg-white border border-slate-200 rounded-xl p-4">
-                    <div class="flex items-center justify-between mb-3">
-                      <h4 class="font-black text-slate-800 flex items-center gap-2 text-sm"><i data-lucide="search" class="w-4 h-4 text-slate-500"></i> Achados vinculados</h4>
-                      <span class="text-xs font-black text-slate-400 uppercase">${aDoProc.length}</span>
-                    </div>
-                    <div class="space-y-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
-                      ${aDoProc.length ? aDoProc.map(a => `
-                        <div class="p-3 rounded-xl border border-slate-200 hover:bg-slate-50">
-                          <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0">
-                              <p class="text-sm font-black text-slate-800">Achado ${escapeHtml(a.achado_numero)}${a.achado_subitem ? "-"+escapeHtml(a.achado_subitem) : ""}</p>
-                              <p class="text-xs text-slate-600 line-clamp-2">${escapeHtml(a.achado_descricao || "")}</p>
-                              <div class="mt-2 flex gap-2 flex-wrap">
-                                <span class="tag tag-slate">Risco: ${escapeHtml(a.grau_risco || "-")}</span>
-                                ${a.impacto ? `<span class="tag tag-slate">Impacto: ${escapeHtml(a.impacto)}</span>` : ""}
-                              </div>
-                            </div>
-                            <div class="flex gap-1 shrink-0">
-                              <button onclick="openEditAchadoModal('${a.achado_id}')" class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                              <button onclick="deleteAchado('${a.achado_id}')" class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                            </div>
-                          </div>
-                        </div>
-                      `).join("") : `<p class="text-xs text-slate-400 italic">Nenhum achado cadastrado.</p>`}
-                    </div>
-                  </div>
-
-                  <div class="bg-white border border-slate-200 rounded-xl p-4">
-                    <div class="flex items-center justify-between mb-3">
-                      <h4 class="font-black text-slate-800 flex items-center gap-2 text-sm"><i data-lucide="list-checks" class="w-4 h-4 text-slate-500"></i> Recomendações / Planos de Ação</h4>
-                      <span class="text-xs font-black text-slate-400 uppercase">${rDoProc.length}</span>
-                    </div>
-
-                    <div class="space-y-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
-                      ${rDoProc.length ? rDoProc.map(r => `
-                        <div class="p-3 rounded-xl border border-slate-200 hover:bg-slate-50">
-                          <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0">
-                              <p class="text-sm font-black text-slate-800">
-                                Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? "-"+escapeHtml(r.recomendacao_subitem) : ""}
-                                <span class="ml-2 text-xs font-black ${r.status==='Atrasado'?'text-red-600':r.status==='Concluído'?'text-emerald-600':r.status==='Em Execução'?'text-blue-600':'text-slate-500'}">${escapeHtml(r.status)}</span>
-                              </p>
-                              <p class="text-xs text-slate-600 line-clamp-2">${escapeHtml(r.recomendacao_texto || "")}</p>
-                              <div class="mt-2 flex gap-2 flex-wrap">
-                                ${r.achado_id ? `<span class="tag tag-blue"><i data-lucide="link" class="w-3 h-3"></i>Vinc. ao Achado</span>` : `<span class="tag tag-slate">Sem vínculo</span>`}
-                                <span class="tag tag-slate">Progresso: ${r.progresso}%</span>
-                              </div>
-                            </div>
-                            <div class="flex gap-1 shrink-0">
-                              <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                              <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                            </div>
-                          </div>
-                        </div>
-                      `).join("") : `<p class="text-xs text-slate-400 italic">Nenhuma recomendação cadastrada.</p>`}
-                    </div>
-                  </div>
-                </div>
+              <div class="flex gap-2 flex-wrap">
+                <button onclick="openNewAchadoModal('${p.processo_id}')" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-blue-600 inline-flex items-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Novo Achado
+                </button>
+                <button onclick="openNewRecomendacaoModal('${p.processo_id}')" class="px-4 py-2 rounded-xl border font-bold text-sm hover:bg-slate-50 inline-flex items-center gap-2">
+                  <i data-lucide="list-plus" class="w-4 h-4"></i> Novo Plano
+                </button>
+                ${isAdmin() ? `
+                  <button onclick="deleteProcesso('${p.processo_id}')" class="px-4 py-2 rounded-xl border border-red-300 text-red-600 font-bold text-sm hover:bg-red-50 inline-flex items-center gap-2">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir
+                  </button>
+                ` : ``}
               </div>
             </div>
-          `;
-        }).join("");
+
+            <div class="p-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="font-extrabold text-slate-800 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> Achados</h4>
+                  <span class="text-xs font-bold text-slate-500">${aProc.length}</span>
+                </div>
+
+                ${aProc.length ? `
+                  <div class="space-y-2">
+                    ${aProc.map(a => `
+                      <div class="bg-white rounded-xl border border-slate-200 p-3">
+                        <div class="flex items-start justify-between gap-3">
+                          <div class="min-w-0">
+                            <p class="font-extrabold text-slate-800">
+                              Achado ${escapeHtml(a.achado_numero)}${a.achado_subitem ? "-"+escapeHtml(a.achado_subitem) : ""}
+                              <span class="ml-2 badge ${a.grau_risco === 'Alto' ? 'badge-red' : a.grau_risco === 'Médio' ? 'badge-amber' : 'badge-emerald'}">${escapeHtml(a.grau_risco || '')}</span>
+                            </p>
+                            <p class="text-sm text-slate-600 mt-1 line-clamp-2">${escapeHtml(a.achado_descricao || "")}</p>
+                            <p class="text-xs text-slate-500 mt-1">
+                              <b>Impacto:</b> ${escapeHtml(a.impacto || a.impacto_outro || "-")}
+                              <span class="mx-2">•</span>
+                              <b>Responsável:</b> ${escapeHtml(a.responsavel_achado || "-")}
+                            </p>
+                          </div>
+
+                          ${isAdmin() ? `
+                            <button onclick="deleteAchado('${a.achado_id}')" class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir Achado">
+                              <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                          ` : ``}
+                        </div>
+                      </div>
+                    `).join("")}
+                  </div>
+                ` : `<p class="text-sm text-slate-400 italic">Nenhum achado cadastrado neste processo.</p>`}
+              </div>
+
+              <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="font-extrabold text-slate-800 flex items-center gap-2"><i data-lucide="list-checks" class="w-4 h-4 text-blue-600"></i> Planos / Recomendações</h4>
+                  <div class="text-xs font-bold text-slate-500">
+                    <span class="badge badge-emerald">${ok} OK</span>
+                    <span class="badge badge-amber ml-2">${pend} Pend.</span>
+                  </div>
+                </div>
+
+                ${rProc.length ? `
+                  <div class="space-y-2">
+                    ${rProc.map(r => {
+                      const ach = getAchadoById(r.achado_id);
+                      const achName = ach ? `Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""}` : "";
+                      const statusBadge = r.status === "Concluído" ? "badge-emerald" : r.status === "Atrasado" ? "badge-red" : r.status === "Em Execução" ? "badge-blue" : "badge-slate";
+                      return `
+                        <div class="bg-white rounded-xl border border-slate-200 p-3">
+                          <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                              <p class="font-extrabold text-slate-800">
+                                Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? "-"+escapeHtml(r.recomendacao_subitem) : ""}
+                                <span class="ml-2 badge ${statusBadge}">${escapeHtml(r.status)}</span>
+                                ${achName ? `<span class="ml-2 badge badge-slate"><i data-lucide="link" class="w-3 h-3"></i> ${escapeHtml(achName)}</span>` : ``}
+                              </p>
+                              <p class="text-sm text-slate-600 mt-1 line-clamp-2">${escapeHtml(r.recomendacao_texto || "")}</p>
+                              <p class="text-xs text-slate-500 mt-1">
+                                <b>Prazo:</b> ${escapeHtml(r.prazo_global || "-")}
+                                <span class="mx-2">•</span>
+                                <b>Responsável:</b> ${escapeHtml(r.responsavel_recomendacao || "-")}
+                                <span class="mx-2">•</span>
+                                <b>Progresso:</b> ${Number(r.progresso||0)}%
+                              </p>
+                            </div>
+                            <div class="flex gap-1 shrink-0">
+                              <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" title="Editar Plano">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                              </button>
+                              ${isAdmin() ? `
+                                <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir Plano">
+                                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                              ` : ``}
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                    }).join("")}
+                  </div>
+                ` : `<p class="text-sm text-slate-400 italic">Nenhum plano cadastrado neste processo.</p>`}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
 
       refreshIcons();
     }
 
     // =========================
-    // RECOMENDAÇÕES (CARDS EXECUTIVE)
+    // RECOMENDAÇÕES (CARDS EXECUTIVE + NOME DO ACHADO)
     // =========================
     function applyRecFilters() {
-      recFilters.busca = document.getElementById("filtro-busca").value || "";
-      recFilters.status = document.getElementById("filtro-status").value || "";
+      recFilters.busca = document.getElementById("filtro-busca").value;
+      recFilters.status = document.getElementById("filtro-status").value;
       renderCurrentView();
     }
     function resetRecFilters() {
@@ -980,31 +1075,31 @@
       const processos = data.filter(d => d.tipo === "processo");
       const recsRaw = data.filter(d => d.tipo === "recomendacao");
 
-      const recs = recsRaw
-        .map(r => ({...r, ...getRecDerived(r)}))
-        .filter(r => {
-          const proc = processos.find(p => p.processo_id === r.processo_id);
-          if (recFilters.status && r.status !== recFilters.status) return false;
-          if (recFilters.busca) {
-            const hay = [
-              r.recomendacao_texto, r.recomendacao_numero,
-              proc?.unidade, proc?.processo_numero,
-              r.responsavel_recomendacao, r.prioridade
-            ].join(" ").toLowerCase();
-            if (!hay.includes(recFilters.busca.toLowerCase())) return false;
-          }
-          return true;
-        });
+      const recs = recsRaw.map(r => ({...r, ...getRecDerived(r)})).filter(r => {
+        const proc = processos.find(p => p.processo_id === r.processo_id);
+        if (recFilters.status && r.status !== recFilters.status) return false;
+        if (recFilters.busca) {
+          const ach = getAchadoById(r.achado_id);
+          const achName = ach ? `Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""}` : "";
+          const hay = [
+            r.recomendacao_texto, r.recomendacao_numero, r.indicador, r.resultado,
+            proc?.unidade, r.responsavel_recomendacao, achName
+          ].join(" ").toLowerCase();
+          if (!hay.includes(recFilters.busca.toLowerCase())) return false;
+        }
+        return true;
+      });
 
       const container = document.getElementById("recomendacoes-grouped");
       const empty = document.getElementById("recomendacoes-empty");
 
-      if (!recs.length) {
+      if (recs.length === 0) {
         container.innerHTML = "";
         empty.style.display = "block";
         refreshIcons();
         return;
       }
+
       empty.style.display = "none";
 
       const byProcess = {};
@@ -1020,7 +1115,7 @@
           <div class="mb-12">
             <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-2">
               <h2 class="text-2xl font-bold text-slate-800">Processo ${escapeHtml(proc?.processo_numero || procId)}</h2>
-              <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-500">${escapeHtml(proc?.unidade || "S/ local")}</span>
+              <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-500">${escapeHtml(proc?.unidade || "")}</span>
             </div>
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
               ${list.map(r => recCardHtml(r, proc)).join("")}
@@ -1033,16 +1128,20 @@
     }
 
     function recCardHtml(r, proc) {
-      // custo total (opcional)
-      let totalCusto = 0; let temCusto = false;
+      const isAdminOrTech = !!userSession;
+
+      // custo total
+      let totalCusto = 0;
+      let temCusto = false;
       (r.acoes || []).forEach(a => {
         if (a.custo) {
-          const num = parseFloat(a.custo.replace(/[^0-9.,]/g, '').replace(',', '.'));
+          const num = parseFloat(String(a.custo).replace(/[^0-9.,]/g, "").replace(",", "."));
           if (!isNaN(num)) { totalCusto += num; temCusto = true; }
         }
       });
-      const custoDisplay = temCusto ? `R$ ${totalCusto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : "Não estimado";
+      const custoDisplay = temCusto ? `R$ ${totalCusto.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Não estimado";
 
+      // progress gradient
       let progressGradient = "from-blue-400 via-blue-600 to-indigo-700";
       if (r.progresso >= 100) progressGradient = "from-emerald-400 via-emerald-500 to-emerald-600";
       else if (r.status === "Atrasado") progressGradient = "from-red-400 via-red-500 to-red-600";
@@ -1071,6 +1170,10 @@
         `;
       }).join("");
 
+      // nome do achado (quando vinculado)
+      const ach = getAchadoById(r.achado_id);
+      const achName = ach ? `Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""}` : "";
+
       return `
         <div class="glass-card border border-slate-200 rounded-[2.5rem] shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col group h-full">
           <div class="p-8 pb-4 flex-1">
@@ -1081,31 +1184,33 @@
               </div>
               <div class="flex gap-2 text-slate-400">
                 <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="p-2 hover:bg-slate-100 rounded-lg transition-colors text-blue-600" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-400 hover:text-red-600" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                ${isAdminOrTech && isAdmin() ? `<button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-400 hover:text-red-600" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
               </div>
             </div>
 
-            <h2 class="text-xl font-bold text-slate-800 mb-2 leading-tight">
-              Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? '-'+escapeHtml(r.recomendacao_subitem) : ''}
-            </h2>
-
-            <p class="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-3">
-              ${escapeHtml(r.recomendacao_texto)}
-            </p>
-
-            <div class="flex flex-wrap gap-2 mb-6">
-              ${r.achado_id ? `<span class="tag tag-blue"><i data-lucide="link" class="w-3 h-3"></i>Vinculada a Achado</span>` : `<span class="tag tag-slate">Sem vínculo</span>`}
-              <span class="tag tag-slate">Proc.: ${escapeHtml(proc?.processo_numero || r.processo_id)}</span>
-              <span class="tag tag-slate">Local: ${escapeHtml(proc?.unidade || "-")}</span>
+            <div class="flex flex-wrap gap-2 mb-3">
+              <h2 class="text-xl font-bold text-slate-800 leading-tight">
+                Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? '-'+escapeHtml(r.recomendacao_subitem) : ''}
+              </h2>
+              ${achName ? `<span class="badge badge-slate"><i data-lucide="link" class="w-3 h-3"></i> ${escapeHtml(achName)}</span>` : ``}
             </div>
+
+            <p class="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-3">${escapeHtml(r.recomendacao_texto)}</p>
+
+            ${(r.indicador || r.resultado) ? `
+              <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5">
+                ${r.indicador ? `<p class="text-xs text-slate-700"><span class="font-black">Indicador:</span> ${escapeHtml(r.indicador)}</p>` : ``}
+                ${r.resultado ? `<p class="text-xs text-slate-700 mt-1"><span class="font-black">Resultado:</span> ${escapeHtml(r.resultado)}</p>` : ``}
+              </div>
+            ` : ``}
 
             <div class="relative pt-2">
               <div class="flex justify-between items-center mb-2">
                 <span class="text-xs font-black text-slate-400 uppercase italic">Eficácia / Progresso</span>
-                <span class="text-sm font-black text-slate-800">${r.progresso}%</span>
+                <span class="text-sm font-black text-slate-800">${Number(r.progresso||0)}%</span>
               </div>
               <div class="h-3 w-full bg-slate-100 rounded-full p-0.5">
-                <div class="h-full bg-gradient-to-r ${progressGradient} rounded-full transition-all duration-1000 progress-glow shadow-inner" style="width: ${r.progresso}%"></div>
+                <div class="h-full bg-gradient-to-r ${progressGradient} rounded-full transition-all duration-1000 progress-glow shadow-inner" style="width: ${Number(r.progresso||0)}%"></div>
               </div>
             </div>
           </div>
@@ -1114,8 +1219,8 @@
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Quem</span>
               <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600 font-bold">${(r.responsavel_recomendacao||"SR").substring(0,2).toUpperCase()}</div>
-                <span class="text-xs font-bold text-slate-700 truncate block max-w-[80px]" title="${escapeHtml(r.responsavel_recomendacao||"")}">${escapeHtml(r.responsavel_recomendacao || "N/A")}</span>
+                <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600 font-bold">${escapeHtml((r.responsavel_recomendacao||"SR").substring(0,2).toUpperCase())}</div>
+                <span class="text-xs font-bold text-slate-700 truncate block max-w-[120px]" title="${escapeHtml(r.responsavel_recomendacao || '')}">${escapeHtml(r.responsavel_recomendacao || "N/A")}</span>
               </div>
             </div>
             <div class="space-y-1 border-x border-slate-200 px-3">
@@ -1152,47 +1257,32 @@
     }
 
     // =========================
-    // MODALS: ABRIR / FECHAR
+    // ACHADO LOOKUP (NOME DO ACHADO)
+    // =========================
+    function getAchadoById(achado_id) {
+      if (!achado_id) return null;
+      return allData.find(d => d.tipo === "achado" && d.achado_id === achado_id) || null;
+    }
+
+    // =========================
+    // MODALS
     // =========================
     function openNewProcessModal() {
+      currentEditingProc = null;
       currentProcessoId = null;
       setoresProcesso = [];
       document.getElementById("modal-processo-title").textContent = "Novo Processo";
       document.getElementById("submit-processo-text").textContent = "Salvar";
+
       document.getElementById("processo-form").reset();
       document.getElementById("eixo_outro").style.display = "none";
-      renderSetoresProcesso();
+      document.getElementById("setores-processo-container").innerHTML = "";
       document.getElementById("modal-processo").style.display = "flex";
       refreshIcons();
     }
 
-    function openEditProcessModal(procId) {
-      const proc = allData.find(d => d.tipo === "processo" && d.processo_id === procId);
-      if (!proc) return alert("Processo não encontrado.");
-      currentProcessoId = procId;
-
-      document.getElementById("modal-processo-title").textContent = "Editar Processo";
-      document.getElementById("submit-processo-text").textContent = "Atualizar";
-
-      document.getElementById("processo_numero").value = proc.processo_numero || "";
-      document.getElementById("eixo").value = proc.eixo || "";
-      document.getElementById("eixo_outro").value = proc.eixo_outro || "";
-      document.getElementById("eixo_outro").style.display = (proc.eixo === "Outro") ? "block" : "none";
-      document.getElementById("unidade").value = proc.unidade || "";
-      document.getElementById("periodo").value = proc.periodo || "";
-      document.getElementById("objeto").value = proc.objeto || "";
-      document.getElementById("responsavel").value = proc.responsavel || "";
-      document.getElementById("auditor").value = proc.auditor || "";
-
-      setoresProcesso = (proc.setores_envolvidos || "").split("|").map(s => s.trim()).filter(Boolean);
-      renderSetoresProcesso();
-
-      document.getElementById("modal-processo").style.display = "flex";
-      refreshIcons();
-    }
-
-    function openNewAchadoModal(procId) {
-      currentProcessoId = procId;
+    function openNewAchadoModal(processoId) {
+      currentProcessoId = processoId;
       currentAchadoId = null;
       document.getElementById("modal-achado-title").textContent = "Novo Achado";
       document.getElementById("submit-achado-text").textContent = "Salvar";
@@ -1202,44 +1292,25 @@
       refreshIcons();
     }
 
-    function openEditAchadoModal(achadoId) {
-      const a = allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
-      if (!a) return alert("Achado não encontrado.");
-      currentAchadoId = achadoId;
-      currentProcessoId = a.processo_id;
-
-      document.getElementById("modal-achado-title").textContent = "Editar Achado";
-      document.getElementById("submit-achado-text").textContent = "Atualizar";
-
-      document.getElementById("achado_numero").value = a.achado_numero || "";
-      document.getElementById("achado_subitem").value = a.achado_subitem || "";
-      document.getElementById("grau_risco").value = a.grau_risco || "";
-      document.getElementById("impacto").value = a.impacto || "";
-      document.getElementById("impacto_outro").value = a.impacto_outro || "";
-      document.getElementById("impacto_outro").style.display = (a.impacto === "Outro") ? "block" : "none";
-      document.getElementById("achado_descricao").value = a.achado_descricao || "";
-      document.getElementById("responsavel_achado").value = a.responsavel_achado || "";
-      document.getElementById("evidencia").value = a.evidencia || "";
-
-      document.getElementById("modal-achado").style.display = "flex";
-      refreshIcons();
-    }
-
-    function openNewRecomendacaoModal(procId) {
+    function openNewRecomendacaoModal(processoId) {
+      currentProcessoId = processoId;
       currentEditingRec = null;
-      currentProcessoId = procId;
 
-      // limpar
+      // reset
       document.getElementById("recomendacao-form").reset();
+      acoesTemp = [];
       areasResponsaveis = [];
       areasEnvolvidas = [];
-      acoesTemp = [];
-      renderAreas();
-      renderAreasEnvolvidas();
-      renderAcoesTemp();
+      editingAcaoIndex = null;
 
-      // popular select de achados do processo
-      populateAchadosSelect(procId, "");
+      document.getElementById("areas-container").innerHTML = "";
+      document.getElementById("areas-envolvidas-container").innerHTML = "";
+      renderAcoesTemp();
+      setAcaoFormMode(false);
+
+      // populate achados do processo (para mostrar nome do achado)
+      populateAchadoSelect(processoId);
+      renderAchadoPreviewInRecModal();
 
       document.getElementById("modal-recomendacao").style.display = "flex";
       refreshIcons();
@@ -1252,114 +1323,180 @@
     function toggleEixoOutro() {
       document.getElementById("eixo_outro").style.display = document.getElementById("eixo").value === "Outro" ? "block" : "none";
     }
+
     function toggleImpactoOutro() {
       document.getElementById("impacto_outro").style.display = document.getElementById("impacto").value === "Outro" ? "block" : "none";
     }
 
     // =========================
-    // SETORES PROCESSO
+    // SETORES DO PROCESSO
     // =========================
     function adicionarSetorProcesso() {
-      const v = (document.getElementById("setor_processo_input").value || "").trim();
-      if (!v) return;
-      if (!setoresProcesso.includes(v)) setoresProcesso.push(v);
-      document.getElementById("setor_processo_input").value = "";
+      const input = document.getElementById("setor_processo_input");
+      const val = (input.value || "").trim();
+      if (!val) return;
+      if (!setoresProcesso.includes(val)) setoresProcesso.push(val);
+      input.value = "";
       renderSetoresProcesso();
     }
-    function removerSetorProcesso(idx) {
-      setoresProcesso.splice(idx, 1);
+
+    function removerSetorProcesso(i) {
+      setoresProcesso.splice(i, 1);
       renderSetoresProcesso();
     }
+
     function renderSetoresProcesso() {
-      const c = document.getElementById("setores-processo-container");
-      c.innerHTML = setoresProcesso.map((s, i) => `
-        <div class="flex items-center justify-between border rounded-lg px-3 py-2 bg-slate-50">
-          <span class="text-sm font-bold text-slate-700">${escapeHtml(s)}</span>
-          <button type="button" onclick="removerSetorProcesso(${i})" class="text-red-600 hover:text-red-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+      const container = document.getElementById("setores-processo-container");
+      container.innerHTML = setoresProcesso.map((s, i) => `
+        <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
+          <span class="text-sm font-semibold text-slate-700">${escapeHtml(s)}</span>
+          <button type="button" onclick="removerSetorProcesso(${i})" class="text-red-600 hover:text-red-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
         </div>
       `).join("");
       refreshIcons();
     }
 
     // =========================
-    // ÁREAS (RECOMENDAÇÃO)
+    // ÁREAS RESPONSÁVEIS / ENVOLVIDAS
     // =========================
     function adicionarArea() {
-      const v = (document.getElementById("area_input").value || "").trim();
-      if (!v) return;
-      if (!areasResponsaveis.includes(v)) areasResponsaveis.push(v);
-      document.getElementById("area_input").value = "";
+      const input = document.getElementById("area_input");
+      const val = (input.value || "").trim();
+      if (!val) return;
+      if (!areasResponsaveis.includes(val)) areasResponsaveis.push(val);
+      input.value = "";
       renderAreas();
     }
+
     function removerArea(i) {
       areasResponsaveis.splice(i, 1);
       renderAreas();
     }
+
     function renderAreas() {
       const c = document.getElementById("areas-container");
       c.innerHTML = areasResponsaveis.map((a, i) => `
-        <div class="flex items-center justify-between border rounded-lg px-3 py-2 bg-slate-50">
-          <span class="text-sm font-bold text-slate-700">${escapeHtml(a)}</span>
-          <button type="button" onclick="removerArea(${i})" class="text-red-600 hover:text-red-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
+          <span class="text-sm font-semibold text-slate-700">${escapeHtml(a)}</span>
+          <button type="button" onclick="removerArea(${i})" class="text-red-600 hover:text-red-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
         </div>
       `).join("");
       refreshIcons();
     }
 
     function adicionarAreaEnvolvida() {
-      const v = (document.getElementById("area_envolvida_input").value || "").trim();
-      if (!v) return;
-      if (!areasEnvolvidas.includes(v)) areasEnvolvidas.push(v);
-      document.getElementById("area_envolvida_input").value = "";
+      const input = document.getElementById("area_envolvida_input");
+      const val = (input.value || "").trim();
+      if (!val) return;
+      if (!areasEnvolvidas.includes(val)) areasEnvolvidas.push(val);
+      input.value = "";
       renderAreasEnvolvidas();
     }
+
     function removerAreaEnvolvida(i) {
       areasEnvolvidas.splice(i, 1);
       renderAreasEnvolvidas();
     }
+
     function renderAreasEnvolvidas() {
       const c = document.getElementById("areas-envolvidas-container");
       c.innerHTML = areasEnvolvidas.map((a, i) => `
-        <div class="flex items-center justify-between border rounded-lg px-3 py-2 bg-slate-50">
-          <span class="text-sm font-bold text-slate-700">${escapeHtml(a)}</span>
-          <button type="button" onclick="removerAreaEnvolvida(${i})" class="text-red-600 hover:text-red-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
+          <span class="text-sm font-semibold text-slate-700">${escapeHtml(a)}</span>
+          <button type="button" onclick="removerAreaEnvolvida(${i})" class="text-red-600 hover:text-red-700">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
         </div>
       `).join("");
       refreshIcons();
     }
 
     // =========================
-    // ACHADOS SELECT (VÍNCULO)
+    // AÇÕES TEMP (EDITAR / GERENCIAR)
     // =========================
-    function populateAchadosSelect(procId, selectedAchadoId) {
-      const sel = document.getElementById("recomendacao_achado_id");
-      const achados = allData.filter(d => d.tipo === "achado" && d.processo_id === procId);
-      sel.innerHTML = `<option value="">Vincular a qual Achado? (opcional)</option>` + achados.map(a => {
-        const label = `Achado ${a.achado_numero}${a.achado_subitem ? "-" + a.achado_subitem : ""} • ${String(a.grau_risco||"").toUpperCase()}`;
-        return `<option value="${a.achado_id}" ${a.achado_id === selectedAchadoId ? "selected" : ""}>${escapeHtml(label)}</option>`;
-      }).join("");
+    function setAcaoFormMode(isEditing) {
+      const btn = document.getElementById("acao_submit_btn");
+      const cancel = document.getElementById("acao_cancel_btn");
+      if (!btn || !cancel) return;
+
+      if (isEditing) {
+        btn.textContent = "Atualizar Etapa";
+        cancel.classList.remove("hidden");
+      } else {
+        btn.textContent = "+ Adicionar Etapa";
+        cancel.classList.add("hidden");
+      }
     }
 
-    // =========================
-    // AÇÕES (PLANO)
-    // =========================
-    function addAcaoToTemp() {
+    function clearAcaoInputs() {
+      document.getElementById("acao_desc").value = "";
+      document.getElementById("acao_resp").value = "";
+      document.getElementById("acao_prazo").value = "";
+      document.getElementById("acao_custo").value = "";
+      document.getElementById("acao_status").value = "Não iniciada";
+    }
+
+    function addOrUpdateAcaoTemp() {
       const desc = (document.getElementById("acao_desc").value || "").trim();
-      if (!desc) return alert("Descrição obrigatória");
-      acoesTemp.push({
-        id: uid("acao"),
+      if (!desc) return alert("Descrição da etapa é obrigatória.");
+
+      const payload = {
+        id: (editingAcaoIndex !== null && acoesTemp[editingAcaoIndex]?.id) ? acoesTemp[editingAcaoIndex].id : uid("acao"),
         desc,
         responsavel: document.getElementById("acao_resp").value,
         prazo: document.getElementById("acao_prazo").value,
         custo: document.getElementById("acao_custo").value,
         status: document.getElementById("acao_status").value
-      });
-      document.getElementById("acao_desc").value = "";
+      };
+
+      if (editingAcaoIndex !== null) {
+        acoesTemp[editingAcaoIndex] = payload;
+        editingAcaoIndex = null;
+        setAcaoFormMode(false);
+      } else {
+        acoesTemp.push(payload);
+      }
+
+      clearAcaoInputs();
       renderAcoesTemp();
     }
 
+    function editAcaoTemp(i) {
+      const a = acoesTemp[i];
+      if (!a) return;
+
+      editingAcaoIndex = i;
+
+      document.getElementById("acao_desc").value = a.desc || "";
+      document.getElementById("acao_resp").value = a.responsavel || "";
+      document.getElementById("acao_prazo").value = a.prazo || "";
+      document.getElementById("acao_custo").value = a.custo || "";
+      document.getElementById("acao_status").value = a.status || "Não iniciada";
+
+      setAcaoFormMode(true);
+      document.getElementById("acao_desc").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function cancelEditAcaoTemp() {
+      editingAcaoIndex = null;
+      clearAcaoInputs();
+      setAcaoFormMode(false);
+    }
+
     function removeAcaoTemp(i) {
+      const a = acoesTemp[i];
+      if (!a) return;
+      if (!confirm("Remover esta etapa?")) return;
+
       acoesTemp.splice(i, 1);
+
+      if (editingAcaoIndex === i) cancelEditAcaoTemp();
+      if (editingAcaoIndex !== null && editingAcaoIndex > i) editingAcaoIndex--;
+
       renderAcoesTemp();
     }
 
@@ -1371,12 +1508,22 @@
       } else {
         document.getElementById("acoes-temp-empty").style.display = "none";
         list.innerHTML = acoesTemp.map((a, i) => `
-          <div class="bg-slate-50 p-3 rounded border flex justify-between items-center">
-            <div>
-              <p class="font-bold text-sm">${escapeHtml(a.desc)}</p>
-              <p class="text-xs text-slate-500">${escapeHtml(a.status)} • ${escapeHtml(a.responsavel || '-')} • ${escapeHtml(a.custo || '-')}</p>
+          <div class="bg-slate-50 p-3 rounded border flex justify-between items-center gap-3">
+            <div class="min-w-0">
+              <p class="font-bold text-sm text-slate-800 truncate">${escapeHtml(a.desc)}</p>
+              <p class="text-xs text-slate-500">
+                ${escapeHtml(a.status)} • ${escapeHtml(a.responsavel || '-')} • ${escapeHtml(a.prazo ? new Date(a.prazo).toLocaleDateString('pt-BR') : 'S/ prazo')} • ${escapeHtml(a.custo || '-')}
+              </p>
             </div>
-            <button type="button" onclick="removeAcaoTemp(${i})" class="text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+
+            <div class="flex gap-1 shrink-0">
+              <button type="button" onclick="editAcaoTemp(${i})" class="p-2 rounded-lg hover:bg-slate-200 text-blue-600" title="Editar etapa">
+                <i data-lucide="pencil" class="w-4 h-4"></i>
+              </button>
+              <button type="button" onclick="removeAcaoTemp(${i})" class="p-2 rounded-lg hover:bg-red-100 text-red-600" title="Remover etapa">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
         `).join("");
       }
@@ -1388,37 +1535,88 @@
     }
 
     // =========================
-    // CRUD: DELETE
+    // ACHADO SELECT (NOME DO ACHADO)
     // =========================
-    async function deleteAchado(achadoId) {
-      if (!confirm("Excluir este achado?")) return;
-      const item = allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
-      if (!item) return;
+    function populateAchadoSelect(processoId) {
+      const sel = document.getElementById("recomendacao_achado_id");
+      const achados = allData.filter(d => d.tipo === "achado" && d.processo_id === processoId);
 
-      // desassociar recomendações vinculadas ao achado
-      const recsVinc = allData.filter(d => d.tipo === "recomendacao" && d.achado_id === achadoId);
-      for (const r of recsVinc) {
-        const upd = {...r, achado_id: "", updated_at: nowISO()};
-        await window.dataSdk.update(upd);
-        auditLog("UPDATE", "recomendacao", `Desvinculou recomendação ${r.recomendacao_numero} do achado`, { recomendacao_id: r.recomendacao_id });
+      sel.innerHTML = `<option value="">(Opcional) Selecione um achado...</option>` + achados.map(a => {
+        const label = `Achado ${a.achado_numero}${a.achado_subitem ? "-"+a.achado_subitem : ""} - ${String(a.achado_descricao || "").slice(0, 80)}${String(a.achado_descricao||"").length > 80 ? "..." : ""}`;
+        return `<option value="${escapeHtml(a.achado_id)}">${escapeHtml(label)}</option>`;
+      }).join("");
+    }
+
+    function renderAchadoPreviewInRecModal() {
+      const sel = document.getElementById("recomendacao_achado_id");
+      const preview = document.getElementById("achado-preview");
+      const id = sel.value;
+      if (!id) {
+        preview.textContent = "";
+        return;
+      }
+      const a = getAchadoById(id);
+      if (!a) {
+        preview.textContent = "";
+        return;
+      }
+      const name = `Achado ${a.achado_numero}${a.achado_subitem ? "-"+a.achado_subitem : ""}`;
+      preview.textContent = `${name} • ${a.grau_risco || ""} • ${String(a.achado_descricao || "").slice(0, 140)}${String(a.achado_descricao||"").length > 140 ? "..." : ""}`;
+    }
+
+    // =========================
+    // CRUD: PROCESSO / ACHADO / RECOMENDAÇÃO
+    // =========================
+    async function deleteProcesso(processoId) {
+      if (!confirm("Excluir este processo e todos os achados/planos vinculados?")) return;
+
+      // apaga processo
+      const proc = allData.find(d => d.tipo === "processo" && d.processo_id === processoId);
+      if (proc) {
+        await window.dataSdk.delete(proc);
+        auditAdd("DELETE", "processo", `Processo ${proc.processo_numero || proc.processo_id}`);
       }
 
-      await window.dataSdk.delete(item);
-      auditLog("DELETE", "achado", `Excluiu achado ${item.achado_numero}`, { achado_id: achadoId });
+      // apaga dependências
+      const deps = allData.filter(d => (d.tipo === "achado" || d.tipo === "recomendacao") && d.processo_id === processoId);
+      for (const item of deps) {
+        await window.dataSdk.delete(item);
+        auditAdd("DELETE", item.tipo, `Vinculado ao processo ${proc?.processo_numero || processoId}`);
+      }
+
+      renderCurrentView();
+    }
+
+    async function deleteAchado(achadoId) {
+      if (!confirm("Excluir este achado? (recomendações vinculadas manterão o vínculo vazio)")) return;
+      const a = allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
+      if (!a) return;
+
+      await window.dataSdk.delete(a);
+      auditAdd("DELETE", "achado", `Achado ${a.achado_numero}${a.achado_subitem ? "-"+a.achado_subitem : ""}`);
+
+      // remove vínculo em recomendações que apontam para esse achado
+      const recs = allData.filter(d => d.tipo === "recomendacao" && d.achado_id === achadoId);
+      for (const r of recs) {
+        const next = { ...r, achado_id: "" , updated_at: new Date().toISOString() };
+        await window.dataSdk.update(next);
+        auditAdd("UPDATE", "recomendacao", `Removido vínculo ao achado em Rec ${r.recomendacao_numero}`);
+      }
+
       renderCurrentView();
     }
 
     async function deleteRecomendacao(recId) {
-      if (!confirm("Excluir esta recomendação/plano?")) return;
-      const item = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === recId);
-      if (!item) return;
-      await window.dataSdk.delete(item);
-      auditLog("DELETE", "recomendacao", `Excluiu recomendação ${item.recomendacao_numero}`, { recomendacao_id: recId });
+      if (!confirm("Excluir este plano de ação?")) return;
+      const rec = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === recId);
+      if (!rec) return;
+      await window.dataSdk.delete(rec);
+      auditAdd("DELETE", "recomendacao", `Rec ${rec.recomendacao_numero}${rec.recomendacao_subitem ? "-"+rec.recomendacao_subitem : ""}`);
       renderCurrentView();
     }
 
     // =========================
-    // EDIT RECOMENDAÇÃO
+    // EDITAR RECOMENDAÇÃO
     // =========================
     function openEditRecomendacao(recId) {
       currentEditingRec = recId;
@@ -1427,6 +1625,10 @@
 
       currentProcessoId = rec.processo_id;
 
+      // popular selects de achado do processo
+      populateAchadoSelect(currentProcessoId);
+
+      // campos base
       document.getElementById("recomendacao_numero").value = rec.recomendacao_numero || "";
       document.getElementById("recomendacao_subitem").value = rec.recomendacao_subitem || "";
       document.getElementById("recomendacao_texto").value = rec.recomendacao_texto || "";
@@ -1434,8 +1636,13 @@
       document.getElementById("prazo_global").value = rec.prazo_global || "";
       document.getElementById("responsavel_recomendacao").value = rec.responsavel_recomendacao || "";
 
-      // vínculo com achado
-      populateAchadosSelect(currentProcessoId, rec.achado_id || "");
+      // indicador e resultado
+      document.getElementById("indicador").value = rec.indicador || "";
+      document.getElementById("resultado").value = rec.resultado || "";
+
+      // vínculo ao achado
+      document.getElementById("recomendacao_achado_id").value = rec.achado_id || "";
+      renderAchadoPreviewInRecModal();
 
       // áreas
       areasResponsaveis = Array.isArray(rec.areas_responsaveis) ? [...rec.areas_responsaveis] : [];
@@ -1445,9 +1652,11 @@
 
       // ações
       acoesTemp = Array.isArray(rec.acoes) ? JSON.parse(JSON.stringify(rec.acoes)) : [];
+      editingAcaoIndex = null;
+      setAcaoFormMode(false);
       renderAcoesTemp();
 
-      // formal
+      // relatório formal
       document.getElementById("evidencias_cumprimento").value = rec.evidencias_cumprimento || "";
       document.getElementById("justificativa_nao_cumprimento").value = rec.justificativa_nao_cumprimento || "";
       document.getElementById("resultados_percebidos").value = rec.resultados_percebidos || "";
@@ -1457,197 +1666,176 @@
     }
 
     // =========================
-    // SUBMITS (AQUI ESTAVA O "SALVAR" FALTANDO!)
+    // SUBMITS (SALVAR FUNCIONANDO)
     // =========================
-    document.addEventListener("DOMContentLoaded", () => {
-      // PROCESSO
-      document.getElementById("processo-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        try {
-          const eixo = document.getElementById("eixo").value;
-          const eixo_outro = document.getElementById("eixo_outro").value;
+    document.getElementById("processo-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-          const base = {
-            tipo: "processo",
-            processo_id: currentProcessoId || uid("proc"),
-            processo_numero: document.getElementById("processo_numero").value,
-            eixo,
-            eixo_outro: eixo === "Outro" ? eixo_outro : "",
-            unidade: document.getElementById("unidade").value, // local auditado
-            periodo: document.getElementById("periodo").value,
-            objeto: document.getElementById("objeto").value,
-            responsavel: document.getElementById("responsavel").value,
-            auditor: document.getElementById("auditor").value,
-            setores_envolvidos: setoresProcesso.join("|"),
-            updated_at: nowISO()
-          };
+      const eixoVal = document.getElementById("eixo").value === "Outro"
+        ? (document.getElementById("eixo_outro").value || "Outro")
+        : document.getElementById("eixo").value;
 
-          if (currentProcessoId) {
-            // manter created_at anterior se existir
-            const prev = allData.find(d => d.tipo === "processo" && d.processo_id === currentProcessoId);
-            const finalObj = {...base, created_at: prev?.created_at || nowISO()};
-            await window.dataSdk.update(finalObj);
-            auditLog("UPDATE", "processo", `Atualizou processo ${finalObj.processo_numero}`, { processo_id: finalObj.processo_id });
-          } else {
-            const finalObj = {...base, created_at: nowISO()};
-            await window.dataSdk.create(finalObj);
-            auditLog("CREATE", "processo", `Criou processo ${finalObj.processo_numero}`, { processo_id: finalObj.processo_id });
-          }
+      const obj = {
+        tipo: "processo",
+        processo_id: currentEditingProc || uid("proc"),
+        processo_numero: document.getElementById("processo_numero").value,
+        eixo: eixoVal,
+        unidade: document.getElementById("unidade").value,
+        periodo: document.getElementById("periodo").value,
+        objeto: document.getElementById("objeto").value,
+        responsavel: document.getElementById("responsavel").value,
+        auditor: document.getElementById("auditor").value,
+        setores_envolvidos: setoresProcesso.join(", "),
+        updated_at: new Date().toISOString()
+      };
 
-          closeModal("processo");
-          showView("processos");
-        } catch (err) {
-          alert("Erro ao salvar processo. Verifique os campos obrigatórios.");
-          console.error(err);
-        }
-      });
+      const res = currentEditingProc
+        ? await window.dataSdk.update(obj)
+        : await window.dataSdk.create({ ...obj, created_at: new Date().toISOString() });
 
-      // ACHADO
-      document.getElementById("achado-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        if (!currentProcessoId) return alert("Processo não definido para o achado.");
+      if (!res?.isOk) return alert("Falha ao salvar processo: " + (res?.error || "erro"));
 
-        try {
-          const impacto = document.getElementById("impacto").value;
-          const base = {
-            tipo: "achado",
-            processo_id: currentProcessoId,
-            achado_id: currentAchadoId || uid("ach"),
-            achado_numero: document.getElementById("achado_numero").value,
-            achado_subitem: document.getElementById("achado_subitem").value,
-            grau_risco: document.getElementById("grau_risco").value,
-            impacto,
-            impacto_outro: impacto === "Outro" ? document.getElementById("impacto_outro").value : "",
-            achado_descricao: document.getElementById("achado_descricao").value,
-            responsavel_achado: document.getElementById("responsavel_achado").value,
-            evidencia: document.getElementById("evidencia").value,
-            updated_at: nowISO()
-          };
+      auditAdd(currentEditingProc ? "UPDATE" : "CREATE", "processo", `Processo ${obj.processo_numero}`);
+      closeModal("processo");
+      renderCurrentView();
+    });
 
-          if (currentAchadoId) {
-            const prev = allData.find(d => d.tipo === "achado" && d.achado_id === currentAchadoId);
-            const finalObj = {...base, created_at: prev?.created_at || nowISO()};
-            await window.dataSdk.update(finalObj);
-            auditLog("UPDATE", "achado", `Atualizou achado ${finalObj.achado_numero}`, { achado_id: finalObj.achado_id });
-          } else {
-            const finalObj = {...base, created_at: nowISO()};
-            await window.dataSdk.create(finalObj);
-            auditLog("CREATE", "achado", `Criou achado ${finalObj.achado_numero}`, { achado_id: finalObj.achado_id });
-          }
+    document.getElementById("achado-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentProcessoId) return alert("Processo não definido. Abra o achado a partir do processo.");
 
-          closeModal("achado");
-          showView("processos");
-        } catch (err) {
-          alert("Erro ao salvar achado. Verifique os campos obrigatórios.");
-          console.error(err);
-        }
-      });
+      const obj = {
+        tipo: "achado",
+        processo_id: currentProcessoId,
+        achado_id: currentAchadoId || uid("ach"),
+        achado_numero: document.getElementById("achado_numero").value,
+        achado_subitem: document.getElementById("achado_subitem").value,
+        grau_risco: document.getElementById("grau_risco").value,
+        impacto: document.getElementById("impacto").value,
+        impacto_outro: document.getElementById("impacto_outro").value,
+        achado_descricao: document.getElementById("achado_descricao").value,
+        responsavel_achado: document.getElementById("responsavel_achado").value,
+        evidencia: document.getElementById("evidencia").value,
+        updated_at: new Date().toISOString()
+      };
 
-      // RECOMENDAÇÃO
-      document.getElementById("recomendacao-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        if (!currentProcessoId) return alert("Processo não definido para a recomendação.");
+      const res = currentAchadoId
+        ? await window.dataSdk.update(obj)
+        : await window.dataSdk.create({ ...obj, created_at: new Date().toISOString() });
 
-        try {
-          const base = {
-            tipo: "recomendacao",
-            processo_id: currentProcessoId,
-            recomendacao_id: currentEditingRec || uid("rec"),
-            achado_id: document.getElementById("recomendacao_achado_id").value || "",
-            recomendacao_numero: document.getElementById("recomendacao_numero").value,
-            recomendacao_subitem: document.getElementById("recomendacao_subitem").value,
-            recomendacao_texto: document.getElementById("recomendacao_texto").value,
-            prioridade: document.getElementById("prioridade").value,
-            prazo_global: document.getElementById("prazo_global").value,
-            responsavel_recomendacao: document.getElementById("responsavel_recomendacao").value,
-            areas_responsaveis: [...areasResponsaveis],
-            areas_envolvidas: [...areasEnvolvidas],
-            acoes: acoesTemp,
-            evidencias_cumprimento: document.getElementById("evidencias_cumprimento").value,
-            justificativa_nao_cumprimento: document.getElementById("justificativa_nao_cumprimento").value,
-            resultados_percebidos: document.getElementById("resultados_percebidos").value,
-            updated_at: nowISO()
-          };
+      if (!res?.isOk) return alert("Falha ao salvar achado: " + (res?.error || "erro"));
 
-          const derived = getRecDerived(base);
-          const finalObj = {...base, ...derived};
+      auditAdd(currentAchadoId ? "UPDATE" : "CREATE", "achado", `Achado ${obj.achado_numero}${obj.achado_subitem ? "-"+obj.achado_subitem : ""}`);
+      closeModal("achado");
+      renderCurrentView();
+    });
 
-          if (currentEditingRec) {
-            const prev = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === currentEditingRec);
-            await window.dataSdk.update({...finalObj, created_at: prev?.created_at || nowISO()});
-            auditLog("UPDATE", "recomendacao", `Atualizou recomendação ${finalObj.recomendacao_numero}`, { recomendacao_id: finalObj.recomendacao_id });
-          } else {
-            await window.dataSdk.create({...finalObj, created_at: nowISO()});
-            auditLog("CREATE", "recomendacao", `Criou recomendação ${finalObj.recomendacao_numero}`, { recomendacao_id: finalObj.recomendacao_id });
-          }
+    document.getElementById("recomendacao-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentProcessoId) return alert("Processo não definido. Abra o plano a partir do processo.");
 
-          closeModal("recomendacao");
-          showView("recomendacoes");
-        } catch (err) {
-          alert("Erro ao salvar plano. Verifique os campos obrigatórios.");
-          console.error(err);
-        }
-      });
+      const base = {
+        tipo: "recomendacao",
+        processo_id: currentProcessoId,
+        recomendacao_id: currentEditingRec || uid("rec"),
+        achado_id: document.getElementById("recomendacao_achado_id").value || "",
+
+        recomendacao_numero: document.getElementById("recomendacao_numero").value,
+        recomendacao_subitem: document.getElementById("recomendacao_subitem").value,
+        recomendacao_texto: document.getElementById("recomendacao_texto").value,
+
+        indicador: document.getElementById("indicador").value,
+        resultado: document.getElementById("resultado").value,
+
+        prioridade: document.getElementById("prioridade").value,
+        prazo_global: document.getElementById("prazo_global").value,
+        responsavel_recomendacao: document.getElementById("responsavel_recomendacao").value,
+
+        areas_responsaveis: areasResponsaveis,
+        areas_envolvidas: areasEnvolvidas,
+
+        acoes: acoesTemp,
+
+        evidencias_cumprimento: document.getElementById("evidencias_cumprimento").value,
+        justificativa_nao_cumprimento: document.getElementById("justificativa_nao_cumprimento").value,
+        resultados_percebidos: document.getElementById("resultados_percebidos").value,
+
+        updated_at: new Date().toISOString()
+      };
+
+      const derived = getRecDerived(base);
+      const finalObj = { ...base, ...derived };
+
+      const res = currentEditingRec
+        ? await window.dataSdk.update(finalObj)
+        : await window.dataSdk.create({ ...finalObj, created_at: new Date().toISOString() });
+
+      if (!res?.isOk) return alert("Falha ao salvar plano: " + (res?.error || "erro"));
+
+      const ach = getAchadoById(finalObj.achado_id);
+      const achName = ach ? ` (vinculado ao Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""})` : "";
+      auditAdd(currentEditingRec ? "UPDATE" : "CREATE", "recomendacao", `Rec ${finalObj.recomendacao_numero}${finalObj.recomendacao_subitem ? "-"+finalObj.recomendacao_subitem : ""}${achName}`);
+
+      closeModal("recomendacao");
+      renderCurrentView();
     });
 
     // =========================
-    // LOGIN / UI
+    // LOGIN / SESSION
     // =========================
     function toggleSetorField() {
       const val = document.getElementById("login-perfil").value;
       document.getElementById("setor-field").style.display = val === "Técnico" ? "block" : "none";
 
-      // mock de setores (você pode trocar por lista real)
+      // exemplo simples de setores
       const sel = document.getElementById("login-setor");
-      sel.innerHTML = `
-        <option value="">Selecione seu setor...</option>
-        <option value="CAS">CAS</option>
-        <option value="SUH">SUH</option>
-        <option value="Financeiro">Financeiro</option>
-        <option value="RH">RH</option>
-        <option value="TI">TI</option>
-      `;
+      sel.innerHTML = `<option value="">Selecione...</option>
+        <option>CAS</option><option>SUAH</option><option>NAO</option><option>Financeiro</option><option>RH</option>`;
     }
 
-    document.getElementById("login-form").onsubmit = (e) => {
+    document.getElementById("login-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      userSession = {
-        nome: document.getElementById("login-nome").value,
-        perfil: document.getElementById("login-perfil").value,
-        setor: document.getElementById("login-setor").value
-      };
+
+      const perfil = document.getElementById("login-perfil").value;
+      const nome = document.getElementById("login-nome").value;
+      const setor = document.getElementById("login-setor").value;
+
+      if (perfil === "Técnico" && !setor) return alert("Selecione o setor.");
+
+      userSession = { nome, perfil, setor };
       localStorage.setItem("userSession", JSON.stringify(userSession));
+
+      auditAdd("LOGIN", "processo", `Login: ${perfil}${setor ? " ("+setor+")" : ""}`);
+
       document.getElementById("login-screen").style.display = "none";
       document.getElementById("app").style.display = "flex";
       updateUserUI();
-      auditLog("LOGIN", "sistema", "Login realizado", { perfil: userSession.perfil, setor: userSession.setor || "" });
-      renderCurrentView();
-    };
+      showView("dashboard");
+    });
 
     function updateUserUI() {
       if (!userSession) return;
+
       document.getElementById("user-name-sidebar").textContent = userSession.nome;
       document.getElementById("user-role-sidebar").textContent = userSession.perfil;
-      document.getElementById("user-avatar").textContent = userSession.nome.substring(0,2).toUpperCase();
-      document.getElementById("user-avatar-header").textContent = userSession.nome.substring(0,2).toUpperCase();
 
-      const badge = document.getElementById("user-setor-badge");
-      const text = document.getElementById("user-setor-text");
+      const initials = (userSession.nome || "U").trim().split(/\s+/).slice(0,2).map(s => s[0]?.toUpperCase() || "").join("");
+      document.getElementById("user-avatar").textContent = initials || "U";
+      document.getElementById("user-avatar-header").textContent = initials || "U";
+
+      // badge setor
       if (userSession.perfil === "Técnico" && userSession.setor) {
-        badge.style.display = "block";
-        text.textContent = "Setor: " + userSession.setor;
+        document.getElementById("user-setor-badge").style.display = "block";
+        document.getElementById("user-setor-text").textContent = userSession.setor;
       } else {
-        badge.style.display = "none";
+        document.getElementById("user-setor-badge").style.display = "none";
       }
 
-      // auditoria do sistema: somente adm
-      const navAudit = document.getElementById("nav-auditoria");
-      if (isAdmin()) navAudit.classList.remove("hidden");
-      else navAudit.classList.add("hidden");
+      // auditoria menu para ADM
+      document.getElementById("nav-auditoria").style.display = isAdmin() ? "flex" : "none";
     }
 
     function logout() {
-      auditLog("LOGOUT", "sistema", "Logout realizado");
       localStorage.removeItem("userSession");
       location.reload();
     }
@@ -1655,44 +1843,40 @@
     // =========================
     // EXPORTS (placeholders)
     // =========================
-    function exportMenuOpen() {
-      document.getElementById("modal-export").style.display = "flex";
-      auditLog("EXPORT", "sistema", "Abriu menu de exportação");
-    }
-    function exportPDFGeral() {
-      alert("Placeholder: exportPDFGeral()");
-      auditLog("EXPORT", "sistema", "Exportou PDF geral (placeholder)");
-    }
-    function exportPDFFormalGeral() {
-      alert("Placeholder: exportPDFFormalGeral()");
-      auditLog("EXPORT", "sistema", "Exportou PDF formal geral (placeholder)");
-    }
+    function exportMenuOpen() { document.getElementById("modal-export").style.display = "flex"; }
+    function exportPDFGeral() { alert("Exportação PDF: em desenvolvimento."); }
+    function exportPDFFormalGeral() { alert("Exportação PDF formal: em desenvolvimento."); }
 
     // =========================
     // INIT
     // =========================
     window.addEventListener("DOMContentLoaded", async () => {
+      // session
       const session = localStorage.getItem("userSession");
       if (session) {
         userSession = safeParse(session, null);
-        if (userSession) {
-          document.getElementById("login-screen").style.display = "none";
-          document.getElementById("app").style.display = "flex";
-          updateUserUI();
-        }
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("app").style.display = "flex";
+        updateUserUI();
       }
 
       ensureDataSdk();
+
       await window.dataSdk.init({
         onDataChanged: (d) => {
           allData = Array.isArray(d) ? d : [];
           renderCurrentView();
+          // se modal de rec estiver aberto, atualiza achados do processo
+          const recModalOpen = document.getElementById("modal-recomendacao").style.display === "flex";
+          if (recModalOpen && currentProcessoId) populateAchadoSelect(currentProcessoId);
         }
       });
 
-      // se cair aqui e for admin, já pode renderizar auditoria quando entrar na aba
+      // primeiro render
+      if (userSession) showView("dashboard");
       refreshIcons();
     });
   </script>
+
 </body>
 </html>
