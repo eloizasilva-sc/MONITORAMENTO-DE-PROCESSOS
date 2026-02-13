@@ -6,12 +6,10 @@
   <title>Processos Auditados | Executive View</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- SDKs (quando existir no ambiente). Se não existir, cai no localStorage. -->
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -28,7 +26,6 @@
       --green:#16a34a;
       --red:#ef4444;
     }
-
     body { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; background-color: #f8fafc; }
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     .progress-glow { box-shadow: 0 0 15px rgba(37, 99, 235, 0.3); }
@@ -37,12 +34,6 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     .dash-card:hover{ box-shadow:var(--shadow2); transform:translateY(-2px); transition:0.2s; }
     .active-link { background-color: rgba(37, 99, 235, 0.1); color: #2563eb; font-weight: 600; border-right: 3px solid #2563eb; }
-    .badge { display:inline-flex; align-items:center; gap:.375rem; padding:.25rem .6rem; border-radius:999px; font-weight:800; font-size:11px; }
-    .badge-slate { background:#f1f5f9; color:#475569; }
-    .badge-blue { background:#dbeafe; color:#1d4ed8; }
-    .badge-emerald { background:#d1fae5; color:#047857; }
-    .badge-amber { background:#fef3c7; color:#b45309; }
-    .badge-red { background:#fee2e2; color:#b91c1c; }
   </style>
 </head>
 
@@ -68,7 +59,6 @@
               <option value="Técnico">Técnico (Por Setor)</option>
             </select>
           </div>
-
           <div id="setor-field" style="display:none;">
             <label class="block text-sm font-medium text-slate-700 mb-2">Setor Responsável *</label>
             <select id="login-setor"
@@ -77,19 +67,16 @@
             </select>
             <p class="text-xs text-slate-500 mt-2">Você verá apenas processos do seu setor cadastrados pelo Administrador</p>
           </div>
-
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Nome Completo *</label>
             <input type="text" id="login-nome" required placeholder="Digite seu nome"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
-
           <button type="submit" id="login-btn"
             class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl">
             Entrar no Sistema
           </button>
         </form>
-
         <div class="mt-6 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
           <p>Sistema de Gestão de Auditorias</p>
           <p class="mt-1">Desenvolvido por Maria Eloiza da Silva - CAS-Administrativo</p>
@@ -98,7 +85,6 @@
     </div>
   </div>
 
-  <!-- APP -->
   <div id="app" style="display:none;" class="flex h-full overflow-hidden w-full">
 
     <!-- SIDEBAR -->
@@ -152,7 +138,6 @@
     <!-- MAIN -->
     <main class="flex-1 overflow-y-auto bg-[#f8fafc]">
 
-      <!-- TOPBAR -->
       <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
         <div>
           <h1 id="page-title" class="font-bold text-lg text-slate-800">Dashboard</h1>
@@ -210,8 +195,7 @@
       <!-- PROCESSOS -->
       <div id="view-processos" style="display:none;" class="p-8 max-w-[1600px] mx-auto">
         <div id="processos-list" class="space-y-6"></div>
-
-        <div id="processos-empty" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+        <div id="processos-empty" style="display:none;" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
           <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
           <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
           <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-slate-700 inline-flex items-center gap-2 mt-4">
@@ -220,9 +204,8 @@
         </div>
       </div>
 
-      <!-- PLANOS -->
+      <!-- PLANOS (RECOMENDAÇÕES) -->
       <div id="view-recomendacoes" style="display:none;" class="p-8 max-w-[1600px] mx-auto">
-
         <div class="glass-card rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
           <div class="flex flex-col lg:flex-row gap-4 items-end">
             <div class="flex-1 w-full">
@@ -240,7 +223,6 @@
                 <option value="Concluído">Concluído</option>
               </select>
             </div>
-
             <button onclick="resetRecFilters()" class="px-4 py-2 text-slate-500 hover:text-blue-600 font-bold text-sm">Limpar</button>
           </div>
         </div>
@@ -253,7 +235,7 @@
         </div>
       </div>
 
-      <!-- AUDITORIA SISTEMA (ADM GERAL) -->
+      <!-- AUDITORIA (ADMIN) -->
       <div id="view-auditoria" style="display:none;" class="p-8 max-w-[1600px] mx-auto">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
           <div class="flex items-start justify-between gap-4 flex-col lg:flex-row">
@@ -281,12 +263,14 @@
               <option value="CREATE">CREATE</option>
               <option value="UPDATE">UPDATE</option>
               <option value="DELETE">DELETE</option>
+              <option value="EXPORT">EXPORT</option>
             </select>
             <select id="audit-tipo" onchange="renderAuditView()" class="w-full px-3 py-2 border rounded-lg">
               <option value="">Todos Tipos</option>
               <option value="processo">Processo</option>
               <option value="achado">Achado</option>
-              <option value="recomendacao">Recomendação</option>
+              <option value="recomendacao">Plano de Ação</option>
+              <option value="system">Sistema</option>
             </select>
             <button onclick="resetAuditFilters()" class="border px-3 py-2 rounded-lg">Limpar</button>
           </div>
@@ -300,6 +284,7 @@
                   <th class="px-4 py-3 text-left">Data</th>
                   <th class="px-4 py-3 text-left">Usuário</th>
                   <th class="px-4 py-3 text-left">Ação</th>
+                  <th class="px-4 py-3 text-left">Tipo</th>
                   <th class="px-4 py-3 text-left">Resumo</th>
                 </tr>
               </thead>
@@ -320,7 +305,6 @@
         <h2 class="font-bold text-xl text-slate-800" id="modal-processo-title">Novo Processo</h2>
         <button onclick="closeModal('processo')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
       </div>
-
       <form id="processo-form" class="p-6 space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input type="text" id="processo_numero" required placeholder="Nº Processo SEI" class="w-full px-4 py-2 border rounded-lg">
@@ -331,18 +315,12 @@
             <option value="Contratos">Contratos</option>
             <option value="Outro">Outro</option>
           </select>
-
           <input type="text" id="eixo_outro" placeholder="Novo eixo..." style="display:none;" class="w-full px-4 py-2 border rounded-lg md:col-span-2">
-          <input type="text" id="unidade" required placeholder="Unidade/Hospital (Local auditado)" class="w-full px-4 py-2 border rounded-lg">
+          <input type="text" id="unidade" required placeholder="Unidade/Hospital" class="w-full px-4 py-2 border rounded-lg">
           <input type="text" id="periodo" required placeholder="Período (ex: Jan/2024)" class="w-full px-4 py-2 border rounded-lg">
-
-          <div class="md:col-span-2">
-            <input type="text" id="objeto" required placeholder="Objeto da Auditoria" class="w-full px-4 py-2 border rounded-lg">
-          </div>
-
+          <div class="md:col-span-2"><input type="text" id="objeto" required placeholder="Objeto da Auditoria" class="w-full px-4 py-2 border rounded-lg"></div>
           <input type="text" id="responsavel" placeholder="Responsável Unidade" class="w-full px-4 py-2 border rounded-lg">
           <input type="text" id="auditor" placeholder="Auditor Responsável" class="w-full px-4 py-2 border rounded-lg">
-
           <div class="md:col-span-2">
             <label class="block text-sm font-medium mb-1">Setores Envolvidos (Técnicos)</label>
             <div id="setores-processo-container" class="space-y-2 mb-2"></div>
@@ -352,7 +330,6 @@
             </div>
           </div>
         </div>
-
         <div class="flex gap-3 justify-end pt-4 border-t">
           <button type="button" onclick="closeModal('processo')" class="px-4 py-2 border rounded-lg">Cancelar</button>
           <button type="submit" id="submit-processo-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg">
@@ -370,9 +347,8 @@
         <h2 class="font-bold text-xl" id="modal-achado-title">Novo Achado</h2>
         <button onclick="closeModal('achado')"><i data-lucide="x"></i></button>
       </div>
-
       <form id="achado-form" class="p-6 space-y-4">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input id="achado_numero" required placeholder="Nº Achado" class="border px-4 py-2 rounded-lg">
           <input id="achado_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg">
           <select id="grau_risco" required class="border px-4 py-2 rounded-lg">
@@ -387,176 +363,149 @@
             <option value="Operacional">Operacional</option>
             <option value="Outro">Outro</option>
           </select>
-
-          <input id="impacto_outro" placeholder="Outro impacto" style="display:none;" class="border px-4 py-2 rounded-lg col-span-2">
-
-          <textarea id="achado_descricao" required rows="3" placeholder="Descrição do Achado" class="border px-4 py-2 rounded-lg col-span-2"></textarea>
-          <input id="responsavel_achado" placeholder="Responsável pelo Achado" class="border px-4 py-2 rounded-lg col-span-2">
-          <input id="evidencia" placeholder="Evidência" class="border px-4 py-2 rounded-lg col-span-2">
+          <input id="impacto_outro" placeholder="Outro impacto" style="display:none;" class="border px-4 py-2 rounded-lg md:col-span-2">
+          <textarea id="achado_descricao" required rows="3" placeholder="Descrição do Achado" class="border px-4 py-2 rounded-lg md:col-span-2"></textarea>
+          <input id="responsavel_achado" placeholder="Responsável pelo Achado" class="border px-4 py-2 rounded-lg md:col-span-2">
+          <input id="evidencia" placeholder="Evidência" class="border px-4 py-2 rounded-lg md:col-span-2">
         </div>
-
         <div class="flex justify-end gap-3">
           <button type="button" onclick="closeModal('achado')" class="border px-4 py-2 rounded-lg">Cancelar</button>
-          <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
-            <span id="submit-achado-text">Salvar</span>
-          </button>
+          <button type="submit" id="submit-achado-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg"><span id="submit-achado-text">Salvar</span></button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL RECOMENDAÇÃO / PLANO -->
- <div id="modal-recomendacao" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-    <div class="p-6 border-b flex justify-between sticky top-0 bg-white z-10">
-      <h2 class="font-bold text-xl">Plano de Ação</h2>
-      <button onclick="closeModal('recomendacao')"><i data-lucide="x"></i></button>
+  <!-- MODAL PLANO (RECOMENDAÇÃO) -->
+  <div id="modal-recomendacao" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b flex justify-between sticky top-0 bg-white z-10">
+        <h2 class="font-bold text-xl" id="modal-plano-title">Plano de Ação</h2>
+        <button onclick="closeModal('recomendacao')"><i data-lucide="x"></i></button>
+      </div>
+
+      <form id="recomendacao-form" class="p-6 space-y-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- VÍNCULO: RECOMENDAÇÃO VINCULADA (Nº + NOME) -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-1">Recomendação Vinculada</label>
+            <select id="recomendacao_vinculada_id" class="w-full border px-4 py-2 rounded-lg" onchange="renderRecomendacaoPreviewInModal()">
+              <option value="">(Opcional) Selecione uma recomendação...</option>
+            </select>
+            <p id="recomendacao-preview" class="text-xs text-slate-500 mt-2"></p>
+          </div>
+
+          <input id="recomendacao_numero" required placeholder="Nº Rec" class="border px-4 py-2 rounded-lg">
+          <input id="recomendacao_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg">
+
+          <select id="prioridade" required class="border px-4 py-2 rounded-lg">
+            <option value="">Prioridade...</option>
+            <option value="Alta">Alta</option>
+            <option value="Média">Média</option>
+            <option value="Baixa">Baixa</option>
+          </select>
+
+          <input id="prazo_global" required placeholder="Prazo Global" class="border px-4 py-2 rounded-lg">
+
+          <textarea id="recomendacao_texto" required rows="3" placeholder="O que deve ser feito (Recomendação)" class="border px-4 py-2 rounded-lg md:col-span-2"></textarea>
+
+          <input id="responsavel_recomendacao" placeholder="Responsável Principal" class="border px-4 py-2 rounded-lg">
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium">Áreas Responsáveis</label>
+            <div id="areas-container" class="space-y-1 mb-2"></div>
+            <div class="flex gap-2">
+              <input id="area_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
+              <button type="button" onclick="adicionarArea()" class="bg-blue-600 text-white px-4 rounded-lg">Add</button>
+            </div>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium">Áreas Envolvidas</label>
+            <div id="areas-envolvidas-container" class="space-y-1 mb-2"></div>
+            <div class="flex gap-2">
+              <input id="area_envolvida_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
+              <button type="button" onclick="adicionarAreaEnvolvida()" class="bg-purple-600 text-white px-4 rounded-lg">Add</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETAPAS / AÇÕES -->
+        <div class="border-t pt-4">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <h3 class="font-bold text-lg">Etapas / Ações</h3>
+            <div class="flex gap-2">
+              <button type="button" onclick="toggleAcoesManage()" class="px-4 py-2 border rounded-lg text-sm font-bold hover:bg-slate-50 flex items-center gap-2">
+                <i data-lucide="settings" class="w-4 h-4"></i> Gerenciar
+              </button>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-end mb-4 bg-slate-50 p-3 rounded-lg">
+            <div>
+              <span class="text-xs text-slate-500 font-bold uppercase">Progresso Calculado</span>
+              <div class="text-2xl font-bold"><span id="calc-progresso">0</span>%</div>
+            </div>
+            <span id="calc-status" class="px-2 py-1 bg-slate-200 rounded text-xs font-bold">Pendente</span>
+          </div>
+
+          <div id="acoes-add-box" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 p-4 border rounded-xl">
+            <input id="acao_desc" placeholder="Descrição da etapa" class="border px-3 py-2 rounded-lg md:col-span-2">
+            <input id="acao_resp" placeholder="Responsável" class="border px-3 py-2 rounded-lg">
+            <input id="acao_prazo" type="date" class="border px-3 py-2 rounded-lg">
+            <input id="acao_custo" placeholder="Custo (R$)" class="border px-3 py-2 rounded-lg">
+            <select id="acao_status" class="border px-3 py-2 rounded-lg">
+              <option value="Não iniciada">Não iniciada</option>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Concluída">Concluída</option>
+            </select>
+            <button type="button" onclick="addAcaoToTemp()" class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-bold">+ Adicionar Etapa</button>
+          </div>
+
+          <div id="acoes-temp-list" class="space-y-2"></div>
+          <div id="acoes-temp-empty" class="text-slate-400 text-center text-sm">Nenhuma etapa adicionada.</div>
+        </div>
+
+        <!-- SEÇÃO DE BAIXO: INDICADOR / RESULTADO / RESPONSÁVEL -->
+        <div class="border-t pt-4">
+          <h3 class="font-bold text-lg mb-3">Síntese do Plano</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Indicador</label>
+              <input id="indicador_plano" type="text" placeholder="Ex: % de recomendações concluídas no prazo" class="w-full border px-4 py-2 rounded-lg bg-white">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Resultado</label>
+              <input id="resultado_plano" type="text" placeholder="Ex: redução de 30% no tempo de resposta" class="w-full border px-4 py-2 rounded-lg bg-white">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Responsável Principal</label>
+              <input id="responsavel_principal_bottom" type="text" placeholder="Espelha o Responsável Principal (topo)" class="w-full border px-4 py-2 rounded-lg bg-white">
+              <p class="text-xs text-slate-500 mt-1">Este campo espelha o “Responsável Principal” do topo para facilitar visualização. Você pode ajustar aqui também.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RELATÓRIO FORMAL -->
+        <div class="border-t pt-4">
+          <h3 class="font-bold text-sm text-slate-500 uppercase mb-2">Relatório Formal (Opcional)</h3>
+          <textarea id="evidencias_cumprimento" rows="2" placeholder="Evidências..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
+          <textarea id="justificativa_nao_cumprimento" rows="2" placeholder="Justificativas..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
+          <textarea id="resultados_percebidos" rows="2" placeholder="Resultados..." class="w-full border px-3 py-2 rounded-lg"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 border-t pt-4">
+          <button type="button" onclick="closeModal('recomendacao')" class="border px-6 py-2 rounded-lg">Cancelar</button>
+          <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold"><span id="submit-recomendacao-text">Salvar Plano</span></button>
+        </div>
+      </form>
     </div>
-
-    <form id="recomendacao-form" class="p-6 space-y-6">
-
-      <!-- BLOCO SUPERIOR -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <!-- NOVO: VÍNCULO À RECOMENDAÇÃO (substitui "Vinculado ao Achado") -->
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium mb-1">Recomendação Vinculada</label>
-          <select id="recomendacao_vinculada_id"
-            class="w-full border px-4 py-2 rounded-lg"
-            onchange="renderRecomendacaoPreviewInModal()">
-            <option value="">(Opcional) Selecione uma recomendação...</option>
-          </select>
-          <p id="recomendacao-preview" class="text-xs text-slate-500 mt-2"></p>
-        </div>
-
-        <input id="recomendacao_numero" required placeholder="Nº Rec" class="border px-4 py-2 rounded-lg">
-        <input id="recomendacao_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg">
-
-        <select id="prioridade" required class="border px-4 py-2 rounded-lg">
-          <option value="">Prioridade...</option>
-          <option value="Alta">Alta</option>
-          <option value="Média">Média</option>
-          <option value="Baixa">Baixa</option>
-        </select>
-
-        <input id="prazo_global" required placeholder="Prazo Global" class="border px-4 py-2 rounded-lg">
-
-        <textarea id="recomendacao_texto" required rows="3" placeholder="O que deve ser feito (Recomendação)"
-          class="border px-4 py-2 rounded-lg md:col-span-2"></textarea>
-
-        <!-- Já existia, mantém -->
-        <input id="responsavel_recomendacao" placeholder="Responsável Principal" class="border px-4 py-2 rounded-lg">
-
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium">Áreas Responsáveis</label>
-          <div id="areas-container" class="space-y-1 mb-2"></div>
-          <div class="flex gap-2">
-            <input id="area_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
-            <button type="button" onclick="adicionarArea()" class="bg-blue-600 text-white px-4 rounded-lg">Add</button>
-          </div>
-        </div>
-
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium">Áreas Envolvidas</label>
-          <div id="areas-envolvidas-container" class="space-y-1 mb-2"></div>
-          <div class="flex gap-2">
-            <input id="area_envolvida_input" placeholder="Nova área..." class="flex-1 border px-4 py-2 rounded-lg">
-            <button type="button" onclick="adicionarAreaEnvolvida()" class="bg-purple-600 text-white px-4 rounded-lg">Add</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ETAPAS -->
-      <div class="border-t pt-4">
-        <h3 class="font-bold text-lg mb-2">Etapas / Ações</h3>
-
-        <div class="flex justify-between items-end mb-4 bg-slate-50 p-3 rounded-lg">
-          <div>
-            <span class="text-xs text-slate-500 font-bold uppercase">Progresso Calculado</span>
-            <div class="text-2xl font-bold"><span id="calc-progresso">0</span>%</div>
-          </div>
-          <span id="calc-status" class="px-2 py-1 bg-slate-200 rounded text-xs font-bold">Pendente</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 p-4 border rounded-xl">
-          <input id="acao_desc" placeholder="Descrição da etapa" class="border px-3 py-2 rounded-lg md:col-span-2">
-          <input id="acao_resp" placeholder="Responsável" class="border px-3 py-2 rounded-lg">
-          <input id="acao_prazo" type="date" class="border px-3 py-2 rounded-lg">
-          <input id="acao_custo" placeholder="Custo (R$)" class="border px-3 py-2 rounded-lg">
-
-          <select id="acao_status" class="border px-3 py-2 rounded-lg">
-            <option value="Não iniciada">Não iniciada</option>
-            <option value="Em andamento">Em andamento</option>
-            <option value="Concluída">Concluída</option>
-          </select>
-
-          <button type="button" onclick="addAcaoToTemp()" class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-bold">
-            + Adicionar Etapa
-          </button>
-        </div>
-
-        <div id="acoes-temp-list" class="space-y-2"></div>
-        <div id="acoes-temp-empty" class="text-slate-400 text-center text-sm">Nenhuma etapa adicionada.</div>
-      </div>
-
-      <!-- SEÇÃO DE BAIXO (COM INDICADOR / RESULTADO / RESPONSÁVEL PRINCIPAL) -->
-      <div class="border-t pt-4">
-        <h3 class="font-bold text-lg mb-3">Síntese do Plano (Indicador e Resultado)</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border">
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Indicador
-            </label>
-            <input id="indicador_plano" type="text"
-              placeholder="Ex: % de recomendações concluídas no prazo"
-              class="w-full border px-4 py-2 rounded-lg bg-white">
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Resultado
-            </label>
-            <input id="resultado_plano" type="text"
-              placeholder="Ex: redução de 30% no tempo de resposta"
-              class="w-full border px-4 py-2 rounded-lg bg-white">
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Responsável Principal
-            </label>
-            <input id="responsavel_principal_bottom" type="text"
-              placeholder="Será preenchido automaticamente, mas você pode ajustar"
-              class="w-full border px-4 py-2 rounded-lg bg-white">
-            <p class="text-xs text-slate-500 mt-1">
-              Esse campo espelha o “Responsável Principal” do topo, para ficar visível na seção final do plano.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- RELATÓRIO FORMAL -->
-      <div class="border-t pt-4">
-        <h3 class="font-bold text-sm text-slate-500 uppercase mb-2">Relatório Formal (Opcional)</h3>
-        <textarea id="evidencias_cumprimento" rows="2" placeholder="Evidências..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
-        <textarea id="justificativa_nao_cumprimento" rows="2" placeholder="Justificativas..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
-        <textarea id="resultados_percebidos" rows="2" placeholder="Resultados..." class="w-full border px-3 py-2 rounded-lg"></textarea>
-      </div>
-
-      <div class="flex justify-end gap-3 border-t pt-4">
-        <button type="button" onclick="closeModal('recomendacao')" class="border px-6 py-2 rounded-lg">Cancelar</button>
-        <button type="submit" id="submit-recomendacao-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">
-          <span id="submit-recomendacao-text">Salvar Plano</span>
-        </button>
-      </div>
-
-    </form>
   </div>
-</div>
 
-  <!-- MODAL EXPORT (placeholder) -->
+  <!-- MODAL EXPORT -->
   <div id="modal-export" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
       <div class="flex justify-between mb-4">
@@ -568,7 +517,7 @@
           <i data-lucide="file-text" class="text-blue-600"></i>
           <div>
             <p class="font-bold">Relatório Geral</p>
-            <p class="text-xs text-slate-500">Todas as recomendações</p>
+            <p class="text-xs text-slate-500">Processos + Achados + Planos</p>
           </div>
         </button>
 
@@ -576,16 +525,14 @@
           <p class="font-bold mb-2 flex items-center gap-2">
             <i data-lucide="folder" class="text-blue-600 w-4 h-4"></i> Por Processo
           </p>
-          <div id="processos-plano-list" class="max-h-32 overflow-y-auto space-y-1 text-sm text-slate-600">
-            <p class="text-xs text-slate-400 italic">Em desenvolvimento</p>
-          </div>
+          <div id="processos-plano-list" class="max-h-32 overflow-y-auto space-y-1"></div>
         </div>
 
         <button onclick="exportPDFFormalGeral()" class="w-full text-left p-4 border rounded-lg hover:bg-purple-50 flex items-center gap-3">
           <i data-lucide="file-check-2" class="text-purple-600"></i>
           <div>
             <p class="font-bold">Formal Geral</p>
-            <p class="text-xs text-slate-500">Com evidências e justificativas</p>
+            <p class="text-xs text-slate-500">Inclui evidências/justificativas/resultados formais</p>
           </div>
         </button>
 
@@ -593,31 +540,24 @@
           <p class="font-bold mb-2 flex items-center gap-2">
             <i data-lucide="folder-check" class="text-purple-600 w-4 h-4"></i> Formal por Processo
           </p>
-          <div id="processos-formal-list" class="max-h-32 overflow-y-auto space-y-1 text-sm text-slate-600">
-            <p class="text-xs text-slate-400 italic">Em desenvolvimento</p>
-          </div>
+          <div id="processos-formal-list" class="max-h-32 overflow-y-auto space-y-1"></div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // =========================
-    // STORAGE & SDK
-    // =========================
+    /* ==========================================================
+      STORAGE + SDK LOCAL (fallback)
+    ========================================================== */
     const STORAGE_KEY = "processos_auditados_v3";
-    const AUDIT_KEY   = "processos_auditados_audit_v1";
+    const AUDIT_KEY = "audit_log_v1";
 
     function safeParse(json, fallback) { try { return JSON.parse(json) ?? fallback; } catch { return fallback; } }
     function getStoredData() { return safeParse(localStorage.getItem(STORAGE_KEY), []); }
     function setStoredData(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
-
-    function getAuditLog() { return safeParse(localStorage.getItem(AUDIT_KEY), []); }
-    function setAuditLog(arr) { localStorage.setItem(AUDIT_KEY, JSON.stringify(arr)); }
-
-    function uid(prefix="id") {
-      return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    }
+    function getAudit() { return safeParse(localStorage.getItem(AUDIT_KEY), []); }
+    function setAudit(arr) { localStorage.setItem(AUDIT_KEY, JSON.stringify(arr)); }
 
     function getIdFieldByTipo(tipo) {
       if (tipo === "processo") return "processo_id";
@@ -626,7 +566,6 @@
       return null;
     }
 
-    // Local SDK fallback
     const localSdk = {
       _onDataChanged: null,
       async init({ onDataChanged } = {}) {
@@ -640,8 +579,7 @@
         if (!idField || !item?.[idField]) return { isOk: false, error: "ID ausente" };
         const data = getStoredData();
         if (data.some(d => d.tipo === item.tipo && d[idField] === item[idField])) return { isOk: false, error: "ID já existe" };
-        data.push(item);
-        setStoredData(data);
+        data.push(item); setStoredData(data);
         if (this._onDataChanged) this._onDataChanged(data);
         return { isOk: true };
       },
@@ -650,8 +588,7 @@
         const data = getStoredData();
         const idx = data.findIndex(d => d.tipo === item.tipo && d[idField] === item[idField]);
         if (idx === -1) return { isOk: false, error: "Item não encontrado" };
-        data[idx] = item;
-        setStoredData(data);
+        data[idx] = item; setStoredData(data);
         if (this._onDataChanged) this._onDataChanged(data);
         return { isOk: true };
       },
@@ -666,132 +603,51 @@
     };
 
     function ensureDataSdk() {
-      if (!window.dataSdk || typeof window.dataSdk.create !== "function") {
-        window.dataSdk = localSdk;
-      }
+      if (!window.dataSdk || typeof window.dataSdk.create !== "function") window.dataSdk = localSdk;
     }
 
-    // =========================
-    // GLOBAL STATE
-    // =========================
+    /* ==========================================================
+      GLOBAIS
+    ========================================================== */
     let allData = [];
     let currentView = "dashboard";
     let userSession = null;
 
-    // Edit contexts
+    // edição / contexto
     let currentProcessoId = null;
     let currentAchadoId = null;
     let currentEditingRec = null;
-    let currentEditingProc = null;
 
     let setoresProcesso = [];
     let areasResponsaveis = [];
     let areasEnvolvidas = [];
     let acoesTemp = [];
-    let editingAcaoIndex = null;
+    let acoesManageMode = false;
 
     const recFilters = { busca: "", status: "" };
 
-    // =========================
-    // UI HELPERS
-    // =========================
+    /* ==========================================================
+      UTIL
+    ========================================================== */
     function refreshIcons() { try { if (window.lucide) window.lucide.createIcons(); } catch {} }
-    function escapeHtml(str) {
-      return (str || "")
-        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-    function isAdmin() {
-      return !!userSession && userSession.perfil === "Administrador Geral - CAS ADM";
-    }
-    function fmtDateTime(iso) {
-      try { return new Date(iso).toLocaleString("pt-BR"); } catch { return iso || ""; }
-    }
+    function escapeHtml(str) { return (str || "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-    // =========================
-    // AUDIT LOG (ADM)
-    // =========================
-    function auditAdd(action, tipo, summary) {
-      const log = getAuditLog();
-      log.unshift({
-        at: new Date().toISOString(),
-        user: userSession?.nome || "N/A",
-        action,
-        tipo,
-        summary: summary || ""
-      });
-      setAuditLog(log.slice(0, 2000));
+    function isAdmin() { return !!userSession && userSession.perfil === "Administrador Geral - CAS ADM"; }
+    function nowISO() { return new Date().toISOString(); }
+
+    function logAudit({ action, tipo, resumo }) {
+      const entry = {
+        ts: nowISO(),
+        user: userSession?.nome || "Desconhecido",
+        action: action || "UPDATE",
+        tipo: tipo || "system",
+        resumo: resumo || ""
+      };
+      const list = getAudit();
+      list.unshift(entry);
+      setAudit(list.slice(0, 2000)); // limite
     }
 
-    function exportAuditJSON() {
-      const log = getAuditLog();
-      const blob = new Blob([JSON.stringify(log, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "auditoria_sistema.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-
-    function clearAuditLog() {
-      if (!confirm("Limpar todos os registros de auditoria?")) return;
-      setAuditLog([]);
-      renderAuditView();
-    }
-
-    function resetAuditFilters() {
-      document.getElementById("audit-busca").value = "";
-      document.getElementById("audit-acao").value = "";
-      document.getElementById("audit-tipo").value = "";
-      renderAuditView();
-    }
-
-    function renderAuditView() {
-      if (!isAdmin()) return;
-
-      const busca = (document.getElementById("audit-busca")?.value || "").toLowerCase();
-      const acao = document.getElementById("audit-acao")?.value || "";
-      const tipo = document.getElementById("audit-tipo")?.value || "";
-
-      let log = getAuditLog();
-
-      log = log.filter(l => {
-        if (acao && l.action !== acao) return false;
-        if (tipo && l.tipo !== tipo) return false;
-        if (busca) {
-          const hay = `${l.user} ${l.action} ${l.tipo} ${l.summary}`.toLowerCase();
-          if (!hay.includes(busca)) return false;
-        }
-        return true;
-      });
-
-      const tbody = document.getElementById("audit-table-body");
-      const empty = document.getElementById("audit-empty");
-
-      if (log.length === 0) {
-        tbody.innerHTML = "";
-        empty.style.display = "block";
-      } else {
-        empty.style.display = "none";
-        tbody.innerHTML = log.map(l => `
-          <tr class="border-b hover:bg-slate-50">
-            <td class="px-4 py-3 whitespace-nowrap text-slate-600">${escapeHtml(fmtDateTime(l.at))}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-semibold text-slate-800">${escapeHtml(l.user)}</td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <span class="badge ${l.action === 'DELETE' ? 'badge-red' : l.action === 'UPDATE' ? 'badge-amber' : l.action === 'CREATE' ? 'badge-emerald' : 'badge-blue'}">${escapeHtml(l.action)}</span>
-              <span class="ml-2 text-xs text-slate-500 font-bold uppercase">${escapeHtml(l.tipo || '')}</span>
-            </td>
-            <td class="px-4 py-3 text-slate-700">${escapeHtml(l.summary || '')}</td>
-          </tr>
-        `).join("");
-      }
-      refreshIcons();
-    }
-
-    // =========================
-    // FILTER BY USER (TÉCNICO)
-    // =========================
     function filterDataByUser(data) {
       if (!userSession || isAdmin()) return data;
 
@@ -800,6 +656,7 @@
         if (item.tipo === "processo") return (item.setores_envolvidos || "").includes(userSetor);
         return true;
       });
+
       const procsIds = processosPermitidos.filter(p => p.tipo === "processo").map(p => p.processo_id);
 
       return data.filter(item => {
@@ -809,9 +666,6 @@
       });
     }
 
-    // =========================
-    // DERIVED RECOMMENDATION
-    // =========================
     function computeProgressFromAcoes(acoes) {
       if (!Array.isArray(acoes) || acoes.length === 0) return 0;
       const sum = acoes.reduce((acc, a) => acc + (a.status === "Concluída" ? 1 : a.status === "Em andamento" ? 0.5 : 0), 0);
@@ -836,43 +690,50 @@
       };
     }
 
-    // =========================
-    // NAV
-    // =========================
+    function moneyToNumber(v) {
+      if (!v) return 0;
+      const s = v.toString().replace(/\./g,'').replace(',', '.').replace(/[^0-9.]/g,'');
+      const n = parseFloat(s);
+      return isNaN(n) ? 0 : n;
+    }
+
+    /* ==========================================================
+      NAVEGAÇÃO
+    ========================================================== */
     function showView(view) {
       currentView = view;
 
       document.querySelectorAll('[id^="view-"]').forEach(v => v.style.display = "none");
-      const target = document.getElementById("view-" + view);
-      if (target) target.style.display = "block";
+      document.getElementById("view-" + view).style.display = "block";
 
       document.querySelectorAll('[id^="nav-"]').forEach(n => n.classList.remove("active-link"));
       const nav = document.getElementById("nav-" + view);
       if (nav) nav.classList.add("active-link");
 
+      // títulos
       const titles = {
-        dashboard: ["Dashboard", "Visão geral de locais, processos e planos"],
-        processos: ["Processos", "Cadastro de processos, achados e recomendações"],
-        recomendacoes: ["Planos de Ação", "Acompanhamento 5W2H por recomendação"],
-        auditoria: ["Auditoria do Sistema", "Logs e rastreabilidade de ações"]
+        dashboard: { t: "Dashboard", s: "Visão geral executiva" },
+        processos: { t: "Processos", s: "Cadastro e acompanhamento" },
+        recomendacoes: { t: "Planos de Ação", s: "Recomendações e 5W2H" },
+        auditoria: { t: "Auditoria do Sistema", s: "Logs e rastreabilidade" },
       };
-      document.getElementById("page-title").textContent = titles[view]?.[0] || "Sistema";
-      document.getElementById("page-subtitle").textContent = titles[view]?.[1] || "";
+      document.getElementById("page-title").textContent = titles[view]?.t || "Sistema";
+      document.getElementById("page-subtitle").textContent = titles[view]?.s || "";
 
       renderCurrentView();
     }
 
     function renderCurrentView() {
-      const filteredData = filterDataByUser(allData);
-      if (currentView === "dashboard") renderDashboard(filteredData);
-      else if (currentView === "processos") renderProcessos(filteredData);
-      else if (currentView === "recomendacoes") renderRecomendacoes(filteredData);
+      const filtered = filterDataByUser(allData);
+      if (currentView === "dashboard") renderDashboard(filtered);
+      else if (currentView === "processos") renderProcessos(filtered);
+      else if (currentView === "recomendacoes") renderRecomendacoes(filtered);
       else if (currentView === "auditoria") renderAuditView();
     }
 
-    // =========================
-    // DASHBOARD
-    // =========================
+    /* ==========================================================
+      DASHBOARD
+    ========================================================== */
     function renderDashboard(data) {
       const processos = data.filter(d => d.tipo === "processo");
       const recs = data.filter(d => d.tipo === "recomendacao").map(r => ({...r, ...getRecDerived(r)}));
@@ -884,6 +745,7 @@
       document.getElementById("dash-atrasadas").textContent = recs.filter(r => r.status === "Atrasado").length;
 
       const container = document.getElementById("locais-dashboard");
+
       if (locais.length === 0) {
         container.innerHTML = "";
         document.getElementById("dashboard-empty").style.display = "block";
@@ -891,14 +753,13 @@
         document.getElementById("dashboard-empty").style.display = "none";
         container.innerHTML = locais.map(local => {
           const pLocal = processos.filter(p => p.unidade === local);
-          const pIds = pLocal.map(p => p.processo_id);
-          const rLocal = recs.filter(r => pIds.includes(r.processo_id));
+          const rLocal = recs.filter(r => pLocal.some(p => p.processo_id === r.processo_id));
           const pendentes = rLocal.filter(r => r.status === "Pendente" || r.status === "Em Execução").length;
           const concluidas = rLocal.filter(r => r.status === "Concluído").length;
 
           return `
             <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-all cursor-pointer"
-                 onclick="goToLocal('${escapeHtml(local)}')">
+                 onclick="jumpToLocal('${escapeHtml(local)}')">
               <div class="flex justify-between items-start mb-4">
                 <div>
                   <h3 class="font-bold text-lg text-slate-800">${escapeHtml(local)}</h3>
@@ -924,23 +785,26 @@
           `;
         }).join("");
       }
+
       refreshIcons();
     }
 
-    function goToLocal(local) {
-      // filtra visualmente indo para Processos (simples)
-      showView("processos");
-      const el = document.querySelector(`[data-local="${CSS.escape(local)}"]`);
-      if (el) el.scrollIntoView({ behavior:"smooth", block:"start" });
+    function jumpToLocal(local) {
+      // vai para Processos e filtra visualmente (simples: rola até o primeiro)
+      showView('processos');
+      setTimeout(() => {
+        const el = document.querySelector(`[data-proc-local="${CSS.escape(local)}"]`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
     }
 
-    // =========================
-    // PROCESSOS (COM Nº PROCESSO, LOCAL, ACHADOS, RECOMENDAÇÕES)
-    // =========================
+    /* ==========================================================
+      PROCESSOS (cards com Achados + Botões)
+    ========================================================== */
     function renderProcessos(data) {
       const processos = data.filter(d => d.tipo === "processo");
       const achados = data.filter(d => d.tipo === "achado");
-      const recs = data.filter(d => d.tipo === "recomendacao").map(r => ({...r, ...getRecDerived(r)}));
+      const planos  = data.filter(d => d.tipo === "recomendacao").map(r => ({...r, ...getRecDerived(r)}));
 
       const list = document.getElementById("processos-list");
       const empty = document.getElementById("processos-empty");
@@ -951,174 +815,178 @@
         refreshIcons();
         return;
       }
+
       empty.style.display = "none";
+      list.innerHTML = processos
+        .sort((a,b) => (b.created_at||"").localeCompare(a.created_at||""))
+        .map(p => {
+          const aProc = achados.filter(a => a.processo_id === p.processo_id);
+          const rProc = planos.filter(r => r.processo_id === p.processo_id);
+          const atras = rProc.filter(r => r.status === "Atrasado").length;
 
-      list.innerHTML = processos.map(p => {
-        const aProc = achados.filter(a => a.processo_id === p.processo_id);
-        const rProc = recs.filter(r => r.processo_id === p.processo_id);
+          const setores = (p.setores_envolvidos || "").split("||").filter(Boolean);
 
-        const pend = rProc.filter(r => r.status !== "Concluído").length;
-        const ok = rProc.filter(r => r.status === "Concluído").length;
+          return `
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6" data-proc-local="${escapeHtml(p.unidade||"")}">
+              <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 class="text-xl font-extrabold text-slate-800 truncate">
+                      Processo ${escapeHtml(p.processo_numero || p.processo_id)}
+                    </h3>
+                    <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-600">
+                      ${escapeHtml(p.unidade || "Sem local")}
+                    </span>
+                    ${atras ? `<span class="px-3 py-1 bg-red-50 border border-red-200 rounded-full text-xs font-black text-red-600">${atras} atrasado(s)</span>` : ""}
+                  </div>
+                  <p class="text-sm text-slate-500 mt-2">
+                    <span class="font-bold">Período:</span> ${escapeHtml(p.periodo || "-")} •
+                    <span class="font-bold">Eixo:</span> ${escapeHtml(p.eixo_final || p.eixo || "-")}
+                  </p>
+                  <p class="text-sm text-slate-600 mt-1 line-clamp-2">
+                    <span class="font-bold">Objeto:</span> ${escapeHtml(p.objeto || "-")}
+                  </p>
 
-        return `
-          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" data-local="${escapeHtml(p.unidade || '')}">
-            <div class="p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div class="min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="text-xl font-extrabold text-slate-800">Processo ${escapeHtml(p.processo_numero || p.processo_id)}</h3>
-                  <span class="badge badge-slate"><i data-lucide="map-pin" class="w-3 h-3"></i> ${escapeHtml(p.unidade || "Sem local")}</span>
-                  <span class="badge badge-blue"><i data-lucide="calendar" class="w-3 h-3"></i> ${escapeHtml(p.periodo || "S/ período")}</span>
-                </div>
-                <p class="text-sm text-slate-500 mt-2">${escapeHtml(p.objeto || "")}</p>
-                <div class="mt-2 text-xs text-slate-500 flex flex-wrap gap-2">
-                  <span><b>Eixo:</b> ${escapeHtml(p.eixo || "")}</span>
-                  <span><b>Auditor:</b> ${escapeHtml(p.auditor || "-")}</span>
-                  <span><b>Resp. Unidade:</b> ${escapeHtml(p.responsavel || "-")}</span>
-                </div>
-              </div>
-
-              <div class="flex gap-2 flex-wrap">
-                <button onclick="openNewAchadoModal('${p.processo_id}')" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-blue-600 inline-flex items-center gap-2">
-                  <i data-lucide="plus" class="w-4 h-4"></i> Novo Achado
-                </button>
-                <button onclick="openNewRecomendacaoModal('${p.processo_id}')" class="px-4 py-2 rounded-xl border font-bold text-sm hover:bg-slate-50 inline-flex items-center gap-2">
-                  <i data-lucide="list-plus" class="w-4 h-4"></i> Novo Plano
-                </button>
-                ${isAdmin() ? `
-                  <button onclick="deleteProcesso('${p.processo_id}')" class="px-4 py-2 rounded-xl border border-red-300 text-red-600 font-bold text-sm hover:bg-red-50 inline-flex items-center gap-2">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir
-                  </button>
-                ` : ``}
-              </div>
-            </div>
-
-            <div class="p-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4">
-                <div class="flex items-center justify-between mb-3">
-                  <h4 class="font-extrabold text-slate-800 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> Achados</h4>
-                  <span class="text-xs font-bold text-slate-500">${aProc.length}</span>
-                </div>
-
-                ${aProc.length ? `
-                  <div class="space-y-2">
-                    ${aProc.map(a => `
-                      <div class="bg-white rounded-xl border border-slate-200 p-3">
-                        <div class="flex items-start justify-between gap-3">
-                          <div class="min-w-0">
-                            <p class="font-extrabold text-slate-800">
-                              Achado ${escapeHtml(a.achado_numero)}${a.achado_subitem ? "-"+escapeHtml(a.achado_subitem) : ""}
-                              <span class="ml-2 badge ${a.grau_risco === 'Alto' ? 'badge-red' : a.grau_risco === 'Médio' ? 'badge-amber' : 'badge-emerald'}">${escapeHtml(a.grau_risco || '')}</span>
-                            </p>
-                            <p class="text-sm text-slate-600 mt-1 line-clamp-2">${escapeHtml(a.achado_descricao || "")}</p>
-                            <p class="text-xs text-slate-500 mt-1">
-                              <b>Impacto:</b> ${escapeHtml(a.impacto || a.impacto_outro || "-")}
-                              <span class="mx-2">•</span>
-                              <b>Responsável:</b> ${escapeHtml(a.responsavel_achado || "-")}
-                            </p>
-                          </div>
-
-                          ${isAdmin() ? `
-                            <button onclick="deleteAchado('${a.achado_id}')" class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir Achado">
-                              <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                          ` : ``}
-                        </div>
-                      </div>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    ${(setores.length ? setores : ["(sem setores)"]).map(s => `
+                      <span class="text-xs font-bold px-2 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-100">${escapeHtml(s)}</span>
                     `).join("")}
                   </div>
-                ` : `<p class="text-sm text-slate-400 italic">Nenhum achado cadastrado neste processo.</p>`}
-              </div>
-
-              <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4">
-                <div class="flex items-center justify-between mb-3">
-                  <h4 class="font-extrabold text-slate-800 flex items-center gap-2"><i data-lucide="list-checks" class="w-4 h-4 text-blue-600"></i> Planos / Recomendações</h4>
-                  <div class="text-xs font-bold text-slate-500">
-                    <span class="badge badge-emerald">${ok} OK</span>
-                    <span class="badge badge-amber ml-2">${pend} Pend.</span>
-                  </div>
                 </div>
 
-                ${rProc.length ? `
-                  <div class="space-y-2">
-                    ${rProc.map(r => {
-                      const ach = getAchadoById(r.achado_id);
-                      const achName = ach ? `Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""}` : "";
-                      const statusBadge = r.status === "Concluído" ? "badge-emerald" : r.status === "Atrasado" ? "badge-red" : r.status === "Em Execução" ? "badge-blue" : "badge-slate";
-                      return `
-                        <div class="bg-white rounded-xl border border-slate-200 p-3">
-                          <div class="flex items-start justify-between gap-3">
+                <div class="flex gap-2 flex-wrap justify-start lg:justify-end">
+                  <button class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-blue-600 flex items-center gap-2"
+                          onclick="openNewAchadoModal('${p.processo_id}')">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Novo Achado
+                  </button>
+                  <button class="px-4 py-2 rounded-xl border border-slate-300 bg-white font-bold text-sm hover:bg-slate-50 flex items-center gap-2"
+                          onclick="openNewPlanoModal('${p.processo_id}')">
+                    <i data-lucide="list-checks" class="w-4 h-4"></i> Novo Plano
+                  </button>
+                  <button class="px-4 py-2 rounded-xl border border-slate-300 bg-white font-bold text-sm hover:bg-slate-50 flex items-center gap-2"
+                          onclick="openEditProcesso('${p.processo_id}')">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i> Editar
+                  </button>
+                  ${isAdmin() ? `
+                    <button class="px-4 py-2 rounded-xl border border-red-200 bg-red-50 text-red-700 font-bold text-sm hover:bg-red-100 flex items-center gap-2"
+                            onclick="deleteProcesso('${p.processo_id}')">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir
+                    </button>
+                  ` : ``}
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+                <div class="border rounded-xl p-4 bg-slate-50/50">
+                  <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-black text-xs uppercase text-slate-600 flex items-center gap-2">
+                      <i data-lucide="search" class="w-4 h-4 text-slate-500"></i> Achados
+                    </h4>
+                    <span class="text-xs font-bold text-slate-500">${aProc.length}</span>
+                  </div>
+                  <div class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-1">
+                    ${aProc.length ? aProc
+                      .sort((x,y)=>(x.achado_numero||"").localeCompare(y.achado_numero||""))
+                      .map(a => `
+                        <div class="bg-white border border-slate-200 rounded-xl p-3">
+                          <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0">
-                              <p class="font-extrabold text-slate-800">
-                                Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? "-"+escapeHtml(r.recomendacao_subitem) : ""}
-                                <span class="ml-2 badge ${statusBadge}">${escapeHtml(r.status)}</span>
-                                ${achName ? `<span class="ml-2 badge badge-slate"><i data-lucide="link" class="w-3 h-3"></i> ${escapeHtml(achName)}</span>` : ``}
+                              <p class="font-extrabold text-slate-800 text-sm">
+                                Achado ${escapeHtml(a.achado_numero)}${a.achado_subitem ? "-" + escapeHtml(a.achado_subitem) : ""}
+                                <span class="ml-2 text-[10px] font-black px-2 py-0.5 rounded-full
+                                  ${a.grau_risco==='Alto'?'bg-red-50 text-red-700 border border-red-200':
+                                    a.grau_risco==='Médio'?'bg-amber-50 text-amber-700 border border-amber-200':
+                                    'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                                  ${escapeHtml(a.grau_risco || "—")}
+                                </span>
                               </p>
-                              <p class="text-sm text-slate-600 mt-1 line-clamp-2">${escapeHtml(r.recomendacao_texto || "")}</p>
-                              <p class="text-xs text-slate-500 mt-1">
-                                <b>Prazo:</b> ${escapeHtml(r.prazo_global || "-")}
-                                <span class="mx-2">•</span>
-                                <b>Responsável:</b> ${escapeHtml(r.responsavel_recomendacao || "-")}
-                                <span class="mx-2">•</span>
-                                <b>Progresso:</b> ${Number(r.progresso||0)}%
-                              </p>
+                              <p class="text-xs text-slate-600 line-clamp-2 mt-1">${escapeHtml(a.achado_descricao || "")}</p>
                             </div>
-                            <div class="flex gap-1 shrink-0">
-                              <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" title="Editar Plano">
+                            <div class="flex gap-1">
+                              <button class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" title="Editar"
+                                      onclick="openEditAchado('${a.achado_id}')">
                                 <i data-lucide="edit-3" class="w-4 h-4"></i>
                               </button>
                               ${isAdmin() ? `
-                                <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir Plano">
+                                <button class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir"
+                                        onclick="deleteAchado('${a.achado_id}')">
                                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
                               ` : ``}
                             </div>
                           </div>
                         </div>
-                      `;
-                    }).join("")}
+                      `).join("")
+                      : `<p class="text-xs text-slate-400 italic">Nenhum achado cadastrado.</p>`}
                   </div>
-                ` : `<p class="text-sm text-slate-400 italic">Nenhum plano cadastrado neste processo.</p>`}
+                </div>
+
+                <div class="border rounded-xl p-4 bg-slate-50/50">
+                  <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-black text-xs uppercase text-slate-600 flex items-center gap-2">
+                      <i data-lucide="list-checks" class="w-4 h-4 text-slate-500"></i> Planos de Ação
+                    </h4>
+                    <span class="text-xs font-bold text-slate-500">${rProc.length}</span>
+                  </div>
+
+                  <div class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-1">
+                    ${rProc.length ? rProc
+                      .sort((x,y)=>(x.recomendacao_numero||"").localeCompare(y.recomendacao_numero||""))
+                      .map(r => `
+                        <div class="bg-white border border-slate-200 rounded-xl p-3">
+                          <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                              <p class="font-extrabold text-slate-800 text-sm">
+                                Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? "-" + escapeHtml(r.recomendacao_subitem) : ""}
+                                <span class="ml-2 text-[10px] font-black ${r.status==='Concluído'?'text-emerald-600':r.status==='Atrasado'?'text-red-600':r.status==='Em Execução'?'text-blue-600':'text-slate-500'}">
+                                  ${escapeHtml(r.status || "")}
+                                </span>
+                              </p>
+                              <p class="text-xs text-slate-600 line-clamp-2 mt-1">${escapeHtml(r.recomendacao_texto || "")}</p>
+                              <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Progresso: ${r.progresso || 0}% • Resp.: ${escapeHtml(r.responsavel_recomendacao||"—")}</p>
+                            </div>
+                            <div class="flex gap-1">
+                              <button class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" title="Abrir"
+                                      onclick="openEditRecomendacao('${r.recomendacao_id}')">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      `).join("")
+                      : `<p class="text-xs text-slate-400 italic">Nenhum plano cadastrado.</p>`}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        `;
-      }).join("");
+          `;
+        }).join("");
 
       refreshIcons();
     }
 
-    // =========================
-    // RECOMENDAÇÕES (CARDS EXECUTIVE + NOME DO ACHADO)
-    // =========================
-    function applyRecFilters() {
-      recFilters.busca = document.getElementById("filtro-busca").value;
-      recFilters.status = document.getElementById("filtro-status").value;
-      renderCurrentView();
-    }
-    function resetRecFilters() {
-      document.getElementById("filtro-busca").value = "";
-      document.getElementById("filtro-status").value = "";
-      applyRecFilters();
-    }
-
+    /* ==========================================================
+      PLANOS (RECOMENDAÇÕES) - LISTAGEM EXECUTIVE
+    ========================================================== */
     function renderRecomendacoes(data) {
       const processos = data.filter(d => d.tipo === "processo");
       const recsRaw = data.filter(d => d.tipo === "recomendacao");
 
-      const recs = recsRaw.map(r => ({...r, ...getRecDerived(r)})).filter(r => {
-        const proc = processos.find(p => p.processo_id === r.processo_id);
-        if (recFilters.status && r.status !== recFilters.status) return false;
-        if (recFilters.busca) {
-          const ach = getAchadoById(r.achado_id);
-          const achName = ach ? `Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""}` : "";
-          const hay = [
-            r.recomendacao_texto, r.recomendacao_numero, r.indicador, r.resultado,
-            proc?.unidade, r.responsavel_recomendacao, achName
-          ].join(" ").toLowerCase();
-          if (!hay.includes(recFilters.busca.toLowerCase())) return false;
-        }
-        return true;
-      });
+      const recs = recsRaw
+        .map(r => ({...r, ...getRecDerived(r)}))
+        .filter(r => {
+          if (recFilters.status && r.status !== recFilters.status) return false;
+          if (recFilters.busca) {
+            const proc = processos.find(p => p.processo_id === r.processo_id);
+            const hay = [
+              r.recomendacao_texto, r.recomendacao_numero,
+              proc?.unidade, r.responsavel_recomendacao,
+              r.indicador_plano, r.resultado_plano
+            ].join(" ").toLowerCase();
+            if (!hay.includes(recFilters.busca.toLowerCase())) return false;
+          }
+          return true;
+        });
 
       const container = document.getElementById("recomendacoes-grouped");
       const empty = document.getElementById("recomendacoes-empty");
@@ -1132,6 +1000,7 @@
 
       empty.style.display = "none";
 
+      // agrupar por processo
       const byProcess = {};
       recs.forEach(r => {
         if (!byProcess[r.processo_id]) byProcess[r.processo_id] = [];
@@ -1141,12 +1010,18 @@
       container.innerHTML = Object.keys(byProcess).map(procId => {
         const proc = processos.find(p => p.processo_id === procId);
         const list = byProcess[procId];
+
         return `
           <div class="mb-12">
             <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-2">
               <h2 class="text-2xl font-bold text-slate-800">Processo ${escapeHtml(proc?.processo_numero || procId)}</h2>
               <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-bold text-slate-500">${escapeHtml(proc?.unidade || "")}</span>
+              <button class="ml-auto px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-blue-600 flex items-center gap-2"
+                      onclick="openNewPlanoModal('${procId}')">
+                <i data-lucide="plus" class="w-4 h-4"></i> Novo Plano
+              </button>
             </div>
+
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
               ${list.map(r => recCardHtml(r, proc)).join("")}
             </div>
@@ -1158,20 +1033,15 @@
     }
 
     function recCardHtml(r, proc) {
-      const isAdminOrTech = !!userSession;
-
       // custo total
       let totalCusto = 0;
       let temCusto = false;
       (r.acoes || []).forEach(a => {
-        if (a.custo) {
-          const num = parseFloat(String(a.custo).replace(/[^0-9.,]/g, "").replace(",", "."));
-          if (!isNaN(num)) { totalCusto += num; temCusto = true; }
-        }
+        const num = moneyToNumber(a.custo);
+        if (num) { totalCusto += num; temCusto = true; }
       });
-      const custoDisplay = temCusto ? `R$ ${totalCusto.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Não estimado";
+      const custoDisplay = temCusto ? `R$ ${totalCusto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : "Não estimado";
 
-      // progress gradient
       let progressGradient = "from-blue-400 via-blue-600 to-indigo-700";
       if (r.progresso >= 100) progressGradient = "from-emerald-400 via-emerald-500 to-emerald-600";
       else if (r.status === "Atrasado") progressGradient = "from-red-400 via-red-500 to-red-600";
@@ -1193,16 +1063,15 @@
             <input type="checkbox" disabled ${isDone ? 'checked' : ''} class="step-checkbox w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500">
             <div class="flex-1">
               <span class="text-sm font-semibold text-slate-700 block">${escapeHtml(a.desc)}</span>
-              <span class="text-[10px] text-slate-400 font-bold uppercase">${escapeHtml(a.responsavel || "Sem resp.")} • ${a.prazo ? new Date(a.prazo).toLocaleDateString('pt-BR').slice(0,5) : "S/ Prazo"}</span>
+              <span class="text-[10px] text-slate-400 font-bold uppercase">${escapeHtml(a.responsavel || "Sem resp.")} • ${a.prazo ? new Date(a.prazo).toLocaleDateString('pt-BR') : "S/ Prazo"}</span>
             </div>
             ${isDone ? '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>' : ''}
           </div>
         `;
       }).join("");
 
-      // nome do achado (quando vinculado)
-      const ach = getAchadoById(r.achado_id);
-      const achName = ach ? `Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""}` : "";
+      // vínculo (mostrar nome da recomendação vinculada)
+      const linked = getLinkedRecomendacaoLabel(r);
 
       return `
         <div class="glass-card border border-slate-200 rounded-[2.5rem] shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col group h-full">
@@ -1213,34 +1082,51 @@
                 <span class="text-[10px] font-black uppercase tracking-widest ${statusClass}">${escapeHtml(r.status)}</span>
               </div>
               <div class="flex gap-2 text-slate-400">
-                <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="p-2 hover:bg-slate-100 rounded-lg transition-colors text-blue-600" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                ${isAdminOrTech && isAdmin() ? `<button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-400 hover:text-red-600" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}
+                <button onclick="openEditRecomendacao('${r.recomendacao_id}')" class="p-2 hover:bg-slate-100 rounded-lg transition-colors text-blue-600" title="Editar">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i>
+                </button>
+                ${isAdmin() ? `
+                  <button onclick="deleteRecomendacao('${r.recomendacao_id}')" class="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-400 hover:text-red-600" title="Excluir">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>` : ``}
               </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 mb-3">
-              <h2 class="text-xl font-bold text-slate-800 leading-tight">
-                Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? '-'+escapeHtml(r.recomendacao_subitem) : ''}
-              </h2>
-              ${achName ? `<span class="badge badge-slate"><i data-lucide="link" class="w-3 h-3"></i> ${escapeHtml(achName)}</span>` : ``}
-            </div>
+            <h2 class="text-xl font-bold text-slate-800 mb-2 leading-tight">
+              Rec. ${escapeHtml(r.recomendacao_numero)}${r.recomendacao_subitem ? '-'+escapeHtml(r.recomendacao_subitem) : ''}
+            </h2>
 
-            <p class="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-3">${escapeHtml(r.recomendacao_texto)}</p>
-
-            ${(r.indicador || r.resultado) ? `
-              <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-5">
-                ${r.indicador ? `<p class="text-xs text-slate-700"><span class="font-black">Indicador:</span> ${escapeHtml(r.indicador)}</p>` : ``}
-                ${r.resultado ? `<p class="text-xs text-slate-700 mt-1"><span class="font-black">Resultado:</span> ${escapeHtml(r.resultado)}</p>` : ``}
+            ${linked ? `
+              <div class="mb-3 text-xs font-bold text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                <span class="uppercase text-[10px] text-slate-400 font-black block mb-1">Recomendação vinculada</span>
+                <span class="text-slate-700">${escapeHtml(linked)}</span>
               </div>
             ` : ``}
+
+            <p class="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-3">
+              ${escapeHtml(r.recomendacao_texto)}
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+              ${r.indicador_plano ? `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div class="text-[10px] font-black uppercase text-slate-400">Indicador</div>
+                  <div class="text-xs font-bold text-slate-700">${escapeHtml(r.indicador_plano)}</div>
+                </div>` : ``}
+              ${r.resultado_plano ? `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div class="text-[10px] font-black uppercase text-slate-400">Resultado</div>
+                  <div class="text-xs font-bold text-slate-700">${escapeHtml(r.resultado_plano)}</div>
+                </div>` : ``}
+            </div>
 
             <div class="relative pt-2">
               <div class="flex justify-between items-center mb-2">
                 <span class="text-xs font-black text-slate-400 uppercase italic">Eficácia / Progresso</span>
-                <span class="text-sm font-black text-slate-800">${Number(r.progresso||0)}%</span>
+                <span class="text-sm font-black text-slate-800">${r.progresso}%</span>
               </div>
               <div class="h-3 w-full bg-slate-100 rounded-full p-0.5">
-                <div class="h-full bg-gradient-to-r ${progressGradient} rounded-full transition-all duration-1000 progress-glow shadow-inner" style="width: ${Number(r.progresso||0)}%"></div>
+                <div class="h-full bg-gradient-to-r ${progressGradient} rounded-full transition-all duration-1000 progress-glow shadow-inner" style="width: ${r.progresso}%"></div>
               </div>
             </div>
           </div>
@@ -1249,8 +1135,8 @@
             <div class="space-y-1">
               <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Quem</span>
               <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600 font-bold">${escapeHtml((r.responsavel_recomendacao||"SR").substring(0,2).toUpperCase())}</div>
-                <span class="text-xs font-bold text-slate-700 truncate block max-w-[120px]" title="${escapeHtml(r.responsavel_recomendacao || '')}">${escapeHtml(r.responsavel_recomendacao || "N/A")}</span>
+                <div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-600 font-bold">${(r.responsavel_recomendacao||"SR").substring(0,2).toUpperCase()}</div>
+                <span class="text-xs font-bold text-slate-700 truncate block max-w-[120px]" title="${escapeHtml(r.responsavel_recomendacao||"")}">${escapeHtml(r.responsavel_recomendacao || "N/A")}</span>
               </div>
             </div>
             <div class="space-y-1 border-x border-slate-200 px-3">
@@ -1286,402 +1172,183 @@
       `;
     }
 
-    // =========================
-    // ACHADO LOOKUP (NOME DO ACHADO)
-    // =========================
-    function getAchadoById(achado_id) {
-      if (!achado_id) return null;
-      return allData.find(d => d.tipo === "achado" && d.achado_id === achado_id) || null;
+    function getLinkedRecomendacaoLabel(plano) {
+      const id = plano.recomendacao_vinculada_id;
+      if (!id) return "";
+      const rec = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === id);
+      if (!rec) return "";
+      const nome = `Rec. ${rec.recomendacao_numero}${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`;
+      const texto = (rec.recomendacao_texto || "").trim();
+      return `${nome} - ${texto.slice(0, 90)}${texto.length > 90 ? "..." : ""}`;
     }
 
-    // =========================
-    // MODALS
-    // =========================
+    /* ==========================================================
+      FILTROS PLANOS
+    ========================================================== */
+    function applyRecFilters() {
+      recFilters.busca = document.getElementById("filtro-busca").value;
+      recFilters.status = document.getElementById("filtro-status").value;
+      renderCurrentView();
+    }
+    function resetRecFilters() {
+      document.getElementById("filtro-busca").value = "";
+      document.getElementById("filtro-status").value = "";
+      applyRecFilters();
+    }
+
+    /* ==========================================================
+      MODAIS / FORM HELPERS
+    ========================================================== */
+    function closeModal(id) { document.getElementById("modal-"+id).style.display = "none"; }
     function openNewProcessModal() {
-      currentEditingProc = null;
       currentProcessoId = null;
       setoresProcesso = [];
       document.getElementById("modal-processo-title").textContent = "Novo Processo";
       document.getElementById("submit-processo-text").textContent = "Salvar";
-
       document.getElementById("processo-form").reset();
       document.getElementById("eixo_outro").style.display = "none";
-      document.getElementById("setores-processo-container").innerHTML = "";
+      renderSetoresProcesso();
       document.getElementById("modal-processo").style.display = "flex";
       refreshIcons();
-    }
-
-    function openNewAchadoModal(processoId) {
-      currentProcessoId = processoId;
-      currentAchadoId = null;
-      document.getElementById("modal-achado-title").textContent = "Novo Achado";
-      document.getElementById("submit-achado-text").textContent = "Salvar";
-      document.getElementById("achado-form").reset();
-      document.getElementById("impacto_outro").style.display = "none";
-      document.getElementById("modal-achado").style.display = "flex";
-      refreshIcons();
-    }
-
-    function openNewRecomendacaoModal(processoId) {
-      currentProcessoId = processoId;
-      currentEditingRec = null;
-
-      // reset
-      document.getElementById("recomendacao-form").reset();
-      acoesTemp = [];
-      areasResponsaveis = [];
-      areasEnvolvidas = [];
-      editingAcaoIndex = null;
-
-      document.getElementById("areas-container").innerHTML = "";
-      document.getElementById("areas-envolvidas-container").innerHTML = "";
-      renderAcoesTemp();
-      setAcaoFormMode(false);
-
-      // populate recomendações do processo (para mostrar nome do achado)
- populateRecomendacaoSelect(processoId);
-renderRecomendacaoPreviewInModal();
-
-      document.getElementById("modal-recomendacao").style.display = "flex";
-      refreshIcons();
-    }
-
-    function closeModal(id) {
-      document.getElementById("modal-" + id).style.display = "none";
     }
 
     function toggleEixoOutro() {
       document.getElementById("eixo_outro").style.display = document.getElementById("eixo").value === "Outro" ? "block" : "none";
     }
-
     function toggleImpactoOutro() {
       document.getElementById("impacto_outro").style.display = document.getElementById("impacto").value === "Outro" ? "block" : "none";
     }
 
-    // =========================
-    // SETORES DO PROCESSO
-    // =========================
     function adicionarSetorProcesso() {
-      const input = document.getElementById("setor_processo_input");
-      const val = (input.value || "").trim();
+      const val = document.getElementById("setor_processo_input").value.trim();
       if (!val) return;
-      if (!setoresProcesso.includes(val)) setoresProcesso.push(val);
-      input.value = "";
+      setoresProcesso.push(val);
+      document.getElementById("setor_processo_input").value = "";
       renderSetoresProcesso();
     }
-
-    function removerSetorProcesso(i) {
-      setoresProcesso.splice(i, 1);
-      renderSetoresProcesso();
-    }
-
     function renderSetoresProcesso() {
-      const container = document.getElementById("setores-processo-container");
-      container.innerHTML = setoresProcesso.map((s, i) => `
+      const c = document.getElementById("setores-processo-container");
+      c.innerHTML = setoresProcesso.map((s, i) => `
         <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
-          <span class="text-sm font-semibold text-slate-700">${escapeHtml(s)}</span>
-          <button type="button" onclick="removerSetorProcesso(${i})" class="text-red-600 hover:text-red-700">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
+          <span class="text-sm font-bold text-slate-700">${escapeHtml(s)}</span>
+          <button type="button" class="text-red-600" onclick="removeSetorProcesso(${i})"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
         </div>
       `).join("");
       refreshIcons();
     }
+    function removeSetorProcesso(i) { setoresProcesso.splice(i,1); renderSetoresProcesso(); }
 
-    // =========================
-    // ÁREAS RESPONSÁVEIS / ENVOLVIDAS
-    // =========================
-    function adicionarArea() {
-      const input = document.getElementById("area_input");
-      const val = (input.value || "").trim();
-      if (!val) return;
-      if (!areasResponsaveis.includes(val)) areasResponsaveis.push(val);
-      input.value = "";
-      renderAreas();
-    }
+    function openEditProcesso(processoId) {
+      const p = allData.find(d => d.tipo === "processo" && d.processo_id === processoId);
+      if (!p) return;
 
-    function removerArea(i) {
-      areasResponsaveis.splice(i, 1);
-      renderAreas();
-    }
+      currentProcessoId = processoId;
+      document.getElementById("modal-processo-title").textContent = "Editar Processo";
+      document.getElementById("submit-processo-text").textContent = "Atualizar";
 
-    function renderAreas() {
-      const c = document.getElementById("areas-container");
-      c.innerHTML = areasResponsaveis.map((a, i) => `
-        <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
-          <span class="text-sm font-semibold text-slate-700">${escapeHtml(a)}</span>
-          <button type="button" onclick="removerArea(${i})" class="text-red-600 hover:text-red-700">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
-      `).join("");
+      document.getElementById("processo_numero").value = p.processo_numero || "";
+      document.getElementById("eixo").value = p.eixo || "";
+      document.getElementById("unidade").value = p.unidade || "";
+      document.getElementById("periodo").value = p.periodo || "";
+      document.getElementById("objeto").value = p.objeto || "";
+      document.getElementById("responsavel").value = p.responsavel || "";
+      document.getElementById("auditor").value = p.auditor || "";
+
+      document.getElementById("eixo_outro").value = p.eixo_outro || "";
+      toggleEixoOutro();
+
+      setoresProcesso = (p.setores_envolvidos || "").split("||").filter(Boolean);
+      renderSetoresProcesso();
+
+      document.getElementById("modal-processo").style.display = "flex";
       refreshIcons();
     }
 
-    function adicionarAreaEnvolvida() {
-      const input = document.getElementById("area_envolvida_input");
-      const val = (input.value || "").trim();
-      if (!val) return;
-      if (!areasEnvolvidas.includes(val)) areasEnvolvidas.push(val);
-      input.value = "";
-      renderAreasEnvolvidas();
-    }
-
-    function removerAreaEnvolvida(i) {
-      areasEnvolvidas.splice(i, 1);
-      renderAreasEnvolvidas();
-    }
-
-    function renderAreasEnvolvidas() {
-      const c = document.getElementById("areas-envolvidas-container");
-      c.innerHTML = areasEnvolvidas.map((a, i) => `
-        <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
-          <span class="text-sm font-semibold text-slate-700">${escapeHtml(a)}</span>
-          <button type="button" onclick="removerAreaEnvolvida(${i})" class="text-red-600 hover:text-red-700">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
-        </div>
-      `).join("");
-      refreshIcons();
-    }
-
-    // =========================
-    // AÇÕES TEMP (EDITAR / GERENCIAR)
-    // =========================
-    function setAcaoFormMode(isEditing) {
-      const btn = document.getElementById("acao_submit_btn");
-      const cancel = document.getElementById("acao_cancel_btn");
-      if (!btn || !cancel) return;
-
-      if (isEditing) {
-        btn.textContent = "Atualizar Etapa";
-        cancel.classList.remove("hidden");
-      } else {
-        btn.textContent = "+ Adicionar Etapa";
-        cancel.classList.add("hidden");
-      }
-    }
-
-    function clearAcaoInputs() {
-      document.getElementById("acao_desc").value = "";
-      document.getElementById("acao_resp").value = "";
-      document.getElementById("acao_prazo").value = "";
-      document.getElementById("acao_custo").value = "";
-      document.getElementById("acao_status").value = "Não iniciada";
-    }
-
-    function addOrUpdateAcaoTemp() {
-      const desc = (document.getElementById("acao_desc").value || "").trim();
-      if (!desc) return alert("Descrição da etapa é obrigatória.");
-
-      const payload = {
-        id: (editingAcaoIndex !== null && acoesTemp[editingAcaoIndex]?.id) ? acoesTemp[editingAcaoIndex].id : uid("acao"),
-        desc,
-        responsavel: document.getElementById("acao_resp").value,
-        prazo: document.getElementById("acao_prazo").value,
-        custo: document.getElementById("acao_custo").value,
-        status: document.getElementById("acao_status").value
-      };
-
-      if (editingAcaoIndex !== null) {
-        acoesTemp[editingAcaoIndex] = payload;
-        editingAcaoIndex = null;
-        setAcaoFormMode(false);
-      } else {
-        acoesTemp.push(payload);
-      }
-
-      clearAcaoInputs();
-      renderAcoesTemp();
-    }
-
-    function editAcaoTemp(i) {
-      const a = acoesTemp[i];
-      if (!a) return;
-
-      editingAcaoIndex = i;
-
-      document.getElementById("acao_desc").value = a.desc || "";
-      document.getElementById("acao_resp").value = a.responsavel || "";
-      document.getElementById("acao_prazo").value = a.prazo || "";
-      document.getElementById("acao_custo").value = a.custo || "";
-      document.getElementById("acao_status").value = a.status || "Não iniciada";
-
-      setAcaoFormMode(true);
-      document.getElementById("acao_desc").scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-
-    function cancelEditAcaoTemp() {
-      editingAcaoIndex = null;
-      clearAcaoInputs();
-      setAcaoFormMode(false);
-    }
-
-    function removeAcaoTemp(i) {
-      const a = acoesTemp[i];
-      if (!a) return;
-      if (!confirm("Remover esta etapa?")) return;
-
-      acoesTemp.splice(i, 1);
-
-      if (editingAcaoIndex === i) cancelEditAcaoTemp();
-      if (editingAcaoIndex !== null && editingAcaoIndex > i) editingAcaoIndex--;
-
-      renderAcoesTemp();
-    }
-
-    function renderAcoesTemp() {
-      const list = document.getElementById("acoes-temp-list");
-      if (acoesTemp.length === 0) {
-        list.innerHTML = "";
-        document.getElementById("acoes-temp-empty").style.display = "block";
-      } else {
-        document.getElementById("acoes-temp-empty").style.display = "none";
-        list.innerHTML = acoesTemp.map((a, i) => `
-          <div class="bg-slate-50 p-3 rounded border flex justify-between items-center gap-3">
-            <div class="min-w-0">
-              <p class="font-bold text-sm text-slate-800 truncate">${escapeHtml(a.desc)}</p>
-              <p class="text-xs text-slate-500">
-                ${escapeHtml(a.status)} • ${escapeHtml(a.responsavel || '-')} • ${escapeHtml(a.prazo ? new Date(a.prazo).toLocaleDateString('pt-BR') : 'S/ prazo')} • ${escapeHtml(a.custo || '-')}
-              </p>
-            </div>
-
-            <div class="flex gap-1 shrink-0">
-              <button type="button" onclick="editAcaoTemp(${i})" class="p-2 rounded-lg hover:bg-slate-200 text-blue-600" title="Editar etapa">
-                <i data-lucide="pencil" class="w-4 h-4"></i>
-              </button>
-              <button type="button" onclick="removeAcaoTemp(${i})" class="p-2 rounded-lg hover:bg-red-100 text-red-600" title="Remover etapa">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-          </div>
-        `).join("");
-      }
-
-      const prog = computeProgressFromAcoes(acoesTemp);
-      document.getElementById("calc-progresso").textContent = prog;
-      document.getElementById("calc-status").textContent = computeStatusFromAcoes(acoesTemp);
-      refreshIcons();
-    }
-
-    // =========================
-    // ACHADO SELECT (NOME DO ACHADO)
-    // =========================
-   function populateRecomendacaoSelect(processoId) {
-
-  const sel = document.getElementById("recomendacao_vinculada_id");
-
-  const recs = allData.filter(d =>
-    d.tipo === "recomendacao" &&
-    d.processo_id === processoId
-  );
-
-  sel.innerHTML =
-    `<option value="">(Opcional) Selecione uma recomendação...</option>` +
-
-    recs.map(r => {
-
-      const label =
-        `Rec. ${r.recomendacao_numero}` +
-        `${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""}` +
-        ` - ${String(r.recomendacao_texto || "").slice(0,80)}` +
-        (r.recomendacao_texto?.length > 80 ? "..." : "");
-
-      return `
-        <option value="${r.recomendacao_id}">
-          ${label}
-        </option>
-      `;
-
-    }).join("");
-    }
-
-  function renderRecomendacaoPreviewInModal() {
-
-  const sel = document.getElementById("recomendacao_vinculada_id");
-  const preview = document.getElementById("recomendacao-preview");
-
-  const id = sel.value;
-
-  if (!id) {
-    preview.textContent = "";
-    return;
-  }
-
-  const rec = allData.find(d =>
-    d.tipo === "recomendacao" &&
-    d.recomendacao_id === id
-  );
-
-  if (!rec) {
-    preview.textContent = "";
-    return;
-  }
-
-  const name =
-    `Rec. ${rec.recomendacao_numero}` +
-    `${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`;
-
-  preview.textContent =
-    `${name} • ${rec.recomendacao_texto.slice(0,140)}` +
-    (rec.recomendacao_texto.length > 140 ? "..." : "");
-}
-
-
-    // =========================
-    // CRUD: PROCESSO / ACHADO / RECOMENDAÇÃO
-    // =========================
-    async function deleteProcesso(processoId) {
-      if (!confirm("Excluir este processo e todos os achados/planos vinculados?")) return;
-
-      // apaga processo
+    function deleteProcesso(processoId) {
+      if (!confirm("Excluir o processo e TODOS os achados/planos vinculados?")) return;
+      // apaga vinculados
+      const vinculados = allData.filter(d => (d.tipo === "achado" || d.tipo === "recomendacao") && d.processo_id === processoId);
+      vinculados.forEach(v => window.dataSdk.delete(v));
       const proc = allData.find(d => d.tipo === "processo" && d.processo_id === processoId);
-      if (proc) {
-        await window.dataSdk.delete(proc);
-        auditAdd("DELETE", "processo", `Processo ${proc.processo_numero || proc.processo_id}`);
-      }
+      if (proc) window.dataSdk.delete(proc);
 
-      // apaga dependências
-      const deps = allData.filter(d => (d.tipo === "achado" || d.tipo === "recomendacao") && d.processo_id === processoId);
-      for (const item of deps) {
-        await window.dataSdk.delete(item);
-        auditAdd("DELETE", item.tipo, `Vinculado ao processo ${proc?.processo_numero || processoId}`);
-      }
-
-      renderCurrentView();
+      logAudit({ action:"DELETE", tipo:"processo", resumo:`Processo ${processoId} (e vinculados)` });
     }
 
-    async function deleteAchado(achadoId) {
-      if (!confirm("Excluir este achado? (recomendações vinculadas manterão o vínculo vazio)")) return;
+    function openNewAchadoModal(processoId) {
+      currentAchadoId = null;
+      currentProcessoId = processoId;
+
+      document.getElementById("modal-achado-title").textContent = "Novo Achado";
+      document.getElementById("submit-achado-text").textContent = "Salvar";
+      document.getElementById("achado-form").reset();
+      document.getElementById("impacto_outro").style.display = "none";
+
+      document.getElementById("modal-achado").style.display = "flex";
+      refreshIcons();
+    }
+
+    function openEditAchado(achadoId) {
       const a = allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
       if (!a) return;
 
-      await window.dataSdk.delete(a);
-      auditAdd("DELETE", "achado", `Achado ${a.achado_numero}${a.achado_subitem ? "-"+a.achado_subitem : ""}`);
+      currentAchadoId = achadoId;
+      currentProcessoId = a.processo_id;
 
-      // remove vínculo em recomendações que apontam para esse achado
-      const recs = allData.filter(d => d.tipo === "recomendacao" && d.achado_id === achadoId);
-      for (const r of recs) {
-        const next = { ...r, achado_id: "" , updated_at: new Date().toISOString() };
-        await window.dataSdk.update(next);
-        auditAdd("UPDATE", "recomendacao", `Removido vínculo ao achado em Rec ${r.recomendacao_numero}`);
-      }
+      document.getElementById("modal-achado-title").textContent = "Editar Achado";
+      document.getElementById("submit-achado-text").textContent = "Atualizar";
 
-      renderCurrentView();
+      document.getElementById("achado_numero").value = a.achado_numero || "";
+      document.getElementById("achado_subitem").value = a.achado_subitem || "";
+      document.getElementById("grau_risco").value = a.grau_risco || "";
+      document.getElementById("impacto").value = a.impacto || "";
+      document.getElementById("impacto_outro").value = a.impacto_outro || "";
+      toggleImpactoOutro();
+      document.getElementById("achado_descricao").value = a.achado_descricao || "";
+      document.getElementById("responsavel_achado").value = a.responsavel_achado || "";
+      document.getElementById("evidencia").value = a.evidencia || "";
+
+      document.getElementById("modal-achado").style.display = "flex";
+      refreshIcons();
     }
 
-    async function deleteRecomendacao(recId) {
-      if (!confirm("Excluir este plano de ação?")) return;
-      const rec = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === recId);
-      if (!rec) return;
-      await window.dataSdk.delete(rec);
-      auditAdd("DELETE", "recomendacao", `Rec ${rec.recomendacao_numero}${rec.recomendacao_subitem ? "-"+rec.recomendacao_subitem : ""}`);
-      renderCurrentView();
+    function deleteAchado(achadoId) {
+      if (!confirm("Excluir este achado?")) return;
+      const a = allData.find(d => d.tipo === "achado" && d.achado_id === achadoId);
+      if (!a) return;
+      window.dataSdk.delete(a);
+      logAudit({ action:"DELETE", tipo:"achado", resumo:`Achado ${a.achado_numero} (${a.achado_id})` });
     }
 
-    // =========================
-    // EDITAR RECOMENDAÇÃO
-    // =========================
+    function openNewPlanoModal(processoId) {
+      currentEditingRec = null;
+      currentProcessoId = processoId;
+
+      acoesTemp = [];
+      acoesManageMode = false;
+      toggleAcoesManage(true);
+
+      areasResponsaveis = [];
+      areasEnvolvidas = [];
+      renderAreas();
+
+      document.getElementById("modal-plano-title").textContent = "Plano de Ação (Novo)";
+      document.getElementById("submit-recomendacao-text").textContent = "Salvar Plano";
+      document.getElementById("recomendacao-form").reset();
+
+      // vínculo por recomendação
+      populateRecomendacaoSelect(processoId);
+      document.getElementById("recomendacao_vinculada_id").value = "";
+      renderRecomendacaoPreviewInModal();
+
+      // sync responsável
+      syncResponsavelPrincipalBottom();
+
+      renderAcoesTemp();
+      document.getElementById("modal-recomendacao").style.display = "flex";
+      refreshIcons();
+    }
+
     function openEditRecomendacao(recId) {
       currentEditingRec = recId;
       const rec = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === recId);
@@ -1689,10 +1356,9 @@ renderRecomendacaoPreviewInModal();
 
       currentProcessoId = rec.processo_id;
 
-      // popular selects de achado do processo
-      populateAchadoSelect(currentProcessoId);
+      document.getElementById("modal-plano-title").textContent = "Plano de Ação (Editar)";
+      document.getElementById("submit-recomendacao-text").textContent = "Atualizar Plano";
 
-      // campos base
       document.getElementById("recomendacao_numero").value = rec.recomendacao_numero || "";
       document.getElementById("recomendacao_subitem").value = rec.recomendacao_subitem || "";
       document.getElementById("recomendacao_texto").value = rec.recomendacao_texto || "";
@@ -1700,27 +1366,27 @@ renderRecomendacaoPreviewInModal();
       document.getElementById("prazo_global").value = rec.prazo_global || "";
       document.getElementById("responsavel_recomendacao").value = rec.responsavel_recomendacao || "";
 
-      // indicador e resultado
-      document.getElementById("indicador").value = rec.indicador || "";
-      document.getElementById("resultado").value = rec.resultado || "";
+      // síntese (baixo)
+      document.getElementById("indicador_plano").value = rec.indicador_plano || "";
+      document.getElementById("resultado_plano").value = rec.resultado_plano || "";
+      document.getElementById("responsavel_principal_bottom").value = rec.responsavel_principal_bottom || rec.responsavel_recomendacao || "";
 
-      // vínculo ao achado
-      document.getElementById("recomendacao_achado_id").value = rec.achado_id || "";
-      renderAchadoPreviewInRecModal();
+      // vínculo por recomendação
+      populateRecomendacaoSelect(currentProcessoId);
+      document.getElementById("recomendacao_vinculada_id").value = rec.recomendacao_vinculada_id || "";
+      renderRecomendacaoPreviewInModal();
 
       // áreas
-      areasResponsaveis = Array.isArray(rec.areas_responsaveis) ? [...rec.areas_responsaveis] : [];
-      areasEnvolvidas = Array.isArray(rec.areas_envolvidas) ? [...rec.areas_envolvidas] : [];
+      areasResponsaveis = Array.isArray(rec.areas_responsaveis) ? JSON.parse(JSON.stringify(rec.areas_responsaveis)) : [];
+      areasEnvolvidas = Array.isArray(rec.areas_envolvidas) ? JSON.parse(JSON.stringify(rec.areas_envolvidas)) : [];
       renderAreas();
-      renderAreasEnvolvidas();
 
       // ações
       acoesTemp = Array.isArray(rec.acoes) ? JSON.parse(JSON.stringify(rec.acoes)) : [];
-      editingAcaoIndex = null;
-      setAcaoFormMode(false);
+      toggleAcoesManage(true);
       renderAcoesTemp();
 
-      // relatório formal
+      // formal
       document.getElementById("evidencias_cumprimento").value = rec.evidencias_cumprimento || "";
       document.getElementById("justificativa_nao_cumprimento").value = rec.justificativa_nao_cumprimento || "";
       document.getElementById("resultados_percebidos").value = rec.resultados_percebidos || "";
@@ -1729,173 +1395,668 @@ renderRecomendacaoPreviewInModal();
       refreshIcons();
     }
 
-    // =========================
-    // SUBMITS (SALVAR FUNCIONANDO)
-    // =========================
-    document.getElementById("processo-form").addEventListener("submit", async (e) => {
+    function deleteRecomendacao(recId) {
+      if (!confirm("Excluir este plano de ação?")) return;
+      const r = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === recId);
+      if (!r) return;
+      window.dataSdk.delete(r);
+      logAudit({ action:"DELETE", tipo:"recomendacao", resumo:`Plano Rec. ${r.recomendacao_numero} (${r.recomendacao_id})` });
+    }
+
+    /* ==========================================================
+      ÁREAS (RESPONSÁVEIS / ENVOLVIDAS)
+    ========================================================== */
+    function adicionarArea() {
+      const v = document.getElementById("area_input").value.trim();
+      if (!v) return;
+      areasResponsaveis.push(v);
+      document.getElementById("area_input").value = "";
+      renderAreas();
+    }
+    function adicionarAreaEnvolvida() {
+      const v = document.getElementById("area_envolvida_input").value.trim();
+      if (!v) return;
+      areasEnvolvidas.push(v);
+      document.getElementById("area_envolvida_input").value = "";
+      renderAreas();
+    }
+    function removeArea(i) { areasResponsaveis.splice(i,1); renderAreas(); }
+    function removeAreaEnvolvida(i) { areasEnvolvidas.splice(i,1); renderAreas(); }
+
+    function renderAreas() {
+      const c1 = document.getElementById("areas-container");
+      const c2 = document.getElementById("areas-envolvidas-container");
+      c1.innerHTML = areasResponsaveis.map((a,i) => `
+        <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
+          <span class="text-sm font-bold text-slate-700">${escapeHtml(a)}</span>
+          <button type="button" class="text-red-600" onclick="removeArea(${i})"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+        </div>
+      `).join("");
+      c2.innerHTML = areasEnvolvidas.map((a,i) => `
+        <div class="flex items-center justify-between bg-slate-50 border rounded-lg px-3 py-2">
+          <span class="text-sm font-bold text-slate-700">${escapeHtml(a)}</span>
+          <button type="button" class="text-red-600" onclick="removeAreaEnvolvida(${i})"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+        </div>
+      `).join("");
+      refreshIcons();
+    }
+
+    /* ==========================================================
+      AÇÕES (EDITAR / GERENCIAR)
+    ========================================================== */
+    function toggleAcoesManage(forceAddMode) {
+      if (typeof forceAddMode === "boolean") {
+        acoesManageMode = forceAddMode ? false : true;
+      } else {
+        acoesManageMode = !acoesManageMode;
+      }
+      const box = document.getElementById("acoes-add-box");
+      // Se manageMode=true, não some com o add, só muda o comportamento visual
+      // Aqui vamos manter add sempre visível, mas habilitar edição inline na lista.
+      box.style.opacity = "1";
+      renderAcoesTemp();
+    }
+
+    function addAcaoToTemp() {
+      const desc = document.getElementById("acao_desc").value.trim();
+      if (!desc) return alert("Descrição obrigatória");
+
+      const acao = {
+        id: "acao_" + Date.now(),
+        desc,
+        responsavel: document.getElementById("acao_resp").value.trim(),
+        prazo: document.getElementById("acao_prazo").value,
+        custo: document.getElementById("acao_custo").value.trim(),
+        status: document.getElementById("acao_status").value
+      };
+
+      acoesTemp.push(acao);
+
+      document.getElementById("acao_desc").value = "";
+      document.getElementById("acao_resp").value = "";
+      document.getElementById("acao_prazo").value = "";
+      document.getElementById("acao_custo").value = "";
+      document.getElementById("acao_status").value = "Não iniciada";
+
+      renderAcoesTemp();
+    }
+
+    function renderAcoesTemp() {
+      const list = document.getElementById("acoes-temp-list");
+      const empty = document.getElementById("acoes-temp-empty");
+
+      if (!acoesTemp.length) {
+        list.innerHTML = "";
+        empty.style.display = "block";
+      } else {
+        empty.style.display = "none";
+
+        list.innerHTML = acoesTemp.map((a, i) => {
+          const canEdit = true;
+          return `
+            <div class="bg-slate-50 p-3 rounded border">
+              <div class="flex justify-between items-start gap-3">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <p class="font-extrabold text-sm text-slate-800">${escapeHtml(a.desc)}</p>
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded-full
+                      ${a.status==='Concluída'?'bg-emerald-50 text-emerald-700 border border-emerald-200':
+                        a.status==='Em andamento'?'bg-blue-50 text-blue-700 border border-blue-200':
+                        'bg-slate-100 text-slate-700 border border-slate-200'}">
+                      ${escapeHtml(a.status)}
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-500 mt-1">
+                    ${escapeHtml(a.responsavel || "-")} • ${a.prazo ? new Date(a.prazo).toLocaleDateString('pt-BR') : "-"} • ${escapeHtml(a.custo || "-")}
+                  </p>
+
+                  ${acoesManageMode ? `
+                    <div class="mt-3 grid grid-cols-1 md:grid-cols-4 gap-2">
+                      <input class="border rounded-lg px-3 py-2 text-sm md:col-span-2" value="${escapeHtml(a.desc)}"
+                             oninput="editAcaoField(${i}, 'desc', this.value)">
+                      <input class="border rounded-lg px-3 py-2 text-sm" value="${escapeHtml(a.responsavel||"")}"
+                             oninput="editAcaoField(${i}, 'responsavel', this.value)" placeholder="Responsável">
+                      <input class="border rounded-lg px-3 py-2 text-sm" type="date" value="${escapeHtml(a.prazo||"")}"
+                             oninput="editAcaoField(${i}, 'prazo', this.value)">
+                      <input class="border rounded-lg px-3 py-2 text-sm" value="${escapeHtml(a.custo||"")}"
+                             oninput="editAcaoField(${i}, 'custo', this.value)" placeholder="Custo">
+                      <select class="border rounded-lg px-3 py-2 text-sm md:col-span-2"
+                              onchange="editAcaoField(${i}, 'status', this.value)">
+                        <option ${a.status==='Não iniciada'?'selected':''} value="Não iniciada">Não iniciada</option>
+                        <option ${a.status==='Em andamento'?'selected':''} value="Em andamento">Em andamento</option>
+                        <option ${a.status==='Concluída'?'selected':''} value="Concluída">Concluída</option>
+                      </select>
+
+                      <button type="button" class="md:col-span-2 border border-red-200 bg-red-50 text-red-700 font-black rounded-lg px-3 py-2"
+                              onclick="removeAcaoTemp(${i})">
+                        Remover etapa
+                      </button>
+                    </div>
+                  ` : ``}
+                </div>
+
+                <div class="flex gap-1">
+                  ${canEdit ? `
+                    <button type="button" class="p-2 rounded-lg hover:bg-slate-100 text-slate-700" title="Gerenciar (editar)"
+                            onclick="acoesManageMode=true; renderAcoesTemp();">
+                      <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </button>
+                  ` : ``}
+                  <button type="button" class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir"
+                          onclick="removeAcaoTemp(${i})">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // progresso
+      const prog = computeProgressFromAcoes(acoesTemp);
+      document.getElementById("calc-progresso").textContent = prog;
+      document.getElementById("calc-status").textContent = computeStatusFromAcoes(acoesTemp);
+
+      refreshIcons();
+    }
+
+    function editAcaoField(i, field, value) {
+      if (!acoesTemp[i]) return;
+      acoesTemp[i][field] = value;
+      // recalcula
+      const prog = computeProgressFromAcoes(acoesTemp);
+      document.getElementById("calc-progresso").textContent = prog;
+      document.getElementById("calc-status").textContent = computeStatusFromAcoes(acoesTemp);
+    }
+
+    function removeAcaoTemp(i) {
+      acoesTemp.splice(i, 1);
+      renderAcoesTemp();
+    }
+
+    /* ==========================================================
+      VÍNCULO: RECOMENDAÇÃO VINCULADA (Nº + NOME)
+    ========================================================== */
+    function populateRecomendacaoSelect(processoId) {
+      const sel = document.getElementById("recomendacao_vinculada_id");
+      const recs = allData
+        .filter(d => d.tipo === "recomendacao" && d.processo_id === processoId)
+        .sort((a,b) => (a.recomendacao_numero||"").localeCompare(b.recomendacao_numero||""));
+
+      sel.innerHTML =
+        `<option value="">(Opcional) Selecione uma recomendação...</option>` +
+        recs.map(r => {
+          const label =
+            `Rec. ${r.recomendacao_numero}` +
+            `${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""}` +
+            ` - ${String(r.recomendacao_texto || "").slice(0,80)}` +
+            ((r.recomendacao_texto||"").length > 80 ? "..." : "");
+          return `<option value="${r.recomendacao_id}">${escapeHtml(label)}</option>`;
+        }).join("");
+    }
+
+    function renderRecomendacaoPreviewInModal() {
+      const sel = document.getElementById("recomendacao_vinculada_id");
+      const preview = document.getElementById("recomendacao-preview");
+      const id = sel.value;
+
+      if (!id) { preview.textContent = ""; return; }
+      const rec = allData.find(d => d.tipo === "recomendacao" && d.recomendacao_id === id);
+      if (!rec) { preview.textContent = ""; return; }
+
+      const name = `Rec. ${rec.recomendacao_numero}${rec.recomendacao_subitem ? "-" + rec.recomendacao_subitem : ""}`;
+      const text = String(rec.recomendacao_texto || "");
+      preview.textContent = `${name} • ${text.slice(0,140)}${text.length > 140 ? "..." : ""}`;
+    }
+
+    /* ==========================================================
+      SYNC RESPONSÁVEL (topo <-> baixo)
+    ========================================================== */
+    function syncResponsavelPrincipalBottom() {
+      const top = document.getElementById("responsavel_recomendacao");
+      const bottom = document.getElementById("responsavel_principal_bottom");
+      if (!top || !bottom) return;
+      // se o bottom estiver vazio, espelha; se tiver preenchido, mantém (permite ajuste)
+      if (!bottom.value) bottom.value = top.value || "";
+    }
+
+    document.addEventListener("input", (e) => {
+      if (e.target && e.target.id === "responsavel_recomendacao") {
+        const bottom = document.getElementById("responsavel_principal_bottom");
+        if (bottom && (!bottom.value || bottom.value === "")) bottom.value = e.target.value || "";
+      }
+      if (e.target && e.target.id === "responsavel_principal_bottom") {
+        const top = document.getElementById("responsavel_recomendacao");
+        // se a pessoa ajustou embaixo, espelha no topo (para ser o oficial)
+        if (top && e.target.value && top.value !== e.target.value) top.value = e.target.value;
+      }
+    });
+
+    /* ==========================================================
+      SUBMITS (CRUD)
+    ========================================================== */
+    document.getElementById("processo-form").onsubmit = async (e) => {
       e.preventDefault();
 
-      const eixoVal = document.getElementById("eixo").value === "Outro"
-        ? (document.getElementById("eixo_outro").value || "Outro")
-        : document.getElementById("eixo").value;
+      const eixo = document.getElementById("eixo").value;
+      const eixo_outro = document.getElementById("eixo_outro").value.trim();
+      const eixo_final = eixo === "Outro" ? eixo_outro : eixo;
 
       const obj = {
         tipo: "processo",
-        processo_id: currentEditingProc || uid("proc"),
-        processo_numero: document.getElementById("processo_numero").value,
-        eixo: eixoVal,
-        unidade: document.getElementById("unidade").value,
-        periodo: document.getElementById("periodo").value,
-        objeto: document.getElementById("objeto").value,
-        responsavel: document.getElementById("responsavel").value,
-        auditor: document.getElementById("auditor").value,
-        setores_envolvidos: setoresProcesso.join(", "),
-        updated_at: new Date().toISOString()
+        processo_id: currentProcessoId || ("proc_" + Date.now()),
+        processo_numero: document.getElementById("processo_numero").value.trim(),
+        eixo,
+        eixo_outro,
+        eixo_final,
+        unidade: document.getElementById("unidade").value.trim(),
+        periodo: document.getElementById("periodo").value.trim(),
+        objeto: document.getElementById("objeto").value.trim(),
+        responsavel: document.getElementById("responsavel").value.trim(),
+        auditor: document.getElementById("auditor").value.trim(),
+        setores_envolvidos: setoresProcesso.join("||"),
+        updated_at: nowISO()
       };
 
-      const res = currentEditingProc
-        ? await window.dataSdk.update(obj)
-        : await window.dataSdk.create({ ...obj, created_at: new Date().toISOString() });
+      if (!obj.processo_numero || !obj.unidade || !obj.periodo || !obj.objeto || !obj.eixo) {
+        return alert("Preencha os campos obrigatórios do processo.");
+      }
+      if (obj.eixo === "Outro" && !obj.eixo_outro) return alert("Informe o novo eixo.");
 
-      if (!res?.isOk) return alert("Falha ao salvar processo: " + (res?.error || "erro"));
+      if (currentProcessoId) {
+        await window.dataSdk.update(obj);
+        logAudit({ action:"UPDATE", tipo:"processo", resumo:`Processo ${obj.processo_numero}` });
+      } else {
+        obj.created_at = nowISO();
+        await window.dataSdk.create(obj);
+        logAudit({ action:"CREATE", tipo:"processo", resumo:`Processo ${obj.processo_numero}` });
+      }
 
-      auditAdd(currentEditingProc ? "UPDATE" : "CREATE", "processo", `Processo ${obj.processo_numero}`);
       closeModal("processo");
       renderCurrentView();
-    });
+    };
 
-    document.getElementById("achado-form").addEventListener("submit", async (e) => {
+    document.getElementById("achado-form").onsubmit = async (e) => {
       e.preventDefault();
-      if (!currentProcessoId) return alert("Processo não definido. Abra o achado a partir do processo.");
+      if (!currentProcessoId) return alert("Processo não definido.");
+
+      const impacto = document.getElementById("impacto").value;
+      const impacto_outro = document.getElementById("impacto_outro").value.trim();
 
       const obj = {
         tipo: "achado",
         processo_id: currentProcessoId,
-        achado_id: currentAchadoId || uid("ach"),
-        achado_numero: document.getElementById("achado_numero").value,
-        achado_subitem: document.getElementById("achado_subitem").value,
+        achado_id: currentAchadoId || ("ach_" + Date.now()),
+        achado_numero: document.getElementById("achado_numero").value.trim(),
+        achado_subitem: document.getElementById("achado_subitem").value.trim(),
         grau_risco: document.getElementById("grau_risco").value,
-        impacto: document.getElementById("impacto").value,
-        impacto_outro: document.getElementById("impacto_outro").value,
-        achado_descricao: document.getElementById("achado_descricao").value,
-        responsavel_achado: document.getElementById("responsavel_achado").value,
-        evidencia: document.getElementById("evidencia").value,
-        updated_at: new Date().toISOString()
+        impacto,
+        impacto_outro,
+        achado_descricao: document.getElementById("achado_descricao").value.trim(),
+        responsavel_achado: document.getElementById("responsavel_achado").value.trim(),
+        evidencia: document.getElementById("evidencia").value.trim(),
+        updated_at: nowISO()
       };
 
-      const res = currentAchadoId
-        ? await window.dataSdk.update(obj)
-        : await window.dataSdk.create({ ...obj, created_at: new Date().toISOString() });
+      if (impacto === "Outro" && !impacto_outro) return alert("Informe o outro impacto.");
+      if (!obj.achado_numero || !obj.grau_risco || !obj.achado_descricao) return alert("Preencha Nº Achado, Risco e Descrição.");
 
-      if (!res?.isOk) return alert("Falha ao salvar achado: " + (res?.error || "erro"));
+      if (currentAchadoId) {
+        await window.dataSdk.update(obj);
+        logAudit({ action:"UPDATE", tipo:"achado", resumo:`Achado ${obj.achado_numero}` });
+      } else {
+        obj.created_at = nowISO();
+        await window.dataSdk.create(obj);
+        logAudit({ action:"CREATE", tipo:"achado", resumo:`Achado ${obj.achado_numero}` });
+      }
 
-      auditAdd(currentAchadoId ? "UPDATE" : "CREATE", "achado", `Achado ${obj.achado_numero}${obj.achado_subitem ? "-"+obj.achado_subitem : ""}`);
       closeModal("achado");
       renderCurrentView();
-    });
+    };
 
-    document.getElementById("recomendacao-form").addEventListener("submit", async (e) => {
+    document.getElementById("recomendacao-form").onsubmit = async (e) => {
       e.preventDefault();
-      if (!currentProcessoId) return alert("Processo não definido. Abra o plano a partir do processo.");
+      if (!currentProcessoId) return alert("Processo não definido.");
+
+      // espelha bottom no topo se precisar
+      const bottomResp = document.getElementById("responsavel_principal_bottom").value.trim();
+      if (bottomResp && !document.getElementById("responsavel_recomendacao").value.trim()) {
+        document.getElementById("responsavel_recomendacao").value = bottomResp;
+      }
 
       const base = {
         tipo: "recomendacao",
         processo_id: currentProcessoId,
-        recomendacao_id: currentEditingRec || uid("rec"),
-        achado_id: document.getElementById("recomendacao_achado_id").value || "",
-
-        recomendacao_numero: document.getElementById("recomendacao_numero").value,
-        recomendacao_subitem: document.getElementById("recomendacao_subitem").value,
-        recomendacao_texto: document.getElementById("recomendacao_texto").value,
-
-        indicador: document.getElementById("indicador").value,
-        resultado: document.getElementById("resultado").value,
-
+        recomendacao_id: currentEditingRec || ("rec_" + Date.now()),
+        recomendacao_numero: document.getElementById("recomendacao_numero").value.trim(),
+        recomendacao_subitem: document.getElementById("recomendacao_subitem").value.trim(),
+        recomendacao_texto: document.getElementById("recomendacao_texto").value.trim(),
         prioridade: document.getElementById("prioridade").value,
-        prazo_global: document.getElementById("prazo_global").value,
-        responsavel_recomendacao: document.getElementById("responsavel_recomendacao").value,
+        prazo_global: document.getElementById("prazo_global").value.trim(),
+        responsavel_recomendacao: document.getElementById("responsavel_recomendacao").value.trim(),
 
+        // vínculo por recomendação (Nº + nome)
+        recomendacao_vinculada_id: document.getElementById("recomendacao_vinculada_id").value || "",
+
+        // áreas
         areas_responsaveis: areasResponsaveis,
         areas_envolvidas: areasEnvolvidas,
 
+        // ações
         acoes: acoesTemp,
 
-        evidencias_cumprimento: document.getElementById("evidencias_cumprimento").value,
-        justificativa_nao_cumprimento: document.getElementById("justificativa_nao_cumprimento").value,
-        resultados_percebidos: document.getElementById("resultados_percebidos").value,
+        // síntese (baixo)
+        indicador_plano: document.getElementById("indicador_plano").value.trim(),
+        resultado_plano: document.getElementById("resultado_plano").value.trim(),
+        responsavel_principal_bottom: document.getElementById("responsavel_principal_bottom").value.trim(),
 
-        updated_at: new Date().toISOString()
+        // formal
+        evidencias_cumprimento: document.getElementById("evidencias_cumprimento").value.trim(),
+        justificativa_nao_cumprimento: document.getElementById("justificativa_nao_cumprimento").value.trim(),
+        resultados_percebidos: document.getElementById("resultados_percebidos").value.trim(),
+
+        updated_at: nowISO()
       };
+
+      if (!base.recomendacao_numero || !base.prioridade || !base.prazo_global || !base.recomendacao_texto) {
+        return alert("Preencha Nº Rec, Prioridade, Prazo Global e Texto da Recomendação.");
+      }
 
       const derived = getRecDerived(base);
       const finalObj = { ...base, ...derived };
 
-      const res = currentEditingRec
-        ? await window.dataSdk.update(finalObj)
-        : await window.dataSdk.create({ ...finalObj, created_at: new Date().toISOString() });
-
-      if (!res?.isOk) return alert("Falha ao salvar plano: " + (res?.error || "erro"));
-
-      const ach = getAchadoById(finalObj.achado_id);
-      const achName = ach ? ` (vinculado ao Achado ${ach.achado_numero}${ach.achado_subitem ? "-"+ach.achado_subitem : ""})` : "";
-      auditAdd(currentEditingRec ? "UPDATE" : "CREATE", "recomendacao", `Rec ${finalObj.recomendacao_numero}${finalObj.recomendacao_subitem ? "-"+finalObj.recomendacao_subitem : ""}${achName}`);
+      if (currentEditingRec) {
+        await window.dataSdk.update(finalObj);
+        logAudit({ action:"UPDATE", tipo:"recomendacao", resumo:`Plano Rec. ${finalObj.recomendacao_numero}` });
+      } else {
+        finalObj.created_at = nowISO();
+        await window.dataSdk.create(finalObj);
+        logAudit({ action:"CREATE", tipo:"recomendacao", resumo:`Plano Rec. ${finalObj.recomendacao_numero}` });
+      }
 
       closeModal("recomendacao");
       renderCurrentView();
-    });
+    };
 
-    // =========================
-    // LOGIN / SESSION
-    // =========================
+    /* ==========================================================
+      EXPORT PDF (FUNCIONAL E INTERLIGADO)
+    ========================================================== */
+    function exportMenuOpen() {
+      document.getElementById("modal-export").style.display = "flex";
+      populateProcessExportLists();
+      refreshIcons();
+    }
+
+    function populateProcessExportLists() {
+      const data = filterDataByUser(allData);
+      const processos = data.filter(d => d.tipo === "processo");
+
+      const list1 = document.getElementById("processos-plano-list");
+      const list2 = document.getElementById("processos-formal-list");
+
+      list1.innerHTML = processos.map(p => `
+        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-sm font-bold"
+                onclick="exportPDFPorProcesso('${p.processo_id}', false)">
+          ${escapeHtml(p.processo_numero || p.processo_id)} • ${escapeHtml(p.unidade || "")}
+        </button>
+      `).join("");
+
+      list2.innerHTML = processos.map(p => `
+        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 text-sm font-bold"
+                onclick="exportPDFPorProcesso('${p.processo_id}', true)">
+          ${escapeHtml(p.processo_numero || p.processo_id)} • ${escapeHtml(p.unidade || "")}
+        </button>
+      `).join("");
+    }
+
+    function pdfWrapText(doc, text, x, y, maxWidth, lineHeight) {
+      const lines = doc.splitTextToSize(text || "", maxWidth);
+      for (const line of lines) {
+        doc.text(line, x, y);
+        y += lineHeight;
+        if (y > 280) { doc.addPage(); y = 20; }
+      }
+      return y;
+    }
+
+    function exportPDFGeral() {
+      const data = filterDataByUser(allData);
+      exportPDFCore(data, { formal:false, onlyProcessId:null, title:"Relatório Geral - Processos Auditados" });
+      logAudit({ action:"EXPORT", tipo:"system", resumo:"PDF Geral" });
+    }
+
+    function exportPDFFormalGeral() {
+      const data = filterDataByUser(allData);
+      exportPDFCore(data, { formal:true, onlyProcessId:null, title:"Relatório Formal - Processos Auditados" });
+      logAudit({ action:"EXPORT", tipo:"system", resumo:"PDF Formal Geral" });
+    }
+
+    function exportPDFPorProcesso(processoId, formal) {
+      const data = filterDataByUser(allData);
+      exportPDFCore(data, { formal:!!formal, onlyProcessId:processoId, title: formal ? "Relatório Formal - Por Processo" : "Relatório - Por Processo" });
+      logAudit({ action:"EXPORT", tipo:"processo", resumo:`PDF ${formal ? "Formal" : "Geral"} Processo ${processoId}` });
+    }
+
+    function exportPDFCore(data, opts) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit:"mm", format:"a4" });
+
+      const processos = data.filter(d => d.tipo === "processo");
+      const achados = data.filter(d => d.tipo === "achado");
+      const planos  = data.filter(d => d.tipo === "recomendacao").map(r => ({...r, ...getRecDerived(r)}));
+
+      const procs = opts.onlyProcessId ? processos.filter(p => p.processo_id === opts.onlyProcessId) : processos;
+
+      let y = 18;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text(opts.title || "Relatório", 14, y); y += 7;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, y); y += 8;
+
+      procs.forEach((p, idx) => {
+        if (y > 260) { doc.addPage(); y = 20; }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text(`Processo: ${p.processo_numero || p.processo_id}`, 14, y); y += 6;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(`Unidade: ${p.unidade || "-"} | Período: ${p.periodo || "-"} | Eixo: ${p.eixo_final || p.eixo || "-"}`, 14, y); y += 5;
+
+        y = pdfWrapText(doc, `Objeto: ${p.objeto || "-"}`, 14, y, 180, 5) + 1;
+
+        const aProc = achados.filter(a => a.processo_id === p.processo_id);
+        const rProc = planos.filter(r => r.processo_id === p.processo_id);
+
+        // ACHADOS
+        doc.setFont("helvetica", "bold");
+        doc.text(`Achados (${aProc.length}):`, 14, y); y += 5;
+        doc.setFont("helvetica", "normal");
+
+        if (!aProc.length) {
+          doc.text("• (Nenhum achado cadastrado)", 16, y); y += 5;
+        } else {
+          aProc.sort((x,y)=> (x.achado_numero||"").localeCompare(y.achado_numero||""));
+          aProc.forEach(a => {
+            const head = `• Achado ${a.achado_numero}${a.achado_subitem ? "-" + a.achado_subitem : ""} | Risco: ${a.grau_risco || "-"} | Impacto: ${a.impacto === "Outro" ? (a.impacto_outro||"Outro") : (a.impacto||"-")}`;
+            y = pdfWrapText(doc, head, 16, y, 178, 5);
+            y = pdfWrapText(doc, `  Descrição: ${a.achado_descricao || "-"}`, 16, y, 178, 5);
+            if (a.responsavel_achado) y = pdfWrapText(doc, `  Responsável: ${a.responsavel_achado}`, 16, y, 178, 5);
+            if (a.evidencia) y = pdfWrapText(doc, `  Evidência: ${a.evidencia}`, 16, y, 178, 5);
+            y += 2;
+          });
+        }
+
+        // PLANOS
+        if (y > 255) { doc.addPage(); y = 20; }
+        doc.setFont("helvetica", "bold");
+        doc.text(`Planos de Ação (${rProc.length}):`, 14, y); y += 5;
+        doc.setFont("helvetica", "normal");
+
+        if (!rProc.length) {
+          doc.text("• (Nenhum plano cadastrado)", 16, y); y += 5;
+        } else {
+          rProc.sort((x,y)=> (x.recomendacao_numero||"").localeCompare(y.recomendacao_numero||""));
+          rProc.forEach(r => {
+            const head = `• Rec. ${r.recomendacao_numero}${r.recomendacao_subitem ? "-" + r.recomendacao_subitem : ""} | Status: ${r.status} | Progresso: ${r.progresso}% | Prioridade: ${r.prioridade || "-"}`;
+            y = pdfWrapText(doc, head, 16, y, 178, 5);
+
+            const linked = getLinkedRecomendacaoLabel(r);
+            if (linked) y = pdfWrapText(doc, `  Recomendação vinculada: ${linked}`, 16, y, 178, 5);
+
+            y = pdfWrapText(doc, `  Recomendação: ${r.recomendacao_texto || "-"}`, 16, y, 178, 5);
+            if (r.responsavel_recomendacao) y = pdfWrapText(doc, `  Responsável principal: ${r.responsavel_recomendacao}`, 16, y, 178, 5);
+            if (r.prazo_global) y = pdfWrapText(doc, `  Prazo global: ${r.prazo_global}`, 16, y, 178, 5);
+
+            if (r.indicador_plano) y = pdfWrapText(doc, `  Indicador: ${r.indicador_plano}`, 16, y, 178, 5);
+            if (r.resultado_plano) y = pdfWrapText(doc, `  Resultado: ${r.resultado_plano}`, 16, y, 178, 5);
+
+            // ações
+            const acoes = Array.isArray(r.acoes) ? r.acoes : [];
+            if (acoes.length) {
+              y = pdfWrapText(doc, `  Etapas (${acoes.length}):`, 16, y, 178, 5);
+              acoes.forEach(ac => {
+                const line = `    - ${ac.desc || ""} | ${ac.status || ""} | Resp.: ${ac.responsavel || "-"} | Prazo: ${ac.prazo ? new Date(ac.prazo).toLocaleDateString('pt-BR') : "-"} | Custo: ${ac.custo || "-"}`;
+                y = pdfWrapText(doc, line, 16, y, 178, 5);
+              });
+            } else {
+              y = pdfWrapText(doc, `  Etapas: (nenhuma cadastrada)`, 16, y, 178, 5);
+            }
+
+            if (opts.formal) {
+              if (r.evidencias_cumprimento) y = pdfWrapText(doc, `  Evidências: ${r.evidencias_cumprimento}`, 16, y, 178, 5);
+              if (r.justificativa_nao_cumprimento) y = pdfWrapText(doc, `  Justificativas: ${r.justificativa_nao_cumprimento}`, 16, y, 178, 5);
+              if (r.resultados_percebidos) y = pdfWrapText(doc, `  Resultados (formal): ${r.resultados_percebidos}`, 16, y, 178, 5);
+            }
+
+            y += 3;
+            if (y > 275) { doc.addPage(); y = 20; }
+          });
+        }
+
+        y += 4;
+        if (idx < procs.length - 1) {
+          doc.setDrawColor(220);
+          doc.line(14, y, 196, y);
+          y += 6;
+        }
+      });
+
+      const filename = (opts.onlyProcessId ? `processo_${opts.onlyProcessId}_` : "") + (opts.formal ? "formal_" : "") + "relatorio.pdf";
+      doc.save(filename);
+      closeModal("export");
+    }
+
+    /* ==========================================================
+      AUDITORIA VIEW (ADMIN)
+    ========================================================== */
+    function resetAuditFilters() {
+      document.getElementById("audit-busca").value = "";
+      document.getElementById("audit-acao").value = "";
+      document.getElementById("audit-tipo").value = "";
+      renderAuditView();
+    }
+
+    function renderAuditView() {
+      if (!isAdmin()) return;
+      const body = document.getElementById("audit-table-body");
+      const empty = document.getElementById("audit-empty");
+
+      const busca = (document.getElementById("audit-busca").value || "").toLowerCase();
+      const acao  = document.getElementById("audit-acao").value;
+      const tipo  = document.getElementById("audit-tipo").value;
+
+      let rows = getAudit();
+
+      if (acao) rows = rows.filter(r => r.action === acao);
+      if (tipo) rows = rows.filter(r => r.tipo === tipo);
+      if (busca) rows = rows.filter(r => (r.resumo||"").toLowerCase().includes(busca) || (r.user||"").toLowerCase().includes(busca));
+
+      if (!rows.length) {
+        body.innerHTML = "";
+        empty.style.display = "block";
+      } else {
+        empty.style.display = "none";
+        body.innerHTML = rows.slice(0, 500).map(r => `
+          <tr class="border-b">
+            <td class="px-4 py-3">${new Date(r.ts).toLocaleString('pt-BR')}</td>
+            <td class="px-4 py-3">${escapeHtml(r.user)}</td>
+            <td class="px-4 py-3 font-bold">${escapeHtml(r.action)}</td>
+            <td class="px-4 py-3">${escapeHtml(r.tipo)}</td>
+            <td class="px-4 py-3">${escapeHtml(r.resumo)}</td>
+          </tr>
+        `).join("");
+      }
+    }
+
+    function exportAuditJSON() {
+      const content = JSON.stringify(getAudit(), null, 2);
+      const blob = new Blob([content], { type:"application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "audit_log.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      logAudit({ action:"EXPORT", tipo:"system", resumo:"Export Audit JSON" });
+    }
+
+    function clearAuditLog() {
+      if (!confirm("Limpar logs de auditoria?")) return;
+      setAudit([]);
+      renderAuditView();
+      logAudit({ action:"DELETE", tipo:"system", resumo:"Limpeza de auditoria" });
+    }
+
+    /* ==========================================================
+      LOGIN / SESSÃO
+    ========================================================== */
     function toggleSetorField() {
       const val = document.getElementById("login-perfil").value;
       document.getElementById("setor-field").style.display = val === "Técnico" ? "block" : "none";
-
-      // exemplo simples de setores
       const sel = document.getElementById("login-setor");
-      sel.innerHTML = `<option value="">Selecione...</option>
-        <option>CAS</option><option>SUAH</option><option>NAO</option><option>Financeiro</option><option>RH</option>`;
+      sel.innerHTML = "<option value=''>Selecione seu setor...</option><option>CAS</option><option>SUAH</option><option>Financeiro</option><option>RH</option><option>TI</option>";
     }
 
-    document.getElementById("login-form").addEventListener("submit", (e) => {
+    document.getElementById("login-form").onsubmit = (e) => {
       e.preventDefault();
+      userSession = {
+        nome: document.getElementById("login-nome").value.trim(),
+        perfil: document.getElementById("login-perfil").value,
+        setor: document.getElementById("login-setor").value
+      };
+      if (!userSession.nome || !userSession.perfil) return alert("Preencha nome e perfil.");
+      if (userSession.perfil === "Técnico" && !userSession.setor) return alert("Selecione o setor.");
 
-      const perfil = document.getElementById("login-perfil").value;
-      const nome = document.getElementById("login-nome").value;
-      const setor = document.getElementById("login-setor").value;
-
-      if (perfil === "Técnico" && !setor) return alert("Selecione o setor.");
-
-      userSession = { nome, perfil, setor };
       localStorage.setItem("userSession", JSON.stringify(userSession));
-
-      auditAdd("LOGIN", "processo", `Login: ${perfil}${setor ? " ("+setor+")" : ""}`);
-
       document.getElementById("login-screen").style.display = "none";
       document.getElementById("app").style.display = "flex";
+
       updateUserUI();
-      showView("dashboard");
-    });
+      logAudit({ action:"LOGIN", tipo:"system", resumo:`Login: ${userSession.perfil}${userSession.setor ? " ("+userSession.setor+")" : ""}` });
+      renderCurrentView();
+    };
 
     function updateUserUI() {
       if (!userSession) return;
-
       document.getElementById("user-name-sidebar").textContent = userSession.nome;
       document.getElementById("user-role-sidebar").textContent = userSession.perfil;
+      document.getElementById("user-avatar").textContent = userSession.nome.substring(0,2).toUpperCase();
+      document.getElementById("user-avatar-header").textContent = userSession.nome.substring(0,2).toUpperCase();
 
-      const initials = (userSession.nome || "U").trim().split(/\s+/).slice(0,2).map(s => s[0]?.toUpperCase() || "").join("");
-      document.getElementById("user-avatar").textContent = initials || "U";
-      document.getElementById("user-avatar-header").textContent = initials || "U";
-
-      // badge setor
-      if (userSession.perfil === "Técnico" && userSession.setor) {
+      if (userSession.perfil === "Técnico") {
         document.getElementById("user-setor-badge").style.display = "block";
-        document.getElementById("user-setor-text").textContent = userSession.setor;
+        document.getElementById("user-setor-text").textContent = userSession.setor || "";
       } else {
         document.getElementById("user-setor-badge").style.display = "none";
       }
 
-      // auditoria menu para ADM
+      // auditoria: apenas admin
       document.getElementById("nav-auditoria").style.display = isAdmin() ? "flex" : "none";
     }
 
@@ -1904,44 +2065,32 @@ renderRecomendacaoPreviewInModal();
       location.reload();
     }
 
-    // =========================
-    // EXPORTS (placeholders)
-    // =========================
-    function exportMenuOpen() { document.getElementById("modal-export").style.display = "flex"; }
-    function exportPDFGeral() { alert("Exportação PDF: em desenvolvimento."); }
-    function exportPDFFormalGeral() { alert("Exportação PDF formal: em desenvolvimento."); }
-
-    // =========================
-    // INIT
-    // =========================
+    /* ==========================================================
+      INICIALIZAÇÃO
+    ========================================================== */
     window.addEventListener("DOMContentLoaded", async () => {
-      // session
       const session = localStorage.getItem("userSession");
       if (session) {
-        userSession = safeParse(session, null);
+        userSession = JSON.parse(session);
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("app").style.display = "flex";
         updateUserUI();
       }
 
       ensureDataSdk();
-
       await window.dataSdk.init({
         onDataChanged: (d) => {
           allData = Array.isArray(d) ? d : [];
+          // manter export lists atualizadas se modal aberto
           renderCurrentView();
-          // se modal de rec estiver aberto, atualiza achados do processo
-          const recModalOpen = document.getElementById("modal-recomendacao").style.display === "flex";
-          if (recModalOpen && currentProcessoId) populateAchadoSelect(currentProcessoId);
+          if (document.getElementById("modal-export").style.display === "flex") populateProcessExportLists();
+          if (isAdmin() && currentView === "auditoria") renderAuditView();
         }
       });
 
-      // primeiro render
-      if (userSession) showView("dashboard");
       refreshIcons();
+      renderCurrentView();
     });
   </script>
-
 </body>
 </html>
-
