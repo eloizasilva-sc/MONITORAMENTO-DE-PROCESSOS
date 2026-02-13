@@ -7,7 +7,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- SDKs (se tiver no ambiente). Se não tiver, o sistema usa fallback localStorage -->
+  <!-- SDKs (se existir no seu ambiente). Se não existir, cai no fallback localStorage -->
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
 
@@ -35,11 +35,13 @@
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     .dash-card:hover{ box-shadow:var(--shadow2); transform:translateY(-2px); transition:0.2s; }
-    .active-link { background-color: rgba(37, 99, 235, 0.1); color: #2563eb; font-weight: 700; border-right: 3px solid #2563eb; }
+    .active-link { background-color: rgba(37, 99, 235, 0.1); color: #2563eb; font-weight: 800; border-right: 3px solid #2563eb; }
     .modal-enter { animation: modalIn .18s ease-out; }
     @keyframes modalIn { from { opacity:.2; transform: translateY(8px) scale(.99);} to { opacity:1; transform: translateY(0) scale(1);} }
-    .toast { animation: toastIn .18s ease-out; }
-    @keyframes toastIn { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform: translateY(0);} }
+
+    /* util */
+    .line-clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .line-clamp-3{ display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   </style>
 </head>
 
@@ -53,14 +55,14 @@
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
       <div class="bg-gradient-to-r from-slate-600 to-slate-700 p-8 text-white text-center">
         <i data-lucide="shield-check" class="w-16 h-16 mx-auto mb-4"></i>
-        <h1 class="text-2xl font-bold mb-2">PROCESSOS AUDITADOS</h1>
+        <h1 class="text-2xl font-extrabold mb-2 tracking-tight">PROCESSOS AUDITADOS</h1>
         <p class="text-sm opacity-90">SESAP/RN</p>
       </div>
       <div class="p-8">
-        <h2 class="text-xl font-bold text-slate-800 mb-6 text-center">Selecione seu Perfil</h2>
+        <h2 class="text-xl font-extrabold text-slate-800 mb-6 text-center">Selecione seu Perfil</h2>
         <form id="login-form" class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-2">Tipo de Usuário *</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Tipo de Usuário *</label>
             <select id="login-perfil" required onchange="toggleSetorField()"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base">
               <option value="">Selecione...</option>
@@ -70,7 +72,7 @@
           </div>
 
           <div id="setor-field" style="display:none;">
-            <label class="block text-sm font-medium text-slate-700 mb-2">Setor Responsável *</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Setor Responsável *</label>
             <select id="login-setor"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base">
               <option value="">Selecione seu setor...</option>
@@ -79,13 +81,13 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-2">Nome Completo *</label>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Nome Completo *</label>
             <input type="text" id="login-nome" required placeholder="Digite seu nome"
               class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <button type="submit"
-            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl">
+            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-extrabold hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl">
             Entrar no Sistema
           </button>
         </form>
@@ -105,19 +107,19 @@
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
       <div class="p-6 flex items-center gap-3 text-white border-b border-slate-800">
         <i data-lucide="shield-check" class="text-slate-400"></i>
-        <span class="font-bold text-lg tracking-tight">AUDITORIA 5W2H</span>
+        <span class="font-extrabold text-lg tracking-tight">AUDITORIA 5W2H</span>
       </div>
 
       <div class="px-4 py-4 bg-slate-800 border-b border-slate-700">
         <div class="flex items-center gap-3 mb-2">
-          <div class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm" id="user-avatar">AD</div>
+          <div class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-extrabold text-sm" id="user-avatar">AD</div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-white truncate" id="user-name-sidebar">Usuário</p>
-            <p class="text-xs text-slate-400" id="user-role-sidebar">Carregando...</p>
+            <p class="text-sm font-extrabold text-white truncate" id="user-name-sidebar">Usuário</p>
+            <p class="text-xs text-slate-400 font-semibold" id="user-role-sidebar">Carregando...</p>
           </div>
         </div>
         <div id="user-setor-badge" style="display:none;" class="mt-2 px-3 py-1.5 bg-blue-600 bg-opacity-20 border border-blue-500 rounded-lg">
-          <p class="text-xs font-semibold text-blue-300 text-center" id="user-setor-text"></p>
+          <p class="text-xs font-extrabold text-blue-300 text-center" id="user-setor-text"></p>
         </div>
       </div>
 
@@ -144,7 +146,7 @@
       </nav>
 
       <div class="p-4 border-t border-slate-800">
-        <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors">
+        <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-extrabold transition-colors">
           <i data-lucide="log-out" class="w-4 h-4"></i> Sair
         </button>
         <div class="mt-3 text-xs text-slate-500 text-center">
@@ -159,20 +161,20 @@
       <!-- HEADER -->
       <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-8 sticky top-0 z-30">
         <div>
-          <h1 id="page-title" class="font-bold text-lg text-slate-800">Dashboard</h1>
-          <p id="page-subtitle" class="text-xs text-slate-500"></p>
+          <h1 id="page-title" class="font-extrabold text-lg text-slate-800">Dashboard</h1>
+          <p id="page-subtitle" class="text-xs text-slate-500 font-semibold"></p>
         </div>
 
         <div class="flex items-center gap-3">
-          <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-slate-200 flex items-center gap-2">
+          <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-extrabold hover:bg-blue-600 transition-colors shadow-lg shadow-slate-200 flex items-center gap-2">
             <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
           </button>
 
-          <button onclick="openNewPlanModal()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
+          <button onclick="openNewPlanModal()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-extrabold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
             <i data-lucide="target" class="w-4 h-4"></i> Novo Plano
           </button>
 
-          <div class="h-8 w-8 bg-slate-900 rounded-full flex items-center justify-center text-white font-medium text-sm" id="user-avatar-header">AD</div>
+          <div class="h-8 w-8 bg-slate-900 rounded-full flex items-center justify-center text-white font-extrabold text-sm" id="user-avatar-header">AD</div>
         </div>
       </header>
 
@@ -180,37 +182,37 @@
       <div id="view-dashboard" class="p-8 max-w-[1600px] mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <p class="text-sm font-bold text-slate-500 uppercase tracking-wide">Locais</p>
+            <p class="text-sm font-extrabold text-slate-500 uppercase tracking-wide">Locais</p>
             <h3 id="dash-total-locais" class="text-4xl font-extrabold mt-2 text-slate-800">0</h3>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <p class="text-sm font-bold text-slate-500 uppercase tracking-wide">Processos</p>
+            <p class="text-sm font-extrabold text-slate-500 uppercase tracking-wide">Processos</p>
             <h3 id="dash-total-processos" class="text-4xl font-extrabold mt-2 text-slate-800">0</h3>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <p class="text-sm font-bold text-slate-500 uppercase tracking-wide">Recomendações Base</p>
+            <p class="text-sm font-extrabold text-slate-500 uppercase tracking-wide">Recomendações Base</p>
             <h3 id="dash-total-base" class="text-4xl font-extrabold mt-2 text-blue-600">0</h3>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <p class="text-sm font-bold text-red-500 uppercase tracking-wide">Planos em Atenção</p>
+            <p class="text-sm font-extrabold text-red-500 uppercase tracking-wide">Planos em Atenção</p>
             <h3 id="dash-atrasadas" class="text-4xl font-extrabold mt-2 text-red-600">0</h3>
           </div>
         </div>
 
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+          <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-3">
             <i data-lucide="map-pin" class="w-7 h-7 text-slate-600"></i> Auditorias por Local
           </h2>
-          <p class="text-slate-500 mt-1">Visão por unidade com progresso de planos</p>
+          <p class="text-slate-500 mt-1 font-semibold">Visão por unidade com progresso de planos</p>
         </div>
 
         <div id="locais-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
         <div id="dashboard-empty" style="display:none;" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
           <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
-          <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhuma auditoria cadastrada</h3>
-          <p class="text-slate-500 mb-6">Comece criando seu primeiro processo de auditoria</p>
-          <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-600 inline-flex items-center gap-2">
+          <h3 class="text-xl font-extrabold text-slate-700 mb-2">Nenhuma auditoria cadastrada</h3>
+          <p class="text-slate-500 mb-6 font-semibold">Comece criando seu primeiro processo de auditoria</p>
+          <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-extrabold hover:bg-blue-600 inline-flex items-center gap-2">
             <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
           </button>
         </div>
@@ -221,11 +223,11 @@
         <div class="flex items-center justify-between mb-6">
           <div>
             <h2 class="text-2xl font-extrabold text-slate-800">Processos</h2>
-            <p class="text-sm text-slate-500">Cadastre processos, achados e recomendações base</p>
+            <p class="text-sm text-slate-500 font-semibold">Cadastre processos, achados e recomendações base</p>
           </div>
 
           <div class="flex gap-2">
-            <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-600 transition-colors flex items-center gap-2">
+            <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-extrabold hover:bg-blue-600 transition-colors flex items-center gap-2">
               <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
             </button>
           </div>
@@ -235,8 +237,8 @@
 
         <div id="processos-empty" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
           <i data-lucide="folder-open" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
-          <h3 class="text-xl font-bold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
-          <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-slate-700 inline-flex items-center gap-2 mt-4">
+          <h3 class="text-xl font-extrabold text-slate-700 mb-2">Nenhum processo cadastrado</h3>
+          <button onclick="openNewProcessModal()" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-extrabold hover:bg-slate-700 inline-flex items-center gap-2 mt-4">
             <i data-lucide="plus" class="w-4 h-4"></i> Novo Processo
           </button>
         </div>
@@ -248,13 +250,13 @@
         <div class="glass-card rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
           <div class="flex flex-col lg:flex-row gap-4 items-end">
             <div class="flex-1 w-full">
-              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Buscar</label>
+              <label class="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-1 block">Buscar</label>
               <input id="plano-busca" type="text" placeholder="Pesquisar por recomendação, processo, ação..." oninput="applyPlanFilters()"
                 class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
-              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Status</label>
-              <select id="plano-status" onchange="applyPlanFilters()" class="px-4 py-2 rounded-xl border border-slate-200 bg-white">
+              <label class="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-1 block">Status</label>
+              <select id="plano-status" onchange="applyPlanFilters()" class="px-4 py-2 rounded-xl border border-slate-200 bg-white font-semibold">
                 <option value="">Todos</option>
                 <option value="Pendente">Pendente</option>
                 <option value="Em Execução">Em Execução</option>
@@ -262,7 +264,7 @@
                 <option value="Concluído">Concluído</option>
               </select>
             </div>
-            <button onclick="resetPlanFilters()" class="px-4 py-2 text-slate-500 hover:text-blue-600 font-bold text-sm">Limpar</button>
+            <button onclick="resetPlanFilters()" class="px-4 py-2 text-slate-500 hover:text-blue-600 font-extrabold text-sm">Limpar</button>
           </div>
         </div>
 
@@ -270,7 +272,7 @@
 
         <div id="planos-empty" style="display:none;" class="text-center py-20">
           <i data-lucide="clipboard-check" class="w-20 h-20 text-slate-200 mx-auto mb-4"></i>
-          <h3 class="text-2xl font-bold text-slate-400">Nenhum plano de ação encontrado</h3>
+          <h3 class="text-2xl font-extrabold text-slate-400">Nenhum plano de ação encontrado</h3>
         </div>
       </div>
 
@@ -279,14 +281,14 @@
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
           <div class="flex items-start justify-between gap-4 flex-col lg:flex-row">
             <div>
-              <h2 class="text-xl font-bold text-slate-800">Auditoria do Sistema</h2>
-              <p class="text-sm text-slate-600 mt-1">Registro de ações do sistema (apenas Administrador Geral).</p>
+              <h2 class="text-xl font-extrabold text-slate-800">Auditoria do Sistema</h2>
+              <p class="text-sm text-slate-600 mt-1 font-semibold">Registro de ações do sistema (apenas Administrador Geral).</p>
             </div>
             <div class="flex gap-2">
-              <button onclick="exportAuditJSON()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 flex items-center gap-2">
+              <button onclick="exportAuditJSON()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-extrabold hover:bg-slate-50 flex items-center gap-2">
                 <i data-lucide="download" class="w-4 h-4"></i> JSON
               </button>
-              <button onclick="clearAuditLog()" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 flex items-center gap-2">
+              <button onclick="clearAuditLog()" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-extrabold hover:bg-red-50 flex items-center gap-2">
                 <i data-lucide="trash-2" class="w-4 h-4"></i> Limpar
               </button>
             </div>
@@ -311,7 +313,7 @@
               <option value="baseRecomendacao">Recomendação Base</option>
               <option value="planoAcao">Plano</option>
             </select>
-            <button onclick="resetAuditFilters()" class="border px-3 py-2 rounded-lg">Limpar</button>
+            <button onclick="resetAuditFilters()" class="border px-3 py-2 rounded-lg font-extrabold">Limpar</button>
           </div>
         </div>
 
@@ -320,16 +322,16 @@
             <table class="min-w-full text-sm">
               <thead class="bg-slate-50 border-b">
                 <tr>
-                  <th class="px-4 py-3 text-left">Data</th>
-                  <th class="px-4 py-3 text-left">Usuário</th>
-                  <th class="px-4 py-3 text-left">Ação</th>
-                  <th class="px-4 py-3 text-left">Resumo</th>
+                  <th class="px-4 py-3 text-left font-extrabold">Data</th>
+                  <th class="px-4 py-3 text-left font-extrabold">Usuário</th>
+                  <th class="px-4 py-3 text-left font-extrabold">Ação</th>
+                  <th class="px-4 py-3 text-left font-extrabold">Resumo</th>
                 </tr>
               </thead>
               <tbody id="audit-table-body"></tbody>
             </table>
           </div>
-          <div id="audit-empty" class="p-10 text-center text-slate-500" style="display:none;">Nenhum registro.</div>
+          <div id="audit-empty" class="p-10 text-center text-slate-500 font-semibold" style="display:none;">Nenhum registro.</div>
         </div>
       </div>
 
@@ -340,7 +342,7 @@
   <div id="modal-processo" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter">
       <div class="sticky top-0 bg-white p-6 border-b border-slate-200 flex items-center justify-between">
-        <h2 class="font-bold text-xl text-slate-800" id="processo-modal-title">Novo Processo</h2>
+        <h2 class="font-extrabold text-xl text-slate-800" id="processo-modal-title">Novo Processo</h2>
         <button onclick="closeModal('processo')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-6 h-6"></i></button>
       </div>
 
@@ -365,18 +367,18 @@
           <input type="text" id="auditor" placeholder="Auditor Responsável" class="w-full px-4 py-2 border rounded-lg">
 
           <div class="md:col-span-2">
-            <label class="block text-sm font-medium mb-1">Setores Envolvidos (Técnicos)</label>
+            <label class="block text-sm font-semibold mb-1">Setores Envolvidos (Técnicos)</label>
             <div id="setores-processo-container" class="space-y-2 mb-2"></div>
             <div class="flex gap-2">
               <input type="text" id="setor_processo_input" placeholder="Ex: CAS, SUAH..." class="flex-1 px-4 py-2 border rounded-lg">
-              <button type="button" onclick="adicionarSetorProcesso()" class="bg-blue-600 text-white px-4 rounded-lg">Add</button>
+              <button type="button" onclick="adicionarSetorProcesso()" class="bg-blue-600 text-white px-4 rounded-lg font-extrabold">Add</button>
             </div>
           </div>
         </div>
 
         <div class="flex gap-3 justify-end pt-4 border-t">
-          <button type="button" onclick="closeModal('processo')" class="px-4 py-2 border rounded-lg">Cancelar</button>
-          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Salvar</button>
+          <button type="button" onclick="closeModal('processo')" class="px-4 py-2 border rounded-lg font-extrabold">Cancelar</button>
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-extrabold">Salvar</button>
         </div>
       </form>
     </div>
@@ -386,7 +388,7 @@
   <div id="modal-achado" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter">
       <div class="p-6 border-b flex justify-between items-center">
-        <h2 class="font-bold text-xl">Novo Achado</h2>
+        <h2 class="font-extrabold text-xl">Novo Achado</h2>
         <button onclick="closeModal('achado')"><i data-lucide="x"></i></button>
       </div>
 
@@ -409,8 +411,8 @@
         </div>
 
         <div class="flex justify-end gap-3 border-t pt-4">
-          <button type="button" onclick="closeModal('achado')" class="border px-4 py-2 rounded-lg">Cancelar</button>
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">Salvar</button>
+          <button type="button" onclick="closeModal('achado')" class="border px-4 py-2 rounded-lg font-extrabold">Cancelar</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-extrabold">Salvar</button>
         </div>
       </form>
     </div>
@@ -420,7 +422,7 @@
   <div id="modal-base-rec" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto modal-enter">
       <div class="p-6 border-b flex justify-between sticky top-0 bg-white z-10">
-        <h2 class="font-bold text-xl">Recomendação Base (Processo)</h2>
+        <h2 class="font-extrabold text-xl">Recomendação Base (Processo)</h2>
         <button onclick="closeModal('base-rec')"><i data-lucide="x"></i></button>
       </div>
 
@@ -438,9 +440,9 @@
           <input id="base_prazo_global" required placeholder="Prazo Global" class="border px-4 py-2 rounded-lg">
 
           <div class="md:col-span-2">
-            <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1">Achado vinculado</label>
+            <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-1">Achado vinculado</label>
             <select id="base_achado_id" required class="border px-4 py-2 rounded-lg w-full bg-white"></select>
-            <p id="base-achado-nome" class="text-xs text-slate-500 mt-2"></p>
+            <p id="base-achado-nome" class="text-xs text-slate-500 mt-2 font-semibold"></p>
           </div>
 
           <textarea id="base_recomendacao_texto" required rows="3" placeholder="Texto da Recomendação" class="border px-4 py-2 rounded-lg md:col-span-2"></textarea>
@@ -449,8 +451,8 @@
         </div>
 
         <div class="flex justify-end gap-3 border-t pt-4">
-          <button type="button" onclick="closeModal('base-rec')" class="border px-6 py-2 rounded-lg">Cancelar</button>
-          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Salvar</button>
+          <button type="button" onclick="closeModal('base-rec')" class="border px-6 py-2 rounded-lg font-extrabold">Cancelar</button>
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-extrabold">Salvar</button>
         </div>
       </form>
     </div>
@@ -458,9 +460,12 @@
 
   <!-- MODAL PLANO DE AÇÃO -->
   <div id="modal-plano" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto modal-enter">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto modal-enter">
       <div class="p-6 border-b flex justify-between sticky top-0 bg-white z-10">
-        <h2 class="font-bold text-xl" id="plano-modal-title">Plano de Ação</h2>
+        <div>
+          <h2 class="font-extrabold text-xl" id="plano-modal-title">Plano de Ação</h2>
+          <p class="text-xs text-slate-500 font-semibold mt-1">Indicador e Resultado ficam por ação (macro), não no cabeçalho.</p>
+        </div>
         <button onclick="closeModal('plano')"><i data-lucide="x"></i></button>
       </div>
 
@@ -470,106 +475,164 @@
 
         <!-- Seletor da recomendação base -->
         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-          <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1">
+          <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-1">
             Recomendação vinculada (obrigatório)
           </label>
-          <select id="plano_base_rec" onchange="onSelectBaseRec()" class="w-full border px-4 py-2 rounded-lg bg-white" required>
+          <select id="plano_base_rec" onchange="onSelectBaseRec()" class="w-full border px-4 py-2 rounded-lg bg-white font-semibold" required>
             <option value="">Selecione a recomendação...</option>
           </select>
-          <p class="text-xs text-slate-500 mt-1">
-            Ao selecionar, o cabeçalho será preenchido e ficará bloqueado.
+          <p class="text-xs text-slate-500 mt-1 font-semibold">
+            Ao selecionar, o cabeçalho é preenchido e fica bloqueado.
           </p>
         </div>
 
         <!-- CABEÇALHO BLOQUEADO -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input id="plano_recomendacao_numero" placeholder="Nº Rec" class="border px-4 py-2 rounded-lg" disabled>
-          <input id="plano_recomendacao_subitem" placeholder="Subitem" class="border px-4 py-2 rounded-lg" disabled>
-          <input id="plano_prioridade" placeholder="Prioridade" class="border px-4 py-2 rounded-lg" disabled>
-          <input id="plano_prazo_global" placeholder="Prazo Global" class="border px-4 py-2 rounded-lg" disabled>
+          <div class="bg-white border border-slate-200 rounded-xl p-3">
+            <div class="text-[10px] font-extrabold uppercase text-slate-400">Nº Recomendação</div>
+            <input id="plano_recomendacao_numero" class="mt-1 w-full border px-3 py-2 rounded-lg bg-slate-50" disabled>
+          </div>
 
-          <textarea id="plano_recomendacao_texto" rows="3" placeholder="Recomendação" class="border px-4 py-2 rounded-lg md:col-span-2" disabled></textarea>
+          <div class="bg-white border border-slate-200 rounded-xl p-3">
+            <div class="text-[10px] font-extrabold uppercase text-slate-400">Subitem</div>
+            <input id="plano_recomendacao_subitem" class="mt-1 w-full border px-3 py-2 rounded-lg bg-slate-50" disabled>
+          </div>
 
-          <input id="plano_responsavel_principal" placeholder="Responsável Principal" class="border px-4 py-2 rounded-lg md:col-span-2" disabled>
+          <div class="bg-white border border-slate-200 rounded-xl p-3">
+            <div class="text-[10px] font-extrabold uppercase text-slate-400">Prioridade</div>
+            <input id="plano_prioridade" class="mt-1 w-full border px-3 py-2 rounded-lg bg-slate-50" disabled>
+          </div>
 
-          <div class="md:col-span-2 bg-white border border-slate-200 rounded-2xl p-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label class="text-xs font-black text-slate-500 uppercase tracking-wider mb-1 block">Indicador</label>
-                <input id="plano_indicador" placeholder="Ex: % de recomendações concluídas no prazo" class="border px-4 py-2 rounded-lg w-full">
-              </div>
-              <div>
-                <label class="text-xs font-black text-slate-500 uppercase tracking-wider mb-1 block">Resultado</label>
-                <input id="plano_resultado" placeholder="Ex: redução de 30% no tempo de resposta" class="border px-4 py-2 rounded-lg w-full">
-              </div>
-            </div>
+          <div class="bg-white border border-slate-200 rounded-xl p-3">
+            <div class="text-[10px] font-extrabold uppercase text-slate-400">Prazo Global</div>
+            <input id="plano_prazo_global" class="mt-1 w-full border px-3 py-2 rounded-lg bg-slate-50" disabled>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-xl p-3 md:col-span-2">
+            <div class="text-[10px] font-extrabold uppercase text-slate-400">Recomendação</div>
+            <textarea id="plano_recomendacao_texto" rows="3" class="mt-1 w-full border px-3 py-2 rounded-lg bg-slate-50" disabled></textarea>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-xl p-3 md:col-span-2">
+            <div class="text-[10px] font-extrabold uppercase text-slate-400">Responsável Principal (Recomendação)</div>
+            <input id="plano_responsavel_principal" class="mt-1 w-full border px-3 py-2 rounded-lg bg-slate-50" disabled>
           </div>
         </div>
 
-        <!-- AÇÕES DO PLANO -->
+        <!-- AÇÕES DO PLANO (Macro) -->
         <div class="border-t pt-4">
-          <h3 class="font-bold text-lg mb-2">Ações do Plano</h3>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 p-4 border rounded-xl bg-white">
-            <input id="plano_acao_titulo" placeholder="Nome da Ação (macro)" class="border px-3 py-2 rounded-lg md:col-span-2">
-            <input id="plano_acao_resp" placeholder="Responsável da Ação" class="border px-3 py-2 rounded-lg">
-            <button type="button" onclick="addAcaoPlano()"
-              class="md:col-span-3 bg-slate-900 text-white py-2 rounded-lg font-bold">
-              + Adicionar Ação
+          <div class="flex items-end justify-between gap-3 flex-col md:flex-row">
+            <div>
+              <h3 class="font-extrabold text-lg mb-1">Ações do Plano (macro)</h3>
+              <p class="text-sm text-slate-500 font-semibold">Cada ação tem: responsável, indicador, resultado e etapas.</p>
+            </div>
+            <button type="button" onclick="openActionEditor()" class="bg-slate-900 text-white px-4 py-2 rounded-xl font-extrabold hover:bg-blue-600 flex items-center gap-2">
+              <i data-lucide="plus" class="w-4 h-4"></i> Nova Ação
             </button>
           </div>
 
-          <div id="acoes-plano-list" class="space-y-3"></div>
-          <div id="acoes-plano-empty" class="text-slate-400 text-center text-sm">Nenhuma ação cadastrada.</div>
+          <div id="acoes-plano-list" class="space-y-3 mt-4"></div>
+          <div id="acoes-plano-empty" class="text-slate-400 text-center text-sm font-semibold mt-6">Nenhuma ação cadastrada.</div>
         </div>
 
         <!-- Relatório -->
         <div class="border-t pt-4">
-          <h3 class="font-bold text-sm text-slate-500 uppercase mb-2">Relatório Formal (Opcional)</h3>
+          <h3 class="font-extrabold text-sm text-slate-500 uppercase mb-2">Relatório Formal (Opcional)</h3>
           <textarea id="plano_evidencias" rows="2" placeholder="Evidências..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
           <textarea id="plano_justificativas" rows="2" placeholder="Justificativas..." class="w-full border px-3 py-2 rounded-lg mb-2"></textarea>
           <textarea id="plano_resultados_percebidos" rows="2" placeholder="Resultados percebidos..." class="w-full border px-3 py-2 rounded-lg"></textarea>
         </div>
 
         <div class="flex justify-end gap-3 border-t pt-4">
-          <button type="button" onclick="closeModal('plano')" class="border px-6 py-2 rounded-lg">Cancelar</button>
-          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Salvar Plano</button>
+          <button type="button" onclick="closeModal('plano')" class="border px-6 py-2 rounded-lg font-extrabold">Cancelar</button>
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-extrabold">Salvar Plano</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL ETAPAS (GERENCIAR ETAPAS DE UMA AÇÃO) -->
-  <div id="modal-etapas" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter">
-      <div class="p-6 border-b flex justify-between items-center">
-        <h3 class="font-bold text-lg" id="etapas-title">Gerenciar Etapas</h3>
+  <!-- MODAL AÇÃO (EDITAR TOPO DA AÇÃO: título, responsável, indicador, resultado, observações) -->
+  <div id="modal-acao" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto modal-enter">
+      <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+        <h3 class="font-extrabold text-lg" id="acao-title">Ação</h3>
+        <button type="button" onclick="closeAcaoModal()"><i data-lucide="x"></i></button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="acao_id" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Nome da Ação (macro) *</label>
+            <input id="acao_titulo" class="w-full border px-3 py-2 rounded-lg" placeholder="Ex: Implantar fluxo padrão para ...">
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Responsável da Ação</label>
+            <input id="acao_responsavel" class="w-full border px-3 py-2 rounded-lg" placeholder="Ex: Coordenação X">
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Prazo da Ação (opcional)</label>
+            <input id="acao_prazo" type="date" class="w-full border px-3 py-2 rounded-lg">
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Indicador (da Ação)</label>
+            <input id="acao_indicador" class="w-full border px-3 py-2 rounded-lg" placeholder="Ex: % de recomendações concluídas no prazo">
+          </div>
+
+          <div>
+            <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Resultado (da Ação)</label>
+            <input id="acao_resultado" class="w-full border px-3 py-2 rounded-lg" placeholder="Ex: redução de 30% no tempo de resposta">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Observações (da Ação)</label>
+            <textarea id="acao_observacoes" rows="3" class="w-full border px-3 py-2 rounded-lg" placeholder="Anotações, dependências, riscos, contexto..."></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 border-t pt-4">
+          <button type="button" onclick="closeAcaoModal()" class="border px-6 py-2 rounded-lg font-extrabold">Fechar</button>
+          <button type="button" onclick="saveAcaoModal()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-extrabold">Salvar Ação</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ETAPAS -->
+  <div id="modal-etapas" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-[70] flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto modal-enter">
+      <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+        <h3 class="font-extrabold text-lg" id="etapas-title">Gerenciar Etapas</h3>
         <button type="button" onclick="closeEtapasModal()"><i data-lucide="x"></i></button>
       </div>
 
       <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 p-4 border rounded-xl">
-          <input id="etapa_desc" placeholder="Descrição da etapa" class="border px-3 py-2 rounded-lg md:col-span-2">
+          <input id="etapa_desc" placeholder="Descrição da etapa *" class="border px-3 py-2 rounded-lg md:col-span-2">
           <input id="etapa_resp" placeholder="Responsável" class="border px-3 py-2 rounded-lg">
           <input id="etapa_prazo" type="date" class="border px-3 py-2 rounded-lg">
           <input id="etapa_custo" placeholder="Custo (R$)" class="border px-3 py-2 rounded-lg">
-          <select id="etapa_status" class="border px-3 py-2 rounded-lg">
+          <select id="etapa_status" class="border px-3 py-2 rounded-lg font-semibold">
             <option value="Não iniciada">Não iniciada</option>
             <option value="Em andamento">Em andamento</option>
             <option value="Concluída">Concluída</option>
           </select>
           <textarea id="etapa_obs" placeholder="Observações (opcional)" rows="2" class="border px-3 py-2 rounded-lg md:col-span-2"></textarea>
 
-          <button type="button" onclick="addEtapaToCurrentAction()" class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-bold">
+          <button type="button" onclick="addEtapaToCurrentAction()" class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-extrabold">
             + Adicionar Etapa
           </button>
         </div>
 
         <div id="etapas-list" class="space-y-2"></div>
-        <div id="etapas-empty" class="text-slate-400 text-center text-sm">Nenhuma etapa adicionada.</div>
+        <div id="etapas-empty" class="text-slate-400 text-center text-sm font-semibold">Nenhuma etapa adicionada.</div>
 
         <div class="flex justify-end gap-3 pt-4 border-t mt-6">
-          <button type="button" onclick="closeEtapasModal()" class="border px-6 py-2 rounded-lg">Fechar</button>
+          <button type="button" onclick="closeEtapasModal()" class="border px-6 py-2 rounded-lg font-extrabold">Fechar</button>
         </div>
       </div>
     </div>
@@ -579,7 +642,7 @@
   <div id="modal-export" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 modal-enter">
       <div class="flex justify-between mb-4">
-        <h3 class="font-bold text-xl">Exportar PDF</h3>
+        <h3 class="font-extrabold text-xl">Exportar PDF</h3>
         <button onclick="closeModal('export')"><i data-lucide="x"></i></button>
       </div>
 
@@ -587,21 +650,21 @@
         <button onclick="exportPDFGeral()" class="w-full text-left p-4 border rounded-lg hover:bg-blue-50 flex items-center gap-3">
           <i data-lucide="file-text" class="text-blue-600"></i>
           <div>
-            <p class="font-bold">Relatório Geral</p>
-            <p class="text-xs text-slate-500">Processos, achados, recomendações base e planos</p>
+            <p class="font-extrabold">Relatório Geral</p>
+            <p class="text-xs text-slate-500 font-semibold">Processos, achados, recomendações base e planos</p>
           </div>
         </button>
 
         <div class="border rounded-lg p-4">
-          <p class="font-bold mb-2 flex items-center gap-2"><i data-lucide="folder" class="text-blue-600 w-4 h-4"></i> Por Processo</p>
+          <p class="font-extrabold mb-2 flex items-center gap-2"><i data-lucide="folder" class="text-blue-600 w-4 h-4"></i> Por Processo</p>
           <div id="export-processos-list" class="max-h-40 overflow-y-auto space-y-1 custom-scrollbar"></div>
         </div>
 
         <button onclick="exportPDFPlanosGeral()" class="w-full text-left p-4 border rounded-lg hover:bg-emerald-50 flex items-center gap-3">
           <i data-lucide="clipboard-check" class="text-emerald-600"></i>
           <div>
-            <p class="font-bold">Planos (Geral)</p>
-            <p class="text-xs text-slate-500">Somente planos, com ações e etapas</p>
+            <p class="font-extrabold">Planos (Geral)</p>
+            <p class="text-xs text-slate-500 font-semibold">Somente planos, com ações, indicador/resultado por ação e etapas</p>
           </div>
         </button>
       </div>
@@ -612,7 +675,7 @@
     /* =======================
        STORAGE + SDK (fallback)
     ======================= */
-    const STORAGE_KEY = "processos_auditados_exec_v3";
+    const STORAGE_KEY = "processos_auditados_exec_v4"; // v4: indicador/resultado por ação + editar topo da ação
 
     function safeParse(json, fallback) { try { return JSON.parse(json) ?? fallback; } catch { return fallback; } }
     function getStoredData() { return safeParse(localStorage.getItem(STORAGE_KEY), []); }
@@ -656,6 +719,11 @@
     }
 
     /* =======================
+       MIGRAÇÃO (mantém dados se já existiam em versões anteriores)
+       - se você estava usando outra key, pode copiar manualmente no devtools.
+    ======================= */
+
+    /* =======================
        GLOBAIS
     ======================= */
     let allData = [];
@@ -670,7 +738,7 @@
 
     // Arrays temporários
     let setoresProcesso = [];
-    let acoesPlano = [];  // ações macro no plano (cada uma com etapas)
+    let acoesPlano = [];  // ações macro no plano (cada uma com indicador/resultado/obs + etapas)
 
     // Filtros
     const planFilters = { busca: "", status: "" };
@@ -697,8 +765,9 @@
         err: "bg-red-600 text-white"
       };
       const div = document.createElement("div");
-      div.className = `toast px-4 py-3 rounded-xl shadow-lg ${colors[type]||colors.info} flex items-center gap-2`;
-      div.innerHTML = `<i data-lucide="${type==='ok'?'check-circle':type==='err'?'alert-triangle':'info'}" class="w-4 h-4"></i><span class="text-sm font-semibold">${escapeHtml(msg)}</span>`;
+      div.className = `px-4 py-3 rounded-xl shadow-lg ${colors[type]||colors.info} flex items-center gap-2`;
+      div.style.animation = "modalIn .18s ease-out";
+      div.innerHTML = `<i data-lucide="${type==='ok'?'check-circle':type==='err'?'alert-triangle':'info'}" class="w-4 h-4"></i><span class="text-sm font-extrabold">${escapeHtml(msg)}</span>`;
       host.appendChild(div);
       refreshIcons();
       setTimeout(() => { div.style.opacity = "0"; div.style.transform = "translateY(6px)"; div.style.transition = ".2s"; }, 2400);
@@ -766,10 +835,9 @@
       const nav = document.getElementById("nav-" + view);
       if (nav) nav.classList.add("active-link");
 
-      // título
       const titles = { dashboard: "Dashboard", processos: "Processos", planos: "Planos de Ação", auditoria: "Auditoria do Sistema" };
       document.getElementById("page-title").textContent = titles[view] || "Sistema";
-      document.getElementById("page-subtitle").textContent = view === "planos" ? "Planos vinculados a recomendações base, com ações e etapas" : "";
+      document.getElementById("page-subtitle").textContent = view === "planos" ? "Planos vinculados a recomendações base, com ações (indicador/resultado por ação) e etapas" : "";
 
       renderCurrentView();
     }
@@ -785,7 +853,8 @@
     }
 
     /* =======================
-       MODELO: status do plano
+       STATUS / PROGRESSO do plano
+       - calculado pelas etapas de TODAS as ações
     ======================= */
     function computeProgressFromActions(acoes_plano) {
       const allEtapas = (acoes_plano||[]).flatMap(a => a.etapas||[]);
@@ -846,16 +915,16 @@
           <div class="glass-card p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-all dash-card">
             <div class="flex justify-between items-start mb-4">
               <div>
-                <h3 class="font-bold text-lg text-slate-800">${escapeHtml(local)}</h3>
-                <p class="text-xs text-slate-500 font-black uppercase">${pLocal.length} processos</p>
+                <h3 class="font-extrabold text-lg text-slate-800">${escapeHtml(local)}</h3>
+                <p class="text-xs text-slate-500 font-extrabold uppercase">${pLocal.length} processos</p>
               </div>
               <div class="bg-blue-100 p-2 rounded-lg"><i data-lucide="building-2" class="text-blue-600 w-5 h-5"></i></div>
             </div>
 
             <div class="space-y-3">
-              <div class="flex justify-between text-sm">
+              <div class="flex justify-between text-sm font-semibold">
                 <span class="text-slate-500">Planos</span>
-                <span class="font-bold text-slate-800">${planosLocal.length}</span>
+                <span class="font-extrabold text-slate-800">${planosLocal.length}</span>
               </div>
 
               <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">
@@ -863,7 +932,7 @@
                 <div class="bg-amber-400 h-full" style="width:${(pendentes/total*100)||0}%"></div>
               </div>
 
-              <div class="flex gap-4 text-xs font-black mt-2">
+              <div class="flex gap-4 text-xs font-extrabold mt-2">
                 <span class="flex items-center gap-1 text-emerald-600"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> ${concluidas} OK</span>
                 <span class="flex items-center gap-1 text-amber-500"><span class="w-2 h-2 rounded-full bg-amber-500"></span> ${pendentes} em andamento</span>
               </div>
@@ -874,7 +943,7 @@
     }
 
     /* =======================
-       PROCESSOS: lista completa
+       PROCESSOS
     ======================= */
     function renderProcessos(data) {
       const processos = data.filter(d => d.tipo === "processo").sort((a,b) => (b.created_at||"").localeCompare(a.created_at||""));
@@ -903,28 +972,28 @@
               <div class="flex items-start justify-between gap-4">
                 <div class="min-w-0">
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-black">Processo</span>
-                    <span class="text-xs font-black text-slate-400 uppercase">${escapeHtml(p.eixo || p.eixo_outro || "")}</span>
+                    <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-extrabold">Processo</span>
+                    <span class="text-xs font-extrabold text-slate-400 uppercase">${escapeHtml(p.eixo || p.eixo_outro || "")}</span>
                   </div>
                   <h3 class="text-2xl font-extrabold text-slate-800 mt-2">SEI ${escapeHtml(p.processo_numero || "")}</h3>
-                  <p class="text-sm text-slate-600 mt-1">
+                  <p class="text-sm text-slate-600 mt-1 font-semibold">
                     <b>Local:</b> ${escapeHtml(p.unidade || "-")}
                     <span class="mx-2 text-slate-300">|</span>
                     <b>Período:</b> ${escapeHtml(p.periodo || "-")}
                   </p>
-                  <p class="text-sm text-slate-500 mt-2">${escapeHtml(p.objeto || "")}</p>
+                  <p class="text-sm text-slate-500 mt-2 font-semibold">${escapeHtml(p.objeto || "")}</p>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                  <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-blue-600 flex items-center gap-2"
+                  <button class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm font-extrabold hover:bg-blue-600 flex items-center gap-2"
                     onclick="openAchadoModal('${p.id}')">
                     <i data-lucide="search" class="w-4 h-4"></i> Novo Achado
                   </button>
-                  <button class="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 flex items-center gap-2"
+                  <button class="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm font-extrabold hover:bg-blue-700 flex items-center gap-2"
                     onclick="openBaseRecModal('${p.id}')">
                     <i data-lucide="clipboard-check" class="w-4 h-4"></i> Nova Recomendação
                   </button>
-                  <button class="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 text-sm font-bold hover:bg-slate-50 flex items-center gap-2"
+                  <button class="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 text-sm font-extrabold hover:bg-slate-50 flex items-center gap-2"
                     onclick="openPlanModalFromProcess('${p.id}')">
                     <i data-lucide="target" class="w-4 h-4"></i> Novo Plano
                   </button>
@@ -933,15 +1002,15 @@
 
               <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                  <div class="text-[10px] font-black uppercase text-slate-400">Achados</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Achados</div>
                   <div class="text-2xl font-extrabold text-slate-800">${achProc.length}</div>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                  <div class="text-[10px] font-black uppercase text-slate-400">Recomendações Base</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Recomendações Base</div>
                   <div class="text-2xl font-extrabold text-blue-600">${recProc.length}</div>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                  <div class="text-[10px] font-black uppercase text-slate-400">Planos</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Planos</div>
                   <div class="text-2xl font-extrabold text-slate-800">${planosProc.length}</div>
                 </div>
               </div>
@@ -950,38 +1019,34 @@
             <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
               <!-- Achados -->
               <div>
-                <div class="flex items-center justify-between mb-3">
-                  <h4 class="text-sm font-black text-slate-700 uppercase flex items-center gap-2">
-                    <i data-lucide="alert-circle" class="w-4 h-4 text-amber-500"></i> Achados
-                  </h4>
-                </div>
+                <h4 class="text-sm font-extrabold text-slate-700 uppercase flex items-center gap-2 mb-3">
+                  <i data-lucide="alert-circle" class="w-4 h-4 text-amber-500"></i> Achados
+                </h4>
 
                 <div class="space-y-2">
                   ${achProc.length ? achProc.map(a => `
                     <div class="border border-slate-200 rounded-xl p-3 bg-white">
                       <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
-                          <div class="text-xs font-black text-slate-400 uppercase">Achado ${escapeHtml(a.achado_numero || "")}${a.achado_subitem ? "-" + escapeHtml(a.achado_subitem) : ""}</div>
+                          <div class="text-xs font-extrabold text-slate-400 uppercase">Achado ${escapeHtml(a.achado_numero || "")}${a.achado_subitem ? "-" + escapeHtml(a.achado_subitem) : ""}</div>
                           <div class="text-sm font-extrabold text-slate-800 truncate">${escapeHtml(a.achado_nome || "")}</div>
-                          <div class="text-xs text-slate-600 mt-1 line-clamp-2">${escapeHtml(a.achado_descricao || "")}</div>
-                          <div class="text-[10px] text-slate-500 font-black uppercase mt-2">Risco: ${escapeHtml(a.grau_risco || "-")} | Impacto: ${escapeHtml(a.impacto || a.impacto_outro || "-")}</div>
+                          <div class="text-xs text-slate-600 mt-1 line-clamp-2 font-semibold">${escapeHtml(a.achado_descricao || "")}</div>
+                          <div class="text-[10px] text-slate-500 font-extrabold uppercase mt-2">Risco: ${escapeHtml(a.grau_risco || "-")} | Impacto: ${escapeHtml(a.impacto || a.impacto_outro || "-")}</div>
                         </div>
                         <button class="p-2 rounded-lg hover:bg-red-50 text-red-600" onclick="deleteItem('${a.id}')" title="Excluir">
                           <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                       </div>
                     </div>
-                  `).join("") : `<p class="text-sm text-slate-400 italic">Nenhum achado cadastrado.</p>`}
+                  `).join("") : `<p class="text-sm text-slate-400 italic font-semibold">Nenhum achado cadastrado.</p>`}
                 </div>
               </div>
 
               <!-- Recomendações Base -->
               <div>
-                <div class="flex items-center justify-between mb-3">
-                  <h4 class="text-sm font-black text-slate-700 uppercase flex items-center gap-2">
-                    <i data-lucide="clipboard-check" class="w-4 h-4 text-blue-600"></i> Recomendações Base
-                  </h4>
-                </div>
+                <h4 class="text-sm font-extrabold text-slate-700 uppercase flex items-center gap-2 mb-3">
+                  <i data-lucide="clipboard-check" class="w-4 h-4 text-blue-600"></i> Recomendações Base
+                </h4>
 
                 <div class="space-y-2">
                   ${recProc.length ? recProc.map(r => {
@@ -992,18 +1057,18 @@
                       <div class="border border-slate-200 rounded-xl p-3 bg-white">
                         <div class="flex items-start justify-between gap-3">
                           <div class="min-w-0">
-                            <div class="text-xs font-black text-slate-400 uppercase">
+                            <div class="text-xs font-extrabold text-slate-400 uppercase">
                               Rec. ${escapeHtml(r.recomendacao_numero || "")}${r.recomendacao_subitem ? "-" + escapeHtml(r.recomendacao_subitem) : ""}
                               <span class="mx-2 text-slate-300">|</span>
-                              Achado: <span class="text-slate-600">${escapeHtml(achadoNome)}</span>
+                              Achado: <span class="text-slate-600 font-semibold">${escapeHtml(achadoNome)}</span>
                             </div>
                             <div class="text-sm font-extrabold text-slate-800 mt-1 line-clamp-2">${escapeHtml(r.recomendacao_texto || "")}</div>
-                            <div class="text-xs text-slate-600 mt-2">
+                            <div class="text-xs text-slate-600 mt-2 font-semibold">
                               <b>Prioridade:</b> ${escapeHtml(r.prioridade || "-")} |
                               <b>Prazo:</b> ${escapeHtml(r.prazo_global || "-")} |
                               <b>Responsável:</b> ${escapeHtml(r.responsavel_principal || "-")}
                             </div>
-                            <div class="text-[10px] text-slate-500 font-black uppercase mt-2">
+                            <div class="text-[10px] text-slate-500 font-extrabold uppercase mt-2">
                               Planos vinculados: ${planosDaRec.length}
                             </div>
                           </div>
@@ -1022,7 +1087,7 @@
                         </div>
                       </div>
                     `;
-                  }).join("") : `<p class="text-sm text-slate-400 italic">Nenhuma recomendação base cadastrada.</p>`}
+                  }).join("") : `<p class="text-sm text-slate-400 italic font-semibold">Nenhuma recomendação base cadastrada.</p>`}
                 </div>
               </div>
             </div>
@@ -1034,7 +1099,7 @@
     }
 
     /* =======================
-       PLANOS: listagem executive
+       PLANOS
     ======================= */
     function applyPlanFilters() {
       planFilters.busca = document.getElementById("plano-busca").value.trim().toLowerCase();
@@ -1058,12 +1123,18 @@
         if (planFilters.busca) {
           const proc = processos.find(x => x.id === p.processo_id);
           const base = baseRecs.find(x => x.id === p.base_rec_id);
+
+          const hayActions = (p.acoes_plano||[]).map(a =>
+            [a.titulo, a.responsavel, a.indicador, a.resultado, a.observacoes, (a.etapas||[]).map(e => [e.desc,e.responsavel,e.status,e.obs].join(" ")).join(" ")]
+              .join(" ")
+          ).join(" ");
+
           const hay = [
             proc?.processo_numero, proc?.unidade,
             base?.recomendacao_numero, base?.recomendacao_texto,
-            p.indicador, p.resultado,
-            (p.acoes_plano||[]).map(a => a.titulo + " " + (a.responsavel||"") + " " + (a.etapas||[]).map(e => e.desc).join(" ")).join(" ")
+            hayActions
           ].join(" ").toLowerCase();
+
           if (!hay.includes(planFilters.busca)) return false;
         }
         return true;
@@ -1079,7 +1150,6 @@
       }
       empty.style.display = "none";
 
-      // agrupar por processo
       const byProc = {};
       planos.forEach(p => {
         if (!byProc[p.processo_id]) byProc[p.processo_id] = [];
@@ -1094,7 +1164,7 @@
           <div class="mb-12">
             <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-2">
               <h2 class="text-2xl font-extrabold text-slate-800">Processo SEI ${escapeHtml(proc?.processo_numero || procId)}</h2>
-              <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-black text-slate-500">${escapeHtml(proc?.unidade || "")}</span>
+              <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-extrabold text-slate-500">${escapeHtml(proc?.unidade || "")}</span>
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -1134,13 +1204,16 @@
       const totalEtapas = (pl.acoes_plano||[]).reduce((acc,a) => acc + ((a.etapas||[]).length), 0);
       const doneEtapas = (pl.acoes_plano||[]).reduce((acc,a) => acc + ((a.etapas||[]).filter(e => e.status === "Concluída").length), 0);
 
+      // evidência rápida: mostra 1 ação principal (primeira)
+      const firstAction = (pl.acoes_plano||[])[0];
+
       return `
         <div class="glass-card border border-slate-200 rounded-[2.5rem] shadow-xl shadow-slate-200/50 overflow-hidden flex flex-col group h-full">
           <div class="p-8 pb-4 flex-1">
             <div class="flex justify-between items-start mb-6">
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full ${pl.status==='Em Execução' ? 'bg-blue-500 animate-pulse' : pl.status==='Atrasado' ? 'bg-red-500' : 'bg-emerald-500'}"></span>
-                <span class="text-[10px] font-black uppercase tracking-widest ${statusClass}">${escapeHtml(pl.status)}</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest ${statusClass}">${escapeHtml(pl.status)}</span>
               </div>
               <div class="flex gap-2 text-slate-400">
                 <button onclick="openEditPlano('${pl.id}')" class="p-2 hover:bg-slate-100 rounded-lg transition-colors text-blue-600" title="Editar">
@@ -1153,34 +1226,42 @@
             </div>
 
             <h2 class="text-xl font-extrabold text-slate-800 mb-2 leading-tight">${escapeHtml(recLabel)}</h2>
-            <p class="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-3">${escapeHtml(recTitle)}</p>
+            <p class="text-slate-500 text-sm leading-relaxed mb-4 line-clamp-3 font-semibold">${escapeHtml(recTitle)}</p>
 
-            <div class="text-xs text-slate-600 mb-4">
+            <div class="text-xs text-slate-600 mb-4 font-semibold">
               <b>Achado:</b> ${escapeHtml(achadoNome || "-")}
               <span class="mx-2 text-slate-300">|</span>
               <b>Prazo global:</b> ${escapeHtml(base?.prazo_global || "-")}
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-              <div class="bg-white border border-slate-200 rounded-xl p-3">
-                <div class="text-[10px] font-black uppercase text-slate-400">Indicador</div>
-                <div class="text-sm font-extrabold text-slate-800 line-clamp-2">${escapeHtml(pl.indicador || "-")}</div>
+            ${firstAction ? `
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                <div class="bg-white border border-slate-200 rounded-xl p-3">
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Ação destaque</div>
+                  <div class="text-sm font-extrabold text-slate-800 line-clamp-2">${escapeHtml(firstAction.titulo || "-")}</div>
+                  <div class="text-xs text-slate-600 mt-1 font-semibold"><b>Resp.:</b> ${escapeHtml(firstAction.responsavel || "-")}</div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl p-3">
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Indicador / Resultado (da ação)</div>
+                  <div class="text-xs text-slate-600 font-semibold"><b>Ind.:</b> ${escapeHtml(firstAction.indicador || "-")}</div>
+                  <div class="text-xs text-slate-600 font-semibold mt-1"><b>Res.:</b> ${escapeHtml(firstAction.resultado || "-")}</div>
+                </div>
               </div>
-              <div class="bg-white border border-slate-200 rounded-xl p-3">
-                <div class="text-[10px] font-black uppercase text-slate-400">Resultado</div>
-                <div class="text-sm font-extrabold text-slate-800 line-clamp-2">${escapeHtml(pl.resultado || "-")}</div>
+            ` : `
+              <div class="bg-white border border-slate-200 rounded-xl p-4 mb-6 text-sm text-slate-500 font-semibold">
+                Nenhuma ação cadastrada ainda.
               </div>
-            </div>
+            `}
 
             <div class="relative pt-2">
               <div class="flex justify-between items-center mb-2">
-                <span class="text-xs font-black text-slate-400 uppercase italic">Progresso</span>
-                <span class="text-sm font-black text-slate-800">${pl.progresso}%</span>
+                <span class="text-xs font-extrabold text-slate-400 uppercase italic">Progresso</span>
+                <span class="text-sm font-extrabold text-slate-800">${pl.progresso}%</span>
               </div>
               <div class="h-3 w-full bg-slate-100 rounded-full p-0.5">
                 <div class="h-full bg-gradient-to-r ${progressGradient} rounded-full transition-all duration-1000 progress-glow shadow-inner" style="width:${pl.progresso}%"></div>
               </div>
-              <div class="mt-3 text-xs text-slate-600">
+              <div class="mt-3 text-xs text-slate-600 font-semibold">
                 <b>Etapas:</b> ${doneEtapas}/${totalEtapas}
               </div>
             </div>
@@ -1188,10 +1269,10 @@
 
           <div class="p-6 bg-white flex-1 max-h-72 flex flex-col border-t border-slate-100">
             <div class="flex justify-between items-center mb-3">
-              <h4 class="text-xs font-black text-slate-800 uppercase flex items-center gap-2">
+              <h4 class="text-xs font-extrabold text-slate-800 uppercase flex items-center gap-2">
                 <i data-lucide="layers" class="text-blue-500 w-4 h-4"></i> Ações do Plano
               </h4>
-              <span class="text-[10px] text-slate-400 font-black uppercase tracking-widest">${(pl.acoes_plano||[]).length} ação(ões)</span>
+              <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">${(pl.acoes_plano||[]).length} ação(ões)</span>
             </div>
 
             <div class="space-y-2 custom-scrollbar overflow-y-auto pr-2 flex-1">
@@ -1201,17 +1282,21 @@
                 return `
                   <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
                     <div class="text-sm font-extrabold text-slate-800">${escapeHtml(a.titulo || "-")}</div>
-                    <div class="text-xs text-slate-600 mt-1">
-                      <b>Responsável:</b> ${escapeHtml(a.responsavel || "-")}
+                    <div class="text-xs text-slate-600 mt-1 font-semibold">
+                      <b>Resp.:</b> ${escapeHtml(a.responsavel || "-")}
                       <span class="mx-2 text-slate-300">|</span>
                       <b>Etapas:</b> ${done}/${total}
                     </div>
+                    <div class="text-xs text-slate-600 mt-1 font-semibold">
+                      <b>Ind.:</b> ${escapeHtml(a.indicador || "-")} <span class="mx-1 text-slate-300">|</span>
+                      <b>Res.:</b> ${escapeHtml(a.resultado || "-")}
+                    </div>
                   </div>
                 `;
-              }).join("") : `<p class="text-xs text-slate-400 italic">Nenhuma ação cadastrada.</p>`}
+              }).join("") : `<p class="text-xs text-slate-400 italic font-semibold">Nenhuma ação cadastrada.</p>`}
             </div>
 
-            <button onclick="openEditPlano('${pl.id}')" class="w-full mt-4 py-3 rounded-xl border-2 border-dashed border-slate-200 text-slate-500 text-xs font-black hover:border-blue-400 hover:text-blue-600 transition-all flex items-center justify-center gap-2">
+            <button onclick="openEditPlano('${pl.id}')" class="w-full mt-4 py-3 rounded-xl border-2 border-dashed border-slate-200 text-slate-500 text-xs font-extrabold hover:border-blue-400 hover:text-blue-600 transition-all flex items-center justify-center gap-2">
               <i data-lucide="pencil" class="w-3 h-3"></i> Gerenciar Plano
             </button>
           </div>
@@ -1264,7 +1349,7 @@
       const c = document.getElementById("setores-processo-container");
       c.innerHTML = setoresProcesso.map((s,i) => `
         <div class="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-          <span class="text-sm font-bold text-slate-700">${escapeHtml(s)}</span>
+          <span class="text-sm font-extrabold text-slate-700">${escapeHtml(s)}</span>
           <button type="button" class="text-red-600" onclick="removeSetorProcesso(${i})"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
       `).join("");
@@ -1433,9 +1518,6 @@
 
     /* =======================
        PLANO DE AÇÃO
-       - Admin e Técnico podem cadastrar
-       - Cabeçalho puxa da recomendação base e fica bloqueado
-       - Usuário cadastra ações macro + etapas
     ======================= */
     function openNewPlanModal() {
       currentPlanoId = null;
@@ -1451,7 +1533,7 @@
       renderAcoesPlano();
       clearPlanHeader();
 
-      populateBaseRecSelect(null); // sem processo escolhido: lista geral permitida
+      populateBaseRecSelect(null);
       openModal("plano");
     }
 
@@ -1492,13 +1574,20 @@
       document.getElementById("plano_id").value = planoId;
       document.getElementById("plano_processo_id").value = pl.processo_id;
 
-      document.getElementById("plano_indicador").value = pl.indicador || "";
-      document.getElementById("plano_resultado").value = pl.resultado || "";
       document.getElementById("plano_evidencias").value = pl.evidencias || "";
       document.getElementById("plano_justificativas").value = pl.justificativas || "";
       document.getElementById("plano_resultados_percebidos").value = pl.resultados_percebidos || "";
 
+      // clone seguro
       acoesPlano = Array.isArray(pl.acoes_plano) ? JSON.parse(JSON.stringify(pl.acoes_plano)) : [];
+      // migração leve: se action não tiver indicador/resultado/obs, cria
+      acoesPlano = acoesPlano.map(a => ({
+        ...a,
+        indicador: a.indicador || "",
+        resultado: a.resultado || "",
+        observacoes: a.observacoes || "",
+        prazo: a.prazo || ""
+      }));
       renderAcoesPlano();
 
       populateBaseRecSelect(pl.processo_id);
@@ -1549,32 +1638,69 @@
       document.getElementById("plano_recomendacao_texto").value = base.recomendacao_texto || "";
       document.getElementById("plano_responsavel_principal").value = base.responsavel_principal || "";
 
-      // fixa processo do plano de acordo com a recomendação, se estiver vazio
       if (!document.getElementById("plano_processo_id").value) {
         document.getElementById("plano_processo_id").value = base.processo_id;
         currentProcessoId = base.processo_id;
       }
     }
 
-    // Ações macro
-    function addAcaoPlano() {
-      const titulo = (document.getElementById("plano_acao_titulo").value || "").trim();
-      if (!titulo) return toast("Informe o nome da ação.", "warn");
+    // AÇÕES: abrir editor
+    function openActionEditor(actionId = null) {
+      const isEdit = !!actionId;
+      let acao = null;
 
-      const resp = (document.getElementById("plano_acao_resp").value || "").trim();
+      if (isEdit) {
+        acao = acoesPlano.find(a => a.id === actionId);
+        if (!acao) return toast("Ação não encontrada.", "err");
+      }
 
-      acoesPlano.push({
-        id: "acao_" + Date.now() + "_" + Math.random().toString(16).slice(2),
+      document.getElementById("acao_id").value = isEdit ? actionId : "";
+      document.getElementById("acao-title").textContent = isEdit ? "Editar Ação (Topo)" : "Nova Ação (Topo)";
+
+      document.getElementById("acao_titulo").value = acao?.titulo || "";
+      document.getElementById("acao_responsavel").value = acao?.responsavel || "";
+      document.getElementById("acao_prazo").value = acao?.prazo || "";
+      document.getElementById("acao_indicador").value = acao?.indicador || "";
+      document.getElementById("acao_resultado").value = acao?.resultado || "";
+      document.getElementById("acao_observacoes").value = acao?.observacoes || "";
+
+      document.getElementById("modal-acao").style.display = "flex";
+      refreshIcons();
+    }
+
+    function closeAcaoModal() {
+      document.getElementById("modal-acao").style.display = "none";
+    }
+
+    function saveAcaoModal() {
+      const id = document.getElementById("acao_id").value;
+      const titulo = (document.getElementById("acao_titulo").value || "").trim();
+      if (!titulo) return toast("Nome da ação é obrigatório.", "warn");
+
+      const payload = {
+        id: id || ("acao_" + Date.now() + "_" + Math.random().toString(16).slice(2)),
         titulo,
-        responsavel: resp,
+        responsavel: (document.getElementById("acao_responsavel").value || "").trim(),
+        prazo: document.getElementById("acao_prazo").value || "",
+        indicador: (document.getElementById("acao_indicador").value || "").trim(),
+        resultado: (document.getElementById("acao_resultado").value || "").trim(),
+        observacoes: (document.getElementById("acao_observacoes").value || "").trim(),
         etapas: []
-      });
+      };
 
-      document.getElementById("plano_acao_titulo").value = "";
-      document.getElementById("plano_acao_resp").value = "";
+      if (id) {
+        // mantém etapas já cadastradas
+        const old = acoesPlano.find(a => a.id === id);
+        payload.etapas = old?.etapas || [];
+        acoesPlano = acoesPlano.map(a => a.id === id ? payload : a);
+        toast("Ação atualizada.", "ok");
+      } else {
+        acoesPlano.push(payload);
+        toast("Ação criada. Agora adicione etapas.", "ok");
+      }
 
+      closeAcaoModal();
       renderAcoesPlano();
-      toast("Ação adicionada. Agora gerencie as etapas.", "ok");
     }
 
     function removeAcaoPlano(actionId) {
@@ -1583,6 +1709,7 @@
       toast("Ação removida.", "ok");
     }
 
+    // ETAPAS
     function openEtapasModal(actionId) {
       currentActionId = actionId;
       const acao = acoesPlano.find(a => a.id === actionId);
@@ -1653,36 +1780,56 @@
         const done = (a.etapas||[]).filter(e => e.status === "Concluída").length;
 
         return `
-          <div class="bg-white border border-slate-200 rounded-xl p-4">
+          <div class="bg-white border border-slate-200 rounded-2xl p-4">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0 flex-1">
-                <div class="text-[10px] font-black uppercase text-slate-400">Ação</div>
-                <div class="text-lg font-extrabold text-slate-800 truncate">${escapeHtml(a.titulo || "-")}</div>
+                <div class="text-[10px] font-extrabold uppercase text-slate-400">Ação</div>
+                <div class="text-lg font-extrabold text-slate-800">${escapeHtml(a.titulo || "-")}</div>
 
-                <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
-                  <div>
-                    <div class="text-[10px] font-black uppercase text-slate-400">Responsável</div>
+                <div class="mt-3 grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div class="md:col-span-2">
+                    <div class="text-[10px] font-extrabold uppercase text-slate-400">Responsável</div>
                     <div class="text-sm font-extrabold text-slate-800">${escapeHtml(a.responsavel || "-")}</div>
                   </div>
                   <div>
-                    <div class="text-[10px] font-black uppercase text-slate-400">Etapas</div>
-                    <div class="text-sm font-extrabold text-slate-800">${total}</div>
+                    <div class="text-[10px] font-extrabold uppercase text-slate-400">Etapas</div>
+                    <div class="text-sm font-extrabold text-slate-800">${done}/${total}</div>
                   </div>
                   <div>
-                    <div class="text-[10px] font-black uppercase text-slate-400">Concluídas</div>
-                    <div class="text-sm font-extrabold text-slate-800">${done}</div>
+                    <div class="text-[10px] font-extrabold uppercase text-slate-400">Prazo (Ação)</div>
+                    <div class="text-sm font-extrabold text-slate-800">${a.prazo ? new Date(a.prazo).toLocaleDateString("pt-BR") : "-"}</div>
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <div class="text-[10px] font-extrabold uppercase text-slate-400">Indicador (da Ação)</div>
+                    <div class="text-sm font-extrabold text-slate-800 line-clamp-2">${escapeHtml(a.indicador || "-")}</div>
+                  </div>
+                  <div class="md:col-span-2">
+                    <div class="text-[10px] font-extrabold uppercase text-slate-400">Resultado (da Ação)</div>
+                    <div class="text-sm font-extrabold text-slate-800 line-clamp-2">${escapeHtml(a.resultado || "-")}</div>
+                  </div>
+
+                  <div class="md:col-span-4">
+                    <div class="text-[10px] font-extrabold uppercase text-slate-400">Observações (da Ação)</div>
+                    <div class="text-sm font-semibold text-slate-700 whitespace-pre-wrap">${escapeHtml(a.observacoes || "-")}</div>
                   </div>
                 </div>
               </div>
 
-              <div class="flex gap-2">
-                <button type="button" onclick="openEtapasModal('${a.id}')"
-                  class="px-3 py-2 rounded-lg bg-blue-600 text-white font-black text-sm hover:bg-blue-700">
-                  Gerenciar Etapas
+              <div class="flex flex-col gap-2">
+                <button type="button" onclick="openActionEditor('${a.id}')"
+                  class="px-3 py-2 rounded-lg bg-slate-900 text-white font-extrabold text-sm hover:bg-blue-600 flex items-center gap-2">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i> Editar topo
                 </button>
+
+                <button type="button" onclick="openEtapasModal('${a.id}')"
+                  class="px-3 py-2 rounded-lg bg-blue-600 text-white font-extrabold text-sm hover:bg-blue-700 flex items-center gap-2">
+                  <i data-lucide="list-checks" class="w-4 h-4"></i> Etapas
+                </button>
+
                 <button type="button" onclick="removeAcaoPlano('${a.id}')"
-                  class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir ação">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  class="px-3 py-2 rounded-lg border border-red-200 text-red-600 font-extrabold text-sm hover:bg-red-50 flex items-center gap-2">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir
                 </button>
               </div>
             </div>
@@ -1710,29 +1857,29 @@
         return `
           <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-start justify-between gap-3">
             <div class="flex-1">
-              <div class="text-[10px] font-black uppercase text-slate-400">Etapa</div>
+              <div class="text-[10px] font-extrabold uppercase text-slate-400">Etapa</div>
               <div class="text-sm font-extrabold text-slate-800">${escapeHtml(e.desc || "-")}</div>
 
               <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 bg-white border border-slate-200 rounded-xl p-3">
                 <div>
-                  <div class="text-[10px] font-black uppercase text-slate-400">Responsável</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Responsável</div>
                   <div class="text-sm font-extrabold text-slate-800">${escapeHtml(e.responsavel || "-")}</div>
                 </div>
                 <div>
-                  <div class="text-[10px] font-black uppercase text-slate-400">Status</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Status</div>
                   <div class="text-sm font-extrabold text-slate-800">${escapeHtml(e.status || "-")}</div>
                 </div>
                 <div>
-                  <div class="text-[10px] font-black uppercase text-slate-400">Prazo</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Prazo</div>
                   <div class="text-sm font-extrabold text-slate-800">${escapeHtml(prazoFmt)}</div>
                 </div>
                 <div>
-                  <div class="text-[10px] font-black uppercase text-slate-400">Custo</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Custo</div>
                   <div class="text-sm font-extrabold text-slate-800">${escapeHtml(e.custo || "-")}</div>
                 </div>
                 <div class="md:col-span-2">
-                  <div class="text-[10px] font-black uppercase text-slate-400">Observações</div>
-                  <div class="text-sm font-extrabold text-slate-800 whitespace-pre-wrap">${escapeHtml(e.obs || "-")}</div>
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Observações</div>
+                  <div class="text-sm font-semibold text-slate-700 whitespace-pre-wrap">${escapeHtml(e.obs || "-")}</div>
                 </div>
               </div>
             </div>
@@ -1759,13 +1906,25 @@
       const id = document.getElementById("plano_id").value || ("plano_" + Date.now());
       const base = allData.find(x => x.tipo === "baseRecomendacao" && x.id === baseId);
 
+      // garante estrutura ação v4
+      acoesPlano = (acoesPlano||[]).map(a => ({
+        id: a.id || ("acao_" + Date.now() + "_" + Math.random().toString(16).slice(2)),
+        titulo: a.titulo || "",
+        responsavel: a.responsavel || "",
+        prazo: a.prazo || "",
+        indicador: a.indicador || "",
+        resultado: a.resultado || "",
+        observacoes: a.observacoes || "",
+        etapas: Array.isArray(a.etapas) ? a.etapas : []
+      }));
+
       const obj = {
         id,
         tipo: "planoAcao",
         processo_id: processoId,
         base_rec_id: baseId,
 
-        // Cabeçalho espelhado (read-only na tela, mas salvo para facilitar export e histórico)
+        // Cabeçalho espelhado
         recomendacao_numero: base?.recomendacao_numero || "",
         recomendacao_subitem: base?.recomendacao_subitem || "",
         prioridade: base?.prioridade || "",
@@ -1773,12 +1932,10 @@
         recomendacao_texto: base?.recomendacao_texto || "",
         responsavel_principal: base?.responsavel_principal || "",
 
-        // Campos do plano
-        indicador: document.getElementById("plano_indicador").value,
-        resultado: document.getElementById("plano_resultado").value,
-
+        // Ações do plano (macro + etapas)
         acoes_plano: acoesPlano,
 
+        // Relatório
         evidencias: document.getElementById("plano_evidencias").value,
         justificativas: document.getElementById("plano_justificativas").value,
         resultados_percebidos: document.getElementById("plano_resultados_percebidos").value,
@@ -1823,7 +1980,7 @@
     }
 
     /* =======================
-       EXPORT PDF
+       EXPORT PDF (corrigido para indicador/resultado por ação)
     ======================= */
     function openExportModal() {
       refreshExportProcessList(filterDataByUser(allData).filter(x => x.tipo === "processo"));
@@ -1838,7 +1995,7 @@
         <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 border border-slate-200"
           onclick="exportPDFByProcess('${p.id}')">
           <div class="text-sm font-extrabold text-slate-800">SEI ${escapeHtml(p.processo_numero)}</div>
-          <div class="text-xs text-slate-500">${escapeHtml(p.unidade || "")}</div>
+          <div class="text-xs text-slate-500 font-semibold">${escapeHtml(p.unidade || "")}</div>
         </button>
       `).join("");
     }
@@ -1919,10 +2076,11 @@
 
         planosProc.forEach(pl => {
           y = pdfWriteWrapped(doc, `• Plano da Rec. ${pl.recomendacao_numero} | Status: ${pl.status} | Progresso: ${pl.progresso}%`, 16, y, 178, 4);
-          y = pdfWriteWrapped(doc, `  Indicador: ${pl.indicador || "-"} | Resultado: ${pl.resultado || "-"}`, 16, y, 178, 4);
 
           (pl.acoes_plano||[]).forEach(a => {
-            y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"}`, 18, y, 176, 4);
+            y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 18, y, 176, 4);
+            if (a.observacoes) y = pdfWriteWrapped(doc, `    Obs.: ${a.observacoes}`, 18, y, 176, 4);
+
             (a.etapas||[]).forEach(e => {
               const prazoFmt = e.prazo ? new Date(e.prazo).toLocaleDateString("pt-BR") : "-";
               y = pdfWriteWrapped(doc, `      * Etapa: ${e.desc || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 20, y, 174, 4);
@@ -1990,10 +2148,11 @@
       doc.setFont("helvetica", "normal");
       planos.forEach(pl => {
         y = pdfWriteWrapped(doc, `• Plano da Rec. ${pl.recomendacao_numero} | Status: ${pl.status} | Progresso: ${pl.progresso}%`, 16, y, 178, 4);
-        y = pdfWriteWrapped(doc, `  Indicador: ${pl.indicador || "-"} | Resultado: ${pl.resultado || "-"}`, 16, y, 178, 4);
 
         (pl.acoes_plano||[]).forEach(a => {
-          y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"}`, 18, y, 176, 4);
+          y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 18, y, 176, 4);
+          if (a.observacoes) y = pdfWriteWrapped(doc, `    Obs.: ${a.observacoes}`, 18, y, 176, 4);
+
           (a.etapas||[]).forEach(e => {
             const prazoFmt = e.prazo ? new Date(e.prazo).toLocaleDateString("pt-BR") : "-";
             y = pdfWriteWrapped(doc, `      * Etapa: ${e.desc || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 20, y, 174, 4);
@@ -2038,11 +2197,12 @@
         y = pdfWriteWrapped(doc, `Processo: SEI ${proc?.processo_numero || "-"} | Local: ${proc?.unidade || "-"}`, 14, y, 180, 4);
         y = pdfWriteWrapped(doc, `Recomendação: ${pl.recomendacao_texto || base?.recomendacao_texto || "-"}`, 14, y, 180, 4);
         y = pdfWriteWrapped(doc, `Achado: ${ach?.achado_nome || "-"} | Prazo: ${pl.prazo_global || base?.prazo_global || "-"} | Status: ${pl.status} | Progresso: ${pl.progresso}%`, 14, y, 180, 4);
-        y = pdfWriteWrapped(doc, `Indicador: ${pl.indicador || "-"} | Resultado: ${pl.resultado || "-"}`, 14, y, 180, 4);
         y += 2;
 
         (pl.acoes_plano||[]).forEach(a => {
-          y = pdfWriteWrapped(doc, `- Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"}`, 16, y, 178, 4);
+          y = pdfWriteWrapped(doc, `- Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 16, y, 178, 4);
+          if (a.observacoes) y = pdfWriteWrapped(doc, `  Obs.: ${a.observacoes}`, 16, y, 178, 4);
+
           (a.etapas||[]).forEach(e => {
             const prazoFmt = e.prazo ? new Date(e.prazo).toLocaleDateString("pt-BR") : "-";
             y = pdfWriteWrapped(doc, `   * Etapa: ${e.desc || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 18, y, 176, 4);
@@ -2102,10 +2262,10 @@
         const dt = l.at ? new Date(l.at).toLocaleString("pt-BR") : "";
         return `
           <tr class="border-b">
-            <td class="px-4 py-3 whitespace-nowrap">${escapeHtml(dt)}</td>
-            <td class="px-4 py-3">${escapeHtml(l.user)}<div class="text-xs text-slate-400">${escapeHtml(l.perfil)} ${l.setor ? " | " + escapeHtml(l.setor) : ""}</div></td>
-            <td class="px-4 py-3 font-bold">${escapeHtml(l.action)}</td>
-            <td class="px-4 py-3">${escapeHtml(l.resumo)}</td>
+            <td class="px-4 py-3 whitespace-nowrap font-semibold">${escapeHtml(dt)}</td>
+            <td class="px-4 py-3 font-semibold">${escapeHtml(l.user)}<div class="text-xs text-slate-400 font-semibold">${escapeHtml(l.perfil)} ${l.setor ? " | " + escapeHtml(l.setor) : ""}</div></td>
+            <td class="px-4 py-3 font-extrabold">${escapeHtml(l.action)}</td>
+            <td class="px-4 py-3 font-semibold">${escapeHtml(l.resumo)}</td>
           </tr>
         `;
       }).join("");
@@ -2151,7 +2311,6 @@
       const val = document.getElementById("login-perfil").value;
       document.getElementById("setor-field").style.display = val === "Técnico" ? "block" : "none";
 
-      // setores mock, pode trocar pelos seus
       const sel = document.getElementById("login-setor");
       sel.innerHTML = `
         <option value="">Selecione seu setor...</option>
@@ -2204,7 +2363,6 @@
         document.getElementById("user-setor-badge").style.display = "none";
       }
 
-      // auditoria só para admin
       document.getElementById("nav-auditoria").style.display = isAdmin() ? "flex" : "none";
     }
 
@@ -2219,7 +2377,6 @@
     window.addEventListener("DOMContentLoaded", async () => {
       ensureDataSdk();
 
-      // carrega sessão
       const session = localStorage.getItem("userSession");
       if (session) {
         userSession = JSON.parse(session);
@@ -2231,15 +2388,11 @@
       await window.dataSdk.init({
         onDataChanged: (d) => {
           allData = Array.isArray(d) ? d : [];
-          // garante que os audits não sumam (fallback create direto)
           renderCurrentView();
         }
       });
 
-      // se não tinha dados no sdk, puxa do localStorage
       if (!allData.length) allData = getStoredData();
-
-      // se admin, habilita auditoria
       if (isAdmin()) document.getElementById("nav-auditoria").style.display = "flex";
 
       refreshIcons();
