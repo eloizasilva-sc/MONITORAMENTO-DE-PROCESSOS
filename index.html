@@ -669,6 +669,85 @@
           <div>
             <p class="font-extrabold">Planos (Geral)</p>
             <p class="text-xs text-slate-500 font-semibold">Somente planos, com ações, indicador/resultado por ação e etapas</p>
+       <!-- RELATÓRIO (CONTROLE 1) -->
+<div class="border-t pt-6">
+  <div class="flex items-start justify-between gap-4 flex-col md:flex-row">
+    <div>
+      <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">
+        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+        Relatório de Cumprimento (Controle 1)
+      </h3>
+      <p class="text-sm text-slate-500 font-semibold mt-1">
+        Preencha evidências, justificativas e benefícios percebidos. A recomendação é puxada automaticamente.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <span id="relatorio-chip" class="px-3 py-1 rounded-full text-xs font-extrabold bg-slate-100 text-slate-600">
+        Em branco
+      </span>
+      <button type="button" onclick="limparRelatorio()" class="px-3 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-extrabold hover:bg-slate-50">
+        Limpar
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- 1) RECOMENDAÇÃO -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 lg:col-span-2">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <label class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+          Recomendação
+        </label>
+        <span class="text-[10px] font-extrabold uppercase text-slate-400">Controle 1</span>
+      </div>
+      <textarea id="plano_relatorio_recomendacao" rows="3" disabled
+        class="w-full border border-slate-200 bg-slate-50 px-3 py-2 rounded-xl font-semibold text-slate-800"></textarea>
+      <p class="text-xs text-slate-500 font-semibold mt-2">
+        Este campo é automaticamente preenchido a partir da recomendação base vinculada.
+      </p>
+    </div>
+
+    <!-- 2) EVIDÊNCIAS -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+          Evidências do cumprimento total ou parcial
+        </label>
+        <span id="cnt_evid" class="text-[10px] font-extrabold text-slate-400">0</span>
+      </div>
+      <textarea id="plano_evidencias" rows="5"
+        placeholder="Ex: Relatório SEI nº..., checklist assinado, print do sistema, ata de reunião, planilha atualizada..."
+        class="w-full border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500"></textarea>
+    </div>
+
+    <!-- 3) JUSTIFICATIVA -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+          Justificativa do não cumprimento total ou cumprimento parcial
+        </label>
+        <span id="cnt_just" class="text-[10px] font-extrabold text-slate-400">0</span>
+      </div>
+      <textarea id="plano_justificativas" rows="5"
+        placeholder="Ex: dependência de contrato, ausência de sistema, prazo em curso, falta de pessoal, mudança normativa..."
+        class="w-full border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500"></textarea>
+    </div>
+
+    <!-- 4) RESULTADOS PERCEBIDOS -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 lg:col-span-2">
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+          Resultados percebidos por conta do cumprimento parcial ou total
+        </label>
+        <span id="cnt_res" class="text-[10px] font-extrabold text-slate-400">0</span>
+      </div>
+      <textarea id="plano_resultados_percebidos" rows="4"
+        placeholder="Descreva benefícios: redução de tempo, melhoria do fluxo, transparência, redução de retrabalho, conformidade..."
+        class="w-full border border-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-500"></textarea>
+    </div>
+  </div>
+</div>
           </div>
         </button>
       </div>
@@ -2494,3 +2573,4 @@
   </script>
 </body>
 </html>
+
