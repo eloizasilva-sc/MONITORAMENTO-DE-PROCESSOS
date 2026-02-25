@@ -602,7 +602,7 @@
     </div>
   </div>
 
-  <!-- MODAL ETAPAS -->
+  <!-- MODAL ETAPAS (COM EDITAR) -->
   <div id="modal-etapas" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 z-[70] flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto modal-enter">
       <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
@@ -612,6 +612,9 @@
 
       <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 p-4 border rounded-xl">
+          <!-- NOVO: ID oculto para edição -->
+          <input type="hidden" id="etapa_id" />
+
           <input id="etapa_desc" placeholder="Descrição da etapa *" class="border px-3 py-2 rounded-lg md:col-span-2">
           <input id="etapa_resp" placeholder="Responsável" class="border px-3 py-2 rounded-lg">
           <input id="etapa_prazo" type="date" class="border px-3 py-2 rounded-lg">
@@ -623,7 +626,8 @@
           </select>
           <textarea id="etapa_obs" placeholder="Observações (opcional)" rows="2" class="border px-3 py-2 rounded-lg md:col-span-2"></textarea>
 
-          <button type="button" onclick="addEtapaToCurrentAction()" class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-extrabold">
+          <button type="button" onclick="addEtapaToCurrentAction()" id="etapa_submit_btn"
+            class="md:col-span-2 bg-blue-600 text-white py-2 rounded-lg font-extrabold">
             + Adicionar Etapa
           </button>
         </div>
@@ -675,7 +679,7 @@
     /* =======================
        STORAGE + SDK (fallback)
     ======================= */
-    const STORAGE_KEY = "processos_auditados_exec_v4"; // v4: indicador/resultado por ação + editar topo da ação
+    const STORAGE_KEY = "processos_auditados_exec_v4"; // v4: indicador/resultado por ação + editar topo da ação + editar etapa + processo na ação/etapa
 
     function safeParse(json, fallback) { try { return JSON.parse(json) ?? fallback; } catch { return fallback; } }
     function getStoredData() { return safeParse(localStorage.getItem(STORAGE_KEY), []); }
@@ -717,11 +721,6 @@
     function ensureDataSdk() {
       if (!window.dataSdk || typeof window.dataSdk.create !== "function") window.dataSdk = localSdk;
     }
-
-    /* =======================
-       MIGRAÇÃO (mantém dados se já existiam em versões anteriores)
-       - se você estava usando outra key, pode copiar manualmente no devtools.
-    ======================= */
 
     /* =======================
        GLOBAIS
@@ -772,6 +771,16 @@
       refreshIcons();
       setTimeout(() => { div.style.opacity = "0"; div.style.transform = "translateY(6px)"; div.style.transition = ".2s"; }, 2400);
       setTimeout(() => { div.remove(); }, 2700);
+    }
+
+    /* =======================
+       PROCESSO INFO (NOVO)
+       - usado para gravar processo na ação e na etapa
+    ======================= */
+    function getCurrentProcessInfo() {
+      const processoId = document.getElementById("plano_processo_id")?.value || currentProcessoId || "";
+      const proc = allData.find(x => x.tipo === "processo" && x.id === processoId);
+      return { processo_id: processoId, processo_numero: proc?.processo_numero || "" };
     }
 
     /* =======================
@@ -1125,7 +1134,8 @@
           const base = baseRecs.find(x => x.id === p.base_rec_id);
 
           const hayActions = (p.acoes_plano||[]).map(a =>
-            [a.titulo, a.responsavel, a.indicador, a.resultado, a.observacoes, (a.etapas||[]).map(e => [e.desc,e.responsavel,e.status,e.obs].join(" ")).join(" ")]
+            [a.processo_numero, a.titulo, a.responsavel, a.indicador, a.resultado, a.observacoes,
+             (a.etapas||[]).map(e => [e.processo_numero, e.desc,e.responsavel,e.status,e.obs].join(" ")).join(" ")]
               .join(" ")
           ).join(" ");
 
@@ -1204,7 +1214,6 @@
       const totalEtapas = (pl.acoes_plano||[]).reduce((acc,a) => acc + ((a.etapas||[]).length), 0);
       const doneEtapas = (pl.acoes_plano||[]).reduce((acc,a) => acc + ((a.etapas||[]).filter(e => e.status === "Concluída").length), 0);
 
-      // evidência rápida: mostra 1 ação principal (primeira)
       const firstAction = (pl.acoes_plano||[])[0];
 
       return `
@@ -1240,6 +1249,7 @@
                   <div class="text-[10px] font-extrabold uppercase text-slate-400">Ação destaque</div>
                   <div class="text-sm font-extrabold text-slate-800 line-clamp-2">${escapeHtml(firstAction.titulo || "-")}</div>
                   <div class="text-xs text-slate-600 mt-1 font-semibold"><b>Resp.:</b> ${escapeHtml(firstAction.responsavel || "-")}</div>
+                  <div class="text-[10px] text-slate-400 font-extrabold uppercase mt-2">Processo: ${escapeHtml(firstAction.processo_numero || proc?.processo_numero || "-")}</div>
                 </div>
                 <div class="bg-white border border-slate-200 rounded-xl p-3">
                   <div class="text-[10px] font-extrabold uppercase text-slate-400">Indicador / Resultado (da ação)</div>
@@ -1291,6 +1301,7 @@
                       <b>Ind.:</b> ${escapeHtml(a.indicador || "-")} <span class="mx-1 text-slate-300">|</span>
                       <b>Res.:</b> ${escapeHtml(a.resultado || "-")}
                     </div>
+                    <div class="text-[10px] text-slate-400 font-extrabold uppercase mt-2">Processo: ${escapeHtml(a.processo_numero || proc?.processo_numero || "-")}</div>
                   </div>
                 `;
               }).join("") : `<p class="text-xs text-slate-400 italic font-semibold">Nenhuma ação cadastrada.</p>`}
@@ -1578,15 +1589,15 @@
       document.getElementById("plano_justificativas").value = pl.justificativas || "";
       document.getElementById("plano_resultados_percebidos").value = pl.resultados_percebidos || "";
 
-      // clone seguro
       acoesPlano = Array.isArray(pl.acoes_plano) ? JSON.parse(JSON.stringify(pl.acoes_plano)) : [];
-      // migração leve: se action não tiver indicador/resultado/obs, cria
       acoesPlano = acoesPlano.map(a => ({
         ...a,
         indicador: a.indicador || "",
         resultado: a.resultado || "",
         observacoes: a.observacoes || "",
-        prazo: a.prazo || ""
+        prazo: a.prazo || "",
+        processo_id: a.processo_id || pl.processo_id || "",
+        processo_numero: a.processo_numero || (allData.find(x => x.tipo === "processo" && x.id === pl.processo_id)?.processo_numero || "")
       }));
       renderAcoesPlano();
 
@@ -1672,13 +1683,21 @@
       document.getElementById("modal-acao").style.display = "none";
     }
 
+    // SALVAR AÇÃO (COM PROCESSO DENTRO)
     function saveAcaoModal() {
       const id = document.getElementById("acao_id").value;
       const titulo = (document.getElementById("acao_titulo").value || "").trim();
       if (!titulo) return toast("Nome da ação é obrigatório.", "warn");
 
+      const procInfo = getCurrentProcessInfo();
+
       const payload = {
         id: id || ("acao_" + Date.now() + "_" + Math.random().toString(16).slice(2)),
+
+        // NOVO: processo dentro da ação
+        processo_id: procInfo.processo_id,
+        processo_numero: procInfo.processo_numero,
+
         titulo,
         responsavel: (document.getElementById("acao_responsavel").value || "").trim(),
         prazo: document.getElementById("acao_prazo").value || "",
@@ -1689,7 +1708,6 @@
       };
 
       if (id) {
-        // mantém etapas já cadastradas
         const old = acoesPlano.find(a => a.id === id);
         payload.etapas = old?.etapas || [];
         acoesPlano = acoesPlano.map(a => a.id === id ? payload : a);
@@ -1709,7 +1727,38 @@
       toast("Ação removida.", "ok");
     }
 
-    // ETAPAS
+    // ETAPAS (EDITAR)
+    function resetEtapaForm() {
+      document.getElementById("etapa_id").value = "";
+      document.getElementById("etapa_desc").value = "";
+      document.getElementById("etapa_resp").value = "";
+      document.getElementById("etapa_prazo").value = "";
+      document.getElementById("etapa_custo").value = "";
+      document.getElementById("etapa_status").value = "Não iniciada";
+      document.getElementById("etapa_obs").value = "";
+      const btn = document.getElementById("etapa_submit_btn");
+      if (btn) btn.textContent = "+ Adicionar Etapa";
+    }
+
+    function editEtapa(actionId, etapaId) {
+      const acao = acoesPlano.find(a => a.id === actionId);
+      if (!acao) return;
+
+      const etapa = (acao.etapas || []).find(e => e.id === etapaId);
+      if (!etapa) return toast("Etapa não encontrada.", "err");
+
+      document.getElementById("etapa_id").value = etapa.id;
+      document.getElementById("etapa_desc").value = etapa.desc || "";
+      document.getElementById("etapa_resp").value = etapa.responsavel || "";
+      document.getElementById("etapa_prazo").value = etapa.prazo || "";
+      document.getElementById("etapa_custo").value = etapa.custo || "";
+      document.getElementById("etapa_status").value = etapa.status || "Não iniciada";
+      document.getElementById("etapa_obs").value = etapa.obs || "";
+
+      const btn = document.getElementById("etapa_submit_btn");
+      if (btn) btn.textContent = "Salvar edição";
+    }
+
     function openEtapasModal(actionId) {
       currentActionId = actionId;
       const acao = acoesPlano.find(a => a.id === actionId);
@@ -1717,6 +1766,8 @@
 
       document.getElementById("etapas-title").textContent = `Etapas da Ação: ${acao.titulo}`;
       document.getElementById("modal-etapas").style.display = "flex";
+
+      resetEtapaForm();
       renderEtapasList();
       refreshIcons();
     }
@@ -1726,6 +1777,7 @@
       currentActionId = null;
     }
 
+    // ADD/UPDATE etapa (COM PROCESSO DENTRO)
     function addEtapaToCurrentAction() {
       const acao = acoesPlano.find(a => a.id === currentActionId);
       if (!acao) return;
@@ -1733,26 +1785,39 @@
       const desc = (document.getElementById("etapa_desc").value || "").trim();
       if (!desc) return toast("Descrição da etapa é obrigatória.", "warn");
 
-      acao.etapas.push({
-        id: "et_" + Date.now() + "_" + Math.random().toString(16).slice(2),
+      const procInfo = getCurrentProcessInfo();
+      const etapaId = document.getElementById("etapa_id").value;
+
+      const payloadEtapa = {
+        id: etapaId || ("et_" + Date.now() + "_" + Math.random().toString(16).slice(2)),
+
+        // NOVO: processo dentro da etapa
+        processo_id: procInfo.processo_id,
+        processo_numero: procInfo.processo_numero,
+
+        // útil para rastreio
+        acao_id: acao.id,
+        acao_titulo: acao.titulo,
+
         desc,
         responsavel: (document.getElementById("etapa_resp").value || "").trim(),
-        prazo: document.getElementById("etapa_prazo").value,
+        prazo: document.getElementById("etapa_prazo").value || "",
         custo: (document.getElementById("etapa_custo").value || "").trim(),
         status: document.getElementById("etapa_status").value,
         obs: (document.getElementById("etapa_obs").value || "").trim()
-      });
+      };
 
-      document.getElementById("etapa_desc").value = "";
-      document.getElementById("etapa_resp").value = "";
-      document.getElementById("etapa_prazo").value = "";
-      document.getElementById("etapa_custo").value = "";
-      document.getElementById("etapa_status").value = "Não iniciada";
-      document.getElementById("etapa_obs").value = "";
+      if (etapaId) {
+        acao.etapas = (acao.etapas || []).map(e => e.id === etapaId ? payloadEtapa : e);
+        toast("Etapa atualizada.", "ok");
+      } else {
+        acao.etapas.push(payloadEtapa);
+        toast("Etapa adicionada.", "ok");
+      }
 
+      resetEtapaForm();
       renderEtapasList();
       renderAcoesPlano();
-      toast("Etapa adicionada.", "ok");
     }
 
     function removeEtapa(actionId, etapaId) {
@@ -1812,6 +1877,11 @@
                   <div class="md:col-span-4">
                     <div class="text-[10px] font-extrabold uppercase text-slate-400">Observações (da Ação)</div>
                     <div class="text-sm font-semibold text-slate-700 whitespace-pre-wrap">${escapeHtml(a.observacoes || "-")}</div>
+                  </div>
+
+                  <div class="md:col-span-4">
+                    <div class="text-[10px] font-extrabold uppercase text-slate-400">Processo</div>
+                    <div class="text-sm font-extrabold text-slate-800">SEI ${escapeHtml(a.processo_numero || "-")}</div>
                   </div>
                 </div>
               </div>
@@ -1877,6 +1947,12 @@
                   <div class="text-[10px] font-extrabold uppercase text-slate-400">Custo</div>
                   <div class="text-sm font-extrabold text-slate-800">${escapeHtml(e.custo || "-")}</div>
                 </div>
+
+                <div class="md:col-span-2">
+                  <div class="text-[10px] font-extrabold uppercase text-slate-400">Processo</div>
+                  <div class="text-sm font-extrabold text-slate-800">SEI ${escapeHtml(e.processo_numero || "-")}</div>
+                </div>
+
                 <div class="md:col-span-2">
                   <div class="text-[10px] font-extrabold uppercase text-slate-400">Observações</div>
                   <div class="text-sm font-semibold text-slate-700 whitespace-pre-wrap">${escapeHtml(e.obs || "-")}</div>
@@ -1884,10 +1960,17 @@
               </div>
             </div>
 
-            <button type="button" onclick="removeEtapa('${acao.id}','${e.id}')"
-              class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir etapa">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
+            <div class="flex gap-1">
+              <button type="button" onclick="editEtapa('${acao.id}','${e.id}')"
+                class="p-2 rounded-lg hover:bg-slate-100 text-blue-600" title="Editar etapa">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+              </button>
+
+              <button type="button" onclick="removeEtapa('${acao.id}','${e.id}')"
+                class="p-2 rounded-lg hover:bg-red-50 text-red-600" title="Excluir etapa">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
         `;
       }).join("");
@@ -1906,16 +1989,26 @@
       const id = document.getElementById("plano_id").value || ("plano_" + Date.now());
       const base = allData.find(x => x.tipo === "baseRecomendacao" && x.id === baseId);
 
-      // garante estrutura ação v4
+      const proc = allData.find(x => x.tipo === "processo" && x.id === processoId);
+
+      // garante estrutura ação + processo (e preserva etapas)
       acoesPlano = (acoesPlano||[]).map(a => ({
         id: a.id || ("acao_" + Date.now() + "_" + Math.random().toString(16).slice(2)),
+        processo_id: a.processo_id || processoId,
+        processo_numero: a.processo_numero || proc?.processo_numero || "",
         titulo: a.titulo || "",
         responsavel: a.responsavel || "",
         prazo: a.prazo || "",
         indicador: a.indicador || "",
         resultado: a.resultado || "",
         observacoes: a.observacoes || "",
-        etapas: Array.isArray(a.etapas) ? a.etapas : []
+        etapas: (Array.isArray(a.etapas) ? a.etapas : []).map(et => ({
+          ...et,
+          processo_id: et.processo_id || processoId,
+          processo_numero: et.processo_numero || proc?.processo_numero || "",
+          acao_id: et.acao_id || a.id,
+          acao_titulo: et.acao_titulo || a.titulo
+        }))
       }));
 
       const obj = {
@@ -1980,7 +2073,7 @@
     }
 
     /* =======================
-       EXPORT PDF (corrigido para indicador/resultado por ação)
+       EXPORT PDF
     ======================= */
     function openExportModal() {
       refreshExportProcessList(filterDataByUser(allData).filter(x => x.tipo === "processo"));
@@ -2075,15 +2168,15 @@
         doc.setFont("helvetica", "normal");
 
         planosProc.forEach(pl => {
-          y = pdfWriteWrapped(doc, `• Plano da Rec. ${pl.recomendacao_numero} | Status: ${pl.status} | Progresso: ${pl.progresso}%`, 16, y, 178, 4);
+          y = pdfWriteWrapped(doc, `• Plano da Rec. ${pl.recomendacao_numero} | Processo SEI: ${p.processo_numero} | Status: ${pl.status} | Progresso: ${pl.progresso}%`, 16, y, 178, 4);
 
           (pl.acoes_plano||[]).forEach(a => {
-            y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 18, y, 176, 4);
+            y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | SEI: ${a.processo_numero || p.processo_numero || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 18, y, 176, 4);
             if (a.observacoes) y = pdfWriteWrapped(doc, `    Obs.: ${a.observacoes}`, 18, y, 176, 4);
 
             (a.etapas||[]).forEach(e => {
               const prazoFmt = e.prazo ? new Date(e.prazo).toLocaleDateString("pt-BR") : "-";
-              y = pdfWriteWrapped(doc, `      * Etapa: ${e.desc || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 20, y, 174, 4);
+              y = pdfWriteWrapped(doc, `      * Etapa: ${e.desc || "-"} | SEI: ${e.processo_numero || p.processo_numero || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 20, y, 174, 4);
               if (y > 270) { doc.addPage(); y = 16; }
             });
             y += 1;
@@ -2147,15 +2240,15 @@
       doc.text(`Planos (${planos.length})`, 14, y); y += 4;
       doc.setFont("helvetica", "normal");
       planos.forEach(pl => {
-        y = pdfWriteWrapped(doc, `• Plano da Rec. ${pl.recomendacao_numero} | Status: ${pl.status} | Progresso: ${pl.progresso}%`, 16, y, 178, 4);
+        y = pdfWriteWrapped(doc, `• Plano da Rec. ${pl.recomendacao_numero} | Processo SEI: ${p.processo_numero} | Status: ${pl.status} | Progresso: ${pl.progresso}%`, 16, y, 178, 4);
 
         (pl.acoes_plano||[]).forEach(a => {
-          y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 18, y, 176, 4);
+          y = pdfWriteWrapped(doc, `  - Ação: ${a.titulo || "-"} | SEI: ${a.processo_numero || p.processo_numero || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 18, y, 176, 4);
           if (a.observacoes) y = pdfWriteWrapped(doc, `    Obs.: ${a.observacoes}`, 18, y, 176, 4);
 
           (a.etapas||[]).forEach(e => {
             const prazoFmt = e.prazo ? new Date(e.prazo).toLocaleDateString("pt-BR") : "-";
-            y = pdfWriteWrapped(doc, `      * Etapa: ${e.desc || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 20, y, 174, 4);
+            y = pdfWriteWrapped(doc, `      * Etapa: ${e.desc || "-"} | SEI: ${e.processo_numero || p.processo_numero || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 20, y, 174, 4);
             if (y > 270) { doc.addPage(); y = 16; }
           });
           y += 1;
@@ -2200,12 +2293,12 @@
         y += 2;
 
         (pl.acoes_plano||[]).forEach(a => {
-          y = pdfWriteWrapped(doc, `- Ação: ${a.titulo || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 16, y, 178, 4);
+          y = pdfWriteWrapped(doc, `- Ação: ${a.titulo || "-"} | SEI: ${a.processo_numero || proc?.processo_numero || "-"} | Resp.: ${a.responsavel || "-"} | Ind.: ${a.indicador || "-"} | Res.: ${a.resultado || "-"}`, 16, y, 178, 4);
           if (a.observacoes) y = pdfWriteWrapped(doc, `  Obs.: ${a.observacoes}`, 16, y, 178, 4);
 
           (a.etapas||[]).forEach(e => {
             const prazoFmt = e.prazo ? new Date(e.prazo).toLocaleDateString("pt-BR") : "-";
-            y = pdfWriteWrapped(doc, `   * Etapa: ${e.desc || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 18, y, 176, 4);
+            y = pdfWriteWrapped(doc, `   * Etapa: ${e.desc || "-"} | SEI: ${e.processo_numero || proc?.processo_numero || "-"} | Status: ${e.status || "-"} | Resp.: ${e.responsavel || "-"} | Prazo: ${prazoFmt} | Custo: ${e.custo || "-"} | Obs.: ${e.obs || "-"}`, 18, y, 176, 4);
             if (y > 270) { doc.addPage(); y = 16; }
           });
           y += 1;
